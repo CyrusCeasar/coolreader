@@ -1,0 +1,128 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "org.coolreader"
+        minSdkVersion 3
+        targetSdkVersion 21
+        // When new version released, version code must be incremented at least by 8
+        // for compatibility with ABI versioning of split apk (see below).
+        versionCode 2001
+        versionName "3.2.2-1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_TOOLCHAIN=clang"
+                arguments "-DANDROID_STL=c++_static"
+                cppFlags ""
+            }
+        }
+    }
+    sourceSets {
+        main {
+            setRoot('src/main')
+            aidl.srcDirs = ['../../android/src']
+            java.srcDirs = ['../../android/src']
+            res.srcDirs = ['../../android/res']
+            jni.srcDirs = ['../../android/jni']
+            jniLibs.srcDirs = ['../../android/jnilib']
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            externalNativeBuild {
+                cmake {
+                    arguments "-DCMAKE_BUILD_TYPE=Release"
+                }
+            }
+        }
+        release_minsize {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules-optimize.pro'
+            externalNativeBuild {
+                cmake {
+                    arguments "-DCMAKE_BUILD_TYPE=Release"
+                }
+            }
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            useProguard false
+            jniDebuggable true
+            debuggable true
+            externalNativeBuild {
+                cmake {
+                    arguments "-DCMAKE_BUILD_TYPE=Debug"
+                }
+            }
+        }
+    }
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked"
+        }
+    }
+    // https://developer.android.com/studio/build/configure-apk-splits
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a' //select ABIs to build APKs for
+            universalApk true //generate an additional APK that contains all the ABIs
+        }
+    }
+     // map for the version code
+    project.ext.abiCodes = [
+            'armeabi': 1,
+            'armeabi-v7a': 2,
+            'arm64-v8a': 6,
+            'mips': 3,
+            'mips64': 7,
+            'x86': 4,
+            'x86_64': 5
+    ]
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // Stores the value of ext.abiCodes that is associated with the ABI for this variant.
+            def baseAbiVersionCode = project.ext.abiCodes.get(output.getFilter(com.android.build.OutputFile.ABI))
+            if (baseAbiVersionCode != null) {
+                // Variant 1: small version code increment for various ABI (old behaviour)
+                output.versionCodeOverride = variant.versionCode + baseAbiVersionCode
+                // Variant 2: big version code increment for various ABI
+                //output.versionCodeOverride = variant.versionCode + 1000000*baseAbiVersionCode
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+    lintOptions {
+        disable 'MissingTranslation'
+    }
+
+
+    // https://developer.android.com/about/versions/marshmallow/android-6.0-changes#behavior-apache-http-client
+    useLibrary 'org.apache.http.legacy'
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation files('libs/YoudaoBase.jar')
+    implementation files('libs/YoudaoTranslateOnline.jar')
+    implementation 'org.jetbrains:annotations-java5:15.0'
+}
+repositories {
+    mavenCentral()
+}
