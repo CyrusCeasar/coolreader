@@ -37,7 +37,7 @@ public class TranslateResultActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String input = getIntent().getStringExtra(KEY_INPUT);
+        final String input = getIntent().getStringExtra(KEY_INPUT);
         setContentView(R.layout.activity_translate);
 
         findViewById(R.id.content).setOnClickListener(new View.OnClickListener() {
@@ -77,7 +77,14 @@ public class TranslateResultActivity extends Activity {
 
                 }
                 Log.d(TAG, sb.toString() + s + s1);
-
+                final String url = String.format("http://45.78.12.192/translate_record/query?words=%s&src_content=%s&display_content=%s", input, "", sb.toString());
+                new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        HttpUtil.get(url);
+                    }
+                }.start();
                 notifyDataUpdate();
             }
 
