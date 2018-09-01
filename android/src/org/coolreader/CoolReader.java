@@ -21,7 +21,6 @@ import org.coolreader.crengine.Engine;
 import org.coolreader.crengine.FileBrowser;
 import org.coolreader.crengine.FileInfo;
 import org.coolreader.crengine.History.BookInfoLoadedCallack;
-import org.coolreader.crengine.TranslateUtil;
 import org.coolreader.crengine.InterfaceTheme;
 import org.coolreader.crengine.L;
 import org.coolreader.crengine.Logger;
@@ -36,7 +35,6 @@ import org.coolreader.crengine.ReaderViewLayout;
 import org.coolreader.crengine.Services;
 import org.coolreader.crengine.TTS;
 import org.coolreader.crengine.TTS.OnTTSCreatedListener;
-import org.coolreader.donations.CRDonationService;
 import org.koekak.android.ebookdownloader.SonyBookSelector;
 
 import android.content.BroadcastReceiver;
@@ -48,7 +46,6 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -123,21 +120,7 @@ public class CoolReader extends BaseActivity
 		if (initialBatteryState >= 0 && mReaderView != null)
 			mReaderView.setBatteryState(initialBatteryState);
 
-		//==========================================
-		// Donations related code
-		try {
-			
-			mDonationService = new CRDonationService(this);
-			mDonationService.bind();
-    		SharedPreferences pref = getSharedPreferences(DONATIONS_PREF_FILE, 0);
-    		try {
-    			mTotalDonations = pref.getFloat(DONATIONS_PREF_TOTAL_AMOUNT, 0.0f);
-    		} catch (Exception e) {
-    			log.e("exception while reading total donations from preferences", e);
-    		}
-		} catch (VerifyError e) {
-			log.e("Exception while trying to initialize billing service for donations");
-		}
+
 
 		N2EpdController.n2MainActivity = this;
         
@@ -168,28 +151,13 @@ public class CoolReader extends BaseActivity
 			mHomeFrame.onClose();
 		mDestroyed = true;
 		
-		//if ( mReaderView!=null )
-		//	mReaderView.close();
-		
-		//if ( mHistory!=null && mDB!=null ) {
-			//history.saveToDB();
-		//}
 
-		
-//		if ( BackgroundThread.instance()!=null ) {
-//			BackgroundThread.instance().quit();
-//		}
-			
-		//mEngine = null;
 		if ( intentReceiver!=null ) {
 			unregisterReceiver(intentReceiver);
 			intentReceiver = null;
 		}
 		
-		//===========================
-		// Donations support code
-		if (mDonationService != null)
-			mDonationService.unbind();
+
 
 		if (mReaderView != null) {
 			mReaderView.destroy();
@@ -887,9 +855,6 @@ public class CoolReader extends BaseActivity
 		} catch (DictionaryException e) {
 			showToast(e.getMessage());
 		}
-    	if (mDonationService != null) {
-    		mDonationService.onActivityResult(requestCode, resultCode, intent);
-    	}
     }
 	
 	public void setDict( String id ) {
@@ -902,71 +867,16 @@ public class CoolReader extends BaseActivity
 	}
 	
 	
-    private CRDonationService mDonationService = null;
-    private DonationListener mDonationListener = null;
     private double mTotalDonations = 0;
     
-    public CRDonationService getDonationService() {
-    	return mDonationService;
-    }
 
-    public boolean isDonationSupported() {
-    	return mDonationService.isBillingSupported();
-    }
 
-    public void setDonationListener(DonationListener listener) {
-    	mDonationListener = listener;
-    }
 
-    public static interface DonationListener {
-    	void onDonationTotalChanged(double total);
-    }
     
     public double getTotalDonations() {
     	return mTotalDonations;
     }
 
-    public boolean makeDonation(final double amount) {
-		final String itemName = "donation" + (amount >= 1 ? String.valueOf((int)amount) : String.valueOf(amount));
-    	log.i("makeDonation is called, itemName=" + itemName);
-    	if (!mDonationService.isBillingSupported())
-    		return false;
-    	BackgroundThread.instance().postBackground(new Runnable() {
-			@Override
-			public void run() {
-		        mDonationService.purchase(itemName, 
-	        		new CRDonationService.PurchaseListener() {
-						@Override
-						public void onPurchaseCompleted(final boolean success, final String productId,
-								final float totalDonations) {
-							BackgroundThread.instance().postGUI(new Runnable() {
-								@Override
-								public void run() {
-									try {
-										if (success) {
-											log.i("Donation purchased: " + productId + ", total amount: " + mTotalDonations);
-											mTotalDonations += amount;
-							        		SharedPreferences pref = getSharedPreferences(DONATIONS_PREF_FILE, 0);
-							        		pref.edit().putString(DONATIONS_PREF_TOTAL_AMOUNT, String.valueOf(mTotalDonations)).commit();
-										} else {
-											showToast("Donation purchase failed");
-										}
-										if (mDonationListener != null)
-											mDonationListener.onDonationTotalChanged(mTotalDonations);
-									} catch (Exception e) {
-										// ignore
-									}
-								}
-							});
-						}
-				});
-			}
-    	});
-    	return true;
-    }
-    
-	private static String DONATIONS_PREF_FILE = "cr3donations";
-	private static String DONATIONS_PREF_TOTAL_AMOUNT = "total";
 
 
     // ========================================================================================
@@ -1306,7 +1216,6 @@ public class CoolReader extends BaseActivity
 	
 	/**
 	 * Get last stored location.
-	 * @param location
 	 * @return
 	 */
 	private String getLastLocation() {

@@ -103,7 +103,7 @@ public class TranslateResultActivity extends Activity {
             public void run() {
                 progressDialog.setVisibility(View.GONE);
                 listView.setVisibility(View.VISIBLE);
-                ArrayAdapter arrayAdapter = new ArrayAdapter(TranslateResultActivity.this, android.R.layout.simple_list_item_1, resutls);
+                ArrayAdapter arrayAdapter = new ArrayAdapter<>(TranslateResultActivity.this, android.R.layout.simple_list_item_1, resutls);
                 listView.setAdapter(arrayAdapter);
             }
         });

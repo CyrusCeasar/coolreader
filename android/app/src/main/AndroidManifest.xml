@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.coolreader"
-      android:installLocation="auto" >
-    <supports-screens
-        android:xlargeScreens="true"
-        android:largeScreens="true"
-        android:normalScreens="true" 
-        android:resizeable="true" 
-        android:smallScreens="true"
-        android:anyDensity="true"
-    />
+      >
+
     <!-- WiFi -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- -->
@@ -31,7 +24,6 @@
     <application
         android:label="@string/app_name"
         android:icon="@drawable/cr3_logo"
-        android:allowBackup="true"
         android:name=".ReaderApplication"
         android:allowClearUserData="true"
         android:process="org.coolreader">
@@ -102,21 +94,10 @@
             android:theme="@android:style/Theme.NoTitleBar"/>
        
         
-        <!-- Sync support -->
-        <service android:name=".sync.SyncService" />
+
         <!-- Database service -->
         <service android:name=".db.CRDBService" />
         
-        <!-- Donations support -->
-        <service android:name=".donations.BillingService" />
-        
-        <receiver android:name="org.coolreader.donations.BillingReceiver">
-            <intent-filter>
-                <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
-                <action android:name="com.android.vending.billing.RESPONSE_CODE" />
-                <action android:name="com.android.vending.billing.PURCHASE_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
         <!-- Stop TTS on incoming call -->
   		<receiver android:name="org.coolreader.PhoneStateReceiver">
 	        <intent-filter>
