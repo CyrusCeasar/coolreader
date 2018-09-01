@@ -1,4 +1,4 @@
-package de.telekom.epub.utils;
+package org.coolreader.crengine;
 
 //import android.graphics.Rect;
 import android.util.Log;

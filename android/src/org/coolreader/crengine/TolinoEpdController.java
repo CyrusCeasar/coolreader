@@ -1,9 +1,7 @@
 package org.coolreader.crengine;
 
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.View;
-import de.telekom.epub.utils.ScreenHelper;
 
 public class TolinoEpdController {
   private static final String LOG_TAG = TolinoEpdController.class.getSimpleName();

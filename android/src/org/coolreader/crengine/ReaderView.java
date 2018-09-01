@@ -2211,9 +2211,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		case DCMD_AUTOSCROLL_SPEED_DECREASE:
 			changeAutoScrollSpeed(-1);
 			break;
-		case DCMD_SHOW_DICTIONARY:
-			mActivity.showDictionary();
-			break;
 		case DCMD_OPEN_PREVIOUS_BOOK:
 			loadPreviousDocument(new Runnable() {
 				@Override

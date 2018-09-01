@@ -8,13 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
-
-import org.coolreader.Dictionaries;
-import org.coolreader.Dictionaries.DictInfo;
 import org.coolreader.R;
 import org.coolreader.db.CRDBService;
 import org.coolreader.db.CRDBServiceAccessor;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -58,8 +54,7 @@ public class BaseActivity extends Activity implements Settings {
 	private View mDecorView;
 
 	private CRDBServiceAccessor mCRDBService;
-	protected Dictionaries mDictionaries;
-	
+
 	protected void unbindCRDBService() {
 		if (mCRDBService != null) {
 			mCRDBService.unbind();
@@ -128,8 +123,6 @@ public class BaseActivity extends Activity implements Settings {
 		mDecorView = getWindow().getDecorView();
 
 		super.onCreate(savedInstanceState);
-
-		mDictionaries = new Dictionaries(this);
 
 		try {
 			PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -1601,7 +1594,6 @@ public class BaseActivity extends Activity implements Settings {
 			props.applyDefault(ReaderView.PROP_CONTROLS_ENABLE_VOLUME_KEYS, "1");
 			props.applyDefault(ReaderView.PROP_APP_TAP_ZONE_HILIGHT, "0");
 			props.applyDefault(ReaderView.PROP_APP_BOOK_SORT_ORDER, FileInfo.DEF_SORT_ORDER.name());
-			props.applyDefault(ReaderView.PROP_APP_DICTIONARY, Dictionaries.DEFAULT_DICTIONARY_ID);
 			props.applyDefault(ReaderView.PROP_APP_FILE_BROWSER_HIDE_EMPTY_FOLDERS, "0");
 			props.applyDefault(ReaderView.PROP_APP_SELECTION_ACTION, "0");
 			props.applyDefault(ReaderView.PROP_APP_MULTI_SELECTION_ACTION, "0");
@@ -1800,10 +1792,6 @@ public class BaseActivity extends Activity implements Settings {
 	}
 
 	
-	public static DictInfo[] getDictList() {
-		return Dictionaries.getDictList();
-	}
-
 	public boolean isPackageInstalled(String packageName) {
         PackageManager pm = getPackageManager();
         try

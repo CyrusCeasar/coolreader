@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.coolreader.CoolReader;
-import org.coolreader.Dictionaries;
-import org.coolreader.Dictionaries.DictInfo;
 import org.coolreader.R;
 import org.coolreader.crengine.ColorPickerDialog.OnColorChangedListener;
 import org.coolreader.plugins.OnlineStorePluginManager;
@@ -1082,20 +1080,6 @@ public class OptionsDialog extends BaseDialog implements TabContentFactory, Opti
 		}
 	}
 	
-	class DictOptions extends ListOption
-	{
-		public DictOptions( OptionOwner owner, String label )
-		{
-			super( owner, label, PROP_APP_DICTIONARY );
-			DictInfo[] dicts = Dictionaries.getDictList();
-			setDefaultValue(dicts[0].id);
-			for (DictInfo dict : dicts) {
-				boolean installed = mActivity.isPackageInstalled(dict.packageName);
-				add( dict.id, dict.name + (installed ? "" : " " + mActivity.getString(R.string.options_app_dictionary_not_installed)));
-			}
-		}
-	} 
-	
 	class HyphenationOptions extends ListOption
 	{
 		public HyphenationOptions( OptionOwner owner, String label )
@@ -1902,7 +1886,6 @@ public class OptionsDialog extends BaseDialog implements TabContentFactory, Opti
 		mOptionsApplication.add(new ListOption(this, getString(R.string.options_app_motion_timeout), PROP_APP_MOTION_TIMEOUT).add(mMotionTimeouts, mMotionTimeoutsTitles).setDefaultValue(Integer.toString(mMotionTimeouts[0])).noIcon());
 		mOptionsApplication.add(new BoolOption(this, getString(R.string.options_app_key_backlight_off), PROP_APP_KEY_BACKLIGHT_OFF).setDefaultValue("1").noIcon());
 		mOptionsApplication.add(new IconsBoolOption(this, getString(R.string.options_app_settings_icons), PROP_APP_SETTINGS_SHOW_ICONS).setDefaultValue("1").noIcon());
-		mOptionsApplication.add(new DictOptions(this, getString(R.string.options_app_dictionary)).noIcon());
 		mOptionsApplication.add(new BoolOption(this, getString(R.string.options_app_show_cover_pages), PROP_APP_SHOW_COVERPAGES).noIcon());
 		mOptionsApplication.add(new ListOption(this, getString(R.string.options_app_cover_page_size), PROP_APP_COVERPAGE_SIZE).add(mCoverPageSizes, mCoverPageSizeTitles).setDefaultValue("1").noIcon());
 		mOptionsApplication.add(new BoolOption(this, getString(R.string.options_app_scan_book_props), PROP_APP_BOOK_PROPERTY_SCAN_ENABLED).setDefaultValue("1").noIcon());
