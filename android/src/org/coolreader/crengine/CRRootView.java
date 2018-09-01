@@ -541,26 +541,6 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 
 		updateCurrentBook(Services.getHistory().getLastBook());
 		
-//		((ImageButton)mView.findViewById(R.id.btn_recent_books)).setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				Activities.showRecentBooks();
-//			}
-//		});
-//
-//		((ImageButton)mView.findViewById(R.id.btn_online_catalogs)).setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				Activities.showOnlineCatalogs();
-//			}
-//		});
-		
-//		((ImageButton)mView.findViewById(R.id.btn_settings)).setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				showSettings();
-//			}
-//		});
 
 		((ImageButton)mView.findViewById(R.id.btn_menu)).setOnClickListener(new OnClickListener() {
 			@Override

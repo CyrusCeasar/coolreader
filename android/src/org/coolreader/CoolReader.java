@@ -1,8 +1,18 @@
 // Main Class
 package org.coolreader;
 
-import java.lang.reflect.Field;
-import java.util.Map;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Debug;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import org.coolreader.crengine.AboutDialog;
 import org.coolreader.crengine.BackgroundThread;
@@ -36,18 +46,8 @@ import org.coolreader.crengine.TTS;
 import org.coolreader.crengine.TTS.OnTTSCreatedListener;
 import org.koekak.android.ebookdownloader.SonyBookSelector;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.media.AudioManager;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Debug;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import java.lang.reflect.Field;
+import java.util.Map;
 
 public class CoolReader extends BaseActivity {
     public static final Logger log = L.create("cr");
@@ -369,17 +369,6 @@ public class CoolReader extends BaseActivity {
             }
         });
 
-//		BackgroundThread.instance().postGUI(new Runnable() {
-//			public void run() {
-//				// fixing font settings
-//				Properties settings = mReaderView.getSettings();
-//				if (SettingsManager.instance(CoolReader.this).fixFontSettings(settings)) {
-//					log.i("Missing font settings were fixed");
-//					mBrowser.setCoverPageFontFace(settings.getProperty(ReaderView.PROP_FONT_FACE, DeviceInfo.DEF_FONT_FACE));
-//					mReaderView.setSettings(settings, null);
-//				}
-//			}
-//		});
 
         if (mHomeFrame == null) {
             waitForCRDBService(new Runnable() {
@@ -817,14 +806,6 @@ public class CoolReader extends BaseActivity {
     public void showAboutDialog() {
         AboutDialog dlg = new AboutDialog(this);
         dlg.show();
-    }
-
-
-    private double mTotalDonations = 0;
-
-
-    public double getTotalDonations() {
-        return mTotalDonations;
     }
 
 
