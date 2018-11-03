@@ -1,4 +1,4 @@
-package com.s_trace.motion_watchdog;
+package org.coolreader.crengine;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -12,7 +12,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.coolreader.CoolReader;
-import org.coolreader.crengine.TTSToolbarDlg;
 
 /**
  * Created by s-trace on 13.03.18.
@@ -40,7 +39,7 @@ public class MotionWatchdogHandler extends Handler implements SensorEventListene
     private final int mTimeout;
 
     public MotionWatchdogHandler(TTSToolbarDlg ttsToolbarDlg, CoolReader coolReader,
-                                 com.s_trace.motion_watchdog.HandlerThread handlerThread, int timeout) {
+                                 HandlerThread handlerThread, int timeout) {
         mHandlerThread = handlerThread;
         mCoolReader = coolReader;
         mTTSToolbarDlg = ttsToolbarDlg;

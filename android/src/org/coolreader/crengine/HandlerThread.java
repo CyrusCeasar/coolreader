@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.s_trace.motion_watchdog;
+package org.coolreader.crengine;
 
 import android.os.Build;
 import android.os.Handler;

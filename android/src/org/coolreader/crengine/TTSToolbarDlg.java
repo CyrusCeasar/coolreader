@@ -6,7 +6,6 @@ import org.coolreader.CoolReader;
 import org.coolreader.R;
 
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -21,9 +20,6 @@ import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-
-import com.s_trace.motion_watchdog.HandlerThread;
-import com.s_trace.motion_watchdog.MotionWatchdogHandler;
 
 public class TTSToolbarDlg implements TTS.OnUtteranceCompletedListener {
 	PopupWindow mWindow;

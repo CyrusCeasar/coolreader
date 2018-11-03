@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -55,6 +56,9 @@ public class TranslateResultActivity extends Activity {
         TranslateUtil.translate(input, new TranslateListener() {
             @Override
             public void onError(TranslateErrorCode translateErrorCode, String s) {
+                if(translateErrorCode == null){
+                    return;
+                }
                 resutls.add(translateErrorCode.toString());
                 Log.d(TAG, translateErrorCode.toString() + translateErrorCode.getCode() + "      " + s);
                 notifyDataUpdate();
@@ -62,8 +66,14 @@ public class TranslateResultActivity extends Activity {
 
             @Override
             public void onResult(Translate translate, String s, String s1) {
+                if(translate == null){
+                    return;
+                }
                 StringBuilder sb = new StringBuilder();
 
+                if(!TextUtils.isEmpty(translate.getPhonetic())) {
+                    resutls.add(translate.getPhonetic());
+                }
                 if (translate.getExplains() != null && !translate.getExplains().isEmpty()) {
                     for (String content : translate.getExplains()) {
                         resutls.add(content);
@@ -87,6 +97,7 @@ public class TranslateResultActivity extends Activity {
                         HttpUtil.get(url);
                     }
                 }.start();
+
                 notifyDataUpdate();
             }
 
@@ -100,6 +111,9 @@ public class TranslateResultActivity extends Activity {
 
 
     private void notifyDataUpdate() {
+        if(resutls.isEmpty()){
+            return;
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
