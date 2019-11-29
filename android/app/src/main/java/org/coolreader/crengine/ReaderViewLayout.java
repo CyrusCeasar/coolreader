@@ -1,16 +1,13 @@
 package org.coolreader.crengine;
 
-import java.util.ArrayList;
-
-import org.coolreader.CoolReader;
+import org.coolreader.CoolReaderActivity;
 import org.coolreader.crengine.CRToolBar.OnActionHandler;
-import org.coolreader.crengine.CRToolBar.OnOverflowHandler;
 
 import android.graphics.Rect;
 import android.view.ViewGroup;
 
 public class ReaderViewLayout extends ViewGroup implements Settings {
-		private CoolReader activity;
+		private CoolReaderActivity activity;
 		private ReaderView contentView;
 		private StatusBar statusView;
 		private CRToolBar toolbarView;
@@ -47,7 +44,7 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 		}
 		
 		public void updateSettings(Properties settings) {
-			CoolReader.log.d("CoolReader.updateSettings()");
+			CoolReaderActivity.log.d("CoolReaderActivity.updateSettings()");
 			nightMode = settings.getBool(PROP_NIGHT_MODE, false);
 			statusBarLocation = settings.getInt(PROP_STATUS_LOCATION, VIEWER_STATUS_TOP);
 			toolbarLocation = settings.getInt(PROP_TOOLBAR_LOCATION, VIEWER_TOOLBAR_SHORT_SIDE);
@@ -86,7 +83,7 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 //				});
 		}
 		
-		public ReaderViewLayout(CoolReader context, ReaderView contentView) {
+		public ReaderViewLayout(CoolReaderActivity context, ReaderView contentView) {
 			super(context);
 			this.activity = context;
 			this.contentView = contentView;
@@ -150,7 +147,7 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 		
 		@Override
 		protected void onLayout(boolean changed, int l, int t, int r, int b) {
-			CoolReader.log.v("onLayout(" + l + ", " + t + ", " + r + ", " + b + ")");
+			CoolReaderActivity.log.v("onLayout(" + l + ", " + t + ", " + r + ", " + b + ")");
 			r -= l;
 			b -= t;
 			t = 0;
@@ -215,7 +212,7 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 				BackgroundThread.instance().postGUI(new Runnable() {
 					@Override
 					public void run() {
-						CoolReader.log.v("Invalidating toolbar ++++++++++");
+						CoolReaderActivity.log.v("Invalidating toolbar ++++++++++");
 						toolbarView.forceLayout();
 						contentView.getSurface().invalidate();
 						toolbarView.invalidate();

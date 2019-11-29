@@ -5,7 +5,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import org.coolreader.CoolReader;
+import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 import org.coolreader.crengine.CRToolBar.OnActionHandler;
 import org.coolreader.crengine.CoverpageManager.CoverpageReadyListener;
@@ -24,7 +24,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 
 	public static final Logger log = L.create("cr");
 
-	private final CoolReader mActivity;
+	private final CoolReaderActivity mActivity;
 	private ViewGroup mView;
 	private LinearLayout mRecentBooksScroll;
 	private LinearLayout mFilesystemScroll;
@@ -35,7 +35,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 	private int coverHeight;
 	private BookInfo currentBook;
 	private CoverpageReadyListener coverpageListener;
-	public CRRootView(CoolReader activity) {
+	public CRRootView(CoolReaderActivity activity) {
 		super(activity);
 		this.mActivity = activity;
 		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));

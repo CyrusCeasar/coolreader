@@ -7,7 +7,7 @@ import android.view.*;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.*;
-import org.coolreader.CoolReader;
+import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 import org.coolreader.crengine.CoverpageManager.CoverpageReadyListener;
 import org.coolreader.crengine.OPDSUtil.DocInfo;
@@ -29,7 +29,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 	
 	Engine mEngine;
 	Scanner mScanner;
-	CoolReader mActivity;
+	CoolReaderActivity mActivity;
 	LayoutInflater mInflater;
 	History mHistory;
 	ListView mListView;
@@ -166,7 +166,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 	}
 	
 	CoverpageManager.CoverpageReadyListener coverpageListener;
-	public FileBrowser(CoolReader activity, Engine engine, Scanner scanner, History history) {
+	public FileBrowser(CoolReaderActivity activity, Engine engine, Scanner scanner, History history) {
 		super(activity);
 		this.mActivity = activity;
 		this.mEngine = engine;

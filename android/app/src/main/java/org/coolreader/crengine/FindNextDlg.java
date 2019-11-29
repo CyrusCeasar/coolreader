@@ -20,7 +20,7 @@ import android.widget.PopupWindow.OnDismissListener;
 public class FindNextDlg {
 	PopupWindow mWindow;
 	View mAnchor;
-	//CoolReader mCoolReader;
+	//CoolReaderActivity mCoolReader;
 	ReaderView mReaderView;
 	View mPanel;
 	final String pattern;

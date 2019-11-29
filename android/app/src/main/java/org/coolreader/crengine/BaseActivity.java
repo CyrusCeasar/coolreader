@@ -130,7 +130,7 @@ public class BaseActivity extends Activity implements Settings {
 		} catch ( NameNotFoundException e ) {
 			// ignore
 		}
-		log.i("CoolReader version : " + getVersion());
+		log.i("CoolReaderActivity version : " + getVersion());
 
 		Display d = getWindowManager().getDefaultDisplay();
 		DisplayMetrics m = new DisplayMetrics(); 
@@ -152,7 +152,7 @@ public class BaseActivity extends Activity implements Settings {
 		diagonalInches = (float)Math.sqrt(widthInches * widthInches + heightInches * heightInches);
 		
 		log.i("diagonal=" + diagonalInches + "  isSmartphone=" + isSmartphone());
-		//log.i("CoolReader.window=" + getWindow());
+		//log.i("CoolReaderActivity.window=" + getWindow());
 		if (!DeviceInfo.EINK_SCREEN) {
 			WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
 			lp.alpha = 1.0f;
@@ -221,7 +221,7 @@ public class BaseActivity extends Activity implements Settings {
 
 	@Override
 	protected void onPause() {
-		log.i("CoolReader.onPause() : saving reader state");
+		log.i("CoolReaderActivity.onPause() : saving reader state");
 		mIsStarted = false;
 		mPaused = true;
 //		setScreenUpdateMode(-1, mReaderView);
@@ -242,7 +242,7 @@ public class BaseActivity extends Activity implements Settings {
 	
 	@Override
 	protected void onResume() {
-		log.i("CoolReader.onResume()");
+		log.i("CoolReaderActivity.onResume()");
 		mPaused = false;
 		mIsStarted = true;
 		backlightControl.onUserActivity();

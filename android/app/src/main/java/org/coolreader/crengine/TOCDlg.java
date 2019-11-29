@@ -18,7 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class TOCDlg extends BaseDialog {
-	//CoolReader mCoolReader;
+	//CoolReaderActivity mCoolReader;
 	ReaderView mReaderView;
 	TOCItem mTOC;
 	ListView mListView;

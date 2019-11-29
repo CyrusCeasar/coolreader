@@ -9,7 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.coolreader.CoolReader;
+import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 import org.coolreader.crengine.Engine.HyphDict;
 import org.coolreader.crengine.InputDialog.InputHandler;
@@ -301,7 +301,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		}
 	}
 
-	private final CoolReader mActivity;
+	private final CoolReaderActivity mActivity;
     private final Engine mEngine;
     
     private BookInfo mBookInfo;
@@ -313,7 +313,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     	return mEngine;
     }
     
-    public CoolReader getActivity()
+    public CoolReaderActivity getActivity()
     {
     	return mActivity;
     }
@@ -2822,8 +2822,8 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		}
 		public void fail( Exception e )
 		{
-			log.e("CoolReader engine initialization failed. Exiting.", e);
-			mEngine.fatalError("Failed to init CoolReader engine");
+			log.e("CoolReaderActivity engine initialization failed. Exiting.", e);
+			mEngine.fatalError("Failed to init CoolReaderActivity engine");
 		}
 	}
 
@@ -4683,7 +4683,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 					log.i("Restoring position : " + pos);
 					restorePositionBackground(pos);
 				}
-				CoolReader.dumpHeapAllocation();
+				CoolReaderActivity.dumpHeapAllocation();
 	        } else {
 				log.e("Error occured while trying to load document " + filename);
 				throw new IOException("Cannot read document");
@@ -5972,7 +5972,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		});
 	}
 
-	public ReaderView(CoolReader activity, Engine engine, Properties props) 
+	public ReaderView(CoolReaderActivity activity, Engine engine, Properties props)
     {
         //super(activity);
 		log.i("Creating normal SurfaceView");

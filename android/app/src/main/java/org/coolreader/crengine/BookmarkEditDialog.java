@@ -1,6 +1,6 @@
 package org.coolreader.crengine;
 
-import org.coolreader.CoolReader;
+import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import android.view.LayoutInflater;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 public class BookmarkEditDialog extends BaseDialog {
 	
-	private final CoolReader mCoolReader;
+	private final CoolReaderActivity mCoolReader;
 	private final LayoutInflater mInflater;
 	private final ReaderView mReaderView;
 	private final Bookmark mOriginalBookmark;
@@ -21,7 +21,7 @@ public class BookmarkEditDialog extends BaseDialog {
 	private final boolean mIsNew;
 	final EditText commentEdit;
 	
-	public BookmarkEditDialog( CoolReader activity, ReaderView readerView, Bookmark bookmark, boolean isNew)
+	public BookmarkEditDialog(CoolReaderActivity activity, ReaderView readerView, Bookmark bookmark, boolean isNew)
 	{
 		super(activity, "", true, false);
 		mCoolReader = activity;

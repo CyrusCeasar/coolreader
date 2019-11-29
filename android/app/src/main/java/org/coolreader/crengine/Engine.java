@@ -24,7 +24,7 @@ import android.os.Environment;
 import android.util.Log;
 
 /**
- * CoolReader Engine class.
+ * CoolReaderActivity Engine class.
  * 
  * Only one instance is allowed.
  */
@@ -242,7 +242,7 @@ public class Engine {
 
 	public void fatalError(String msg) {
 		AlertDialog dlg = new AlertDialog.Builder(mActivity).setMessage(msg)
-				.setTitle("CoolReader fatal error").show();
+				.setTitle("CoolReaderActivity fatal error").show();
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {
@@ -536,7 +536,7 @@ public class Engine {
 	}
 
 	/**
-	 * Initialize CoolReader Engine
+	 * Initialize CoolReaderActivity Engine
 	 * 
 	 * @param fontList
 	 *            is array of .ttf font pathnames to load

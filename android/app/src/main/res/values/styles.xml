@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-    xmlns:cr3="http://schemas.android.com/apk/res/org.coolreader"
-    >
+<resources xmlns:cr3="http://schemas.android.com/apk/res/org.coolreader">
 
     <style name="TabWidget" parent="@android:style/Widget.TabWidget">
         <!-- item name="android:textAppearance">@style/TextAppearance.Small</item>
@@ -21,26 +19,25 @@
         <item name="android:measureWithLargestChild">true</item>
         <item name="android:tabLayout">@android:layout/tab_indicator_holo</item-->
     </style>
-    
-    <style name="TextAppearance.Widget.EditText" parent="@android:style/TextAppearance.Widget.EditText">
-    </style>
-        
-    <style name="ListView">
-    </style>
+
+    <style name="TextAppearance.Widget.EditText" parent="@android:style/TextAppearance.Widget.EditText"></style>
+
+    <style name="ListView"></style>
+
     <style name="ListView.Dark" parent="@style/Theme.Dark">
         <item name="android:scrollbars">vertical</item>
         <item name="android:fadingEdge">vertical</item>
         <item name="android:listSelector">@null</item>
         <item name="android:divider">@drawable/divider_dark_tiled_v3</item>
     </style>
-        
+
     <style name="ListView.Light" parent="@style/Theme.Light">
         <item name="android:scrollbars">vertical</item>
         <item name="android:fadingEdge">vertical</item>
         <item name="android:listSelector">@null</item>
         <item name="android:divider">@drawable/divider_light_tiled_v3</item>
     </style>
-        
+
     <style name="ListView.Black" parent="@style/Theme.Black">
         <item name="android:scrollbars">vertical</item>
         <item name="android:fadingEdge">vertical</item>
@@ -63,6 +60,7 @@
         <item name="android:listViewWhiteStyle">@style/ListView.Light</item>
         <item name="rootDelimiterStyle">@style/RootDelimiter.Light</item>
     </style>
+
     <style name="Theme.Dark" parent="@android:style/Theme">
         <item name="android:windowBackground">@drawable/background_tiled_dark_v3</item>
         <item name="android:colorBackground">#ff302030</item>
@@ -71,6 +69,7 @@
         <item name="android:listViewWhiteStyle">@style/ListView.Dark</item>
         <item name="rootDelimiterStyle">@style/RootDelimiter.Dark</item>
     </style>
+
     <style name="Theme.White" parent="@android:style/Theme.Light">
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:colorBackground">@android:color/white</item>
@@ -80,64 +79,73 @@
 
         <item name="rootDelimiterStyle">@style/RootDelimiter.White</item>
     </style>
+
     <style name="Theme.Black" parent="@android:style/Theme">
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
         <!-- item name="android:textColor">@android:color/white</item-->
         <item name="android:listViewStyle">@style/ListView.Black</item>
         <item name="android:listViewWhiteStyle">@style/ListView.Black</item>
-        
+
         <item name="rootDelimiterStyle">@style/RootDelimiter.Black</item>
     </style>
-    
+
     <style name="Theme.Light.Dialog.Normal" parent="@style/Theme.Light">
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
     <style name="Theme.Light.Dialog.Fullscreen" parent="@style/Theme.Light">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
     </style>
+
     <style name="Theme.Dark.Dialog.Normal" parent="@style/Theme.Dark">
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
     <style name="Theme.Dark.Dialog.Fullscreen" parent="@style/Theme.Dark">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
     </style>
+
     <style name="Theme.Black.Dialog.Normal" parent="@style/Theme.Black">
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
     <style name="Theme.Black.Dialog.Fullscreen" parent="@style/Theme.Black">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
     </style>
+
     <style name="Theme.White.Dialog.Normal" parent="@style/Theme.White">
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
     <style name="Theme.White.Dialog.Fullscreen" parent="@style/Theme.White">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
     </style>
+
     <style name="TapZoneGridItem">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
@@ -149,6 +157,7 @@
         <item name="android:layout_margin">5dip</item>
         <item name="android:background">#60808080</item>
     </style>
+
     <style name="TapZoneGridCell">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
@@ -158,6 +167,7 @@
         <item name="android:layout_margin">3dip</item>
         <item name="android:background">#60808080</item>
     </style>
+
     <style name="TapZoneGridCellText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -168,6 +178,7 @@
         <item name="android:padding">2dip</item>
         <item name="android:layout_margin">2dip</item>
     </style>
+
     <style name="TapZoneGridCellTextSecond">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -179,7 +190,6 @@
     </style>
 
 
-    
     <style name="RootDelimiter">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">8dip</item>
@@ -190,11 +200,11 @@
     <style name="RootDelimiter.Dark" parent="@style/Theme.Dark">
         <item name="android:background">@drawable/divider_light_tiled_v3</item>
     </style>
-        
+
     <style name="RootDelimiter.Light" parent="@style/Theme.Light">
         <item name="android:background">@drawable/divider_light_tiled_v3</item>
     </style>
-        
+
     <style name="RootDelimiter.Black" parent="@style/Theme.Black">
         <item name="android:background">@drawable/divider_black_tiled</item>
     </style>
@@ -202,5 +212,16 @@
     <style name="RootDelimiter.White" parent="@style/Theme.White">
         <item name="android:background">@drawable/divider_white_tiled</item>
     </style>
-    
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light" />
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

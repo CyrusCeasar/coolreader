@@ -2,7 +2,7 @@ package org.coolreader.crengine;
 
 import java.io.File;
 
-import org.coolreader.CoolReader;
+import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 import org.coolreader.crengine.CoverpageManager.CoverpageBitmapReadyListener;
 import org.coolreader.plugins.BookInfoCallback;
@@ -32,7 +32,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 public class OnlineStoreBookInfoDialog extends BaseDialog {
-	private CoolReader mActivity;
+	private CoolReaderActivity mActivity;
 	private OnlineStoreBookInfo mBookInfo;
 	private FileInfo mFileInfo;
 	private LayoutInflater mInflater;
@@ -45,7 +45,7 @@ public class OnlineStoreBookInfoDialog extends BaseDialog {
 	
 	private ViewGroup mContentView;
 	
-	public OnlineStoreBookInfoDialog(CoolReader activity, OnlineStoreBookInfo book, FileInfo fileInfo)
+	public OnlineStoreBookInfoDialog(CoolReaderActivity activity, OnlineStoreBookInfo book, FileInfo fileInfo)
 	{
 		super(activity, null, false, false);
 		DisplayMetrics outMetrics = new DisplayMetrics();

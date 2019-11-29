@@ -112,7 +112,7 @@ public class LitresConnection {
 					}
 					connection = (HttpURLConnection)conn;
 					Log.i(TAG, "opened connection");
-		            connection.setRequestProperty("User-Agent", "CoolReader/3(Android)");
+		            connection.setRequestProperty("User-Agent", "CoolReaderActivity/3(Android)");
 		            connection.setInstanceFollowRedirects(true);
 		            connection.setAllowUserInteraction(false);
 		            connection.setConnectTimeout(CONNECT_TIMEOUT);
@@ -250,7 +250,7 @@ public class LitresConnection {
 					}
 					connection = (HttpURLConnection)conn;
 					Log.i(TAG, "opened connection");
-		            connection.setRequestProperty("User-Agent", "CoolReader/3(Android)");
+		            connection.setRequestProperty("User-Agent", "CoolReaderActivity/3(Android)");
 		            connection.setInstanceFollowRedirects(true);
 		            connection.setAllowUserInteraction(false);
 		            connection.setConnectTimeout(CONNECT_TIMEOUT);

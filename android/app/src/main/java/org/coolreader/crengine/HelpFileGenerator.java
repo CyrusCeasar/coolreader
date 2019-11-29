@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-import org.coolreader.CoolReader;
+import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import android.content.Context;
@@ -21,7 +21,7 @@ public class HelpFileGenerator {
 	private final String langCode;
 	private final Properties settings;
 	private final String version;
-	public HelpFileGenerator(CoolReader context, Engine engine, Properties props, String langCode) {
+	public HelpFileGenerator(CoolReaderActivity context, Engine engine, Properties props, String langCode) {
 		this.context = context;
 		this.engine = engine;
 		this.langCode = langCode;

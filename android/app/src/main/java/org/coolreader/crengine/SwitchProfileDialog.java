@@ -1,6 +1,6 @@
 package org.coolreader.crengine;
 
-import org.coolreader.CoolReader;
+import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import android.view.LayoutInflater;
@@ -14,11 +14,11 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class SwitchProfileDialog extends BaseDialog {
-	CoolReader mCoolReader;
+	CoolReaderActivity mCoolReader;
 	ReaderView mReaderView;
 	ListView mListView;
 	int currentProfile;
-	public SwitchProfileDialog(CoolReader coolReader, ReaderView readerView)
+	public SwitchProfileDialog(CoolReaderActivity coolReader, ReaderView readerView)
 	{
 		super(coolReader, coolReader.getResources().getString(R.string.action_switch_settings_profile), false, false);
         setCancelable(true);

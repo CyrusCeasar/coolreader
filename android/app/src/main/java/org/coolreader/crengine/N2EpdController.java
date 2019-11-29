@@ -92,7 +92,7 @@ public class N2EpdController {
 				if (DeviceInfo.EINK_NOOK_120 && mEpdController == null)
 					mEpdController = EpdControllerConstructors[0].newInstance(new Object[] { n2MainActivity });
 				Object regionParams =  RegionParamsConstructor.newInstance(new Object[] { 0, 0, 600, 800, enumsWave[wave]});
-				mtSetRegion.invoke(mEpdController, "CoolReader", enumsRegion[region], regionParams, enumsMode[mode]);
+				mtSetRegion.invoke(mEpdController, "CoolReaderActivity", enumsRegion[region], regionParams, enumsMode[mode]);
 			} catch (Exception e) {
 				System.err.println("Failed: SetMode");
 				System.err.println(e.toString());
