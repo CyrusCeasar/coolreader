@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 29
     defaultConfig {
         applicationId "org.coolreader"
-        minSdkVersion 3
-        targetSdkVersion 21
+        minSdkVersion 21
+        targetSdkVersion 29
         // When new version released, version code must be incremented at least by 8
         // for compatibility with ABI versioning of split apk (see below).
         versionCode 2001
@@ -22,12 +22,8 @@ android {
     }
     sourceSets {
         main {
-            setRoot('src/main')
             aidl.srcDirs = ['../../android/src']
-            java.srcDirs = ['../../android/src']
-            res.srcDirs = ['../../android/res']
             jni.srcDirs = ['../../android/jni']
-            jniLibs.srcDirs = ['../../android/jnilib']
         }
     }
     buildTypes {
@@ -119,8 +115,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation files('libs/YoudaoBase.jar')
-    implementation files('libs/YoudaoTranslateOnline.jar')
+    implementation files('libs/YoudaoBase_v2.0.0.jar')
+    implementation files('libs/YoudaoTranslateOnline_v2.0.0.jar')
     implementation 'org.jetbrains:annotations-java5:15.0'
     implementation 'com.google.code.gson:gson:2.8.5'
 }
