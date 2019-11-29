@@ -23,7 +23,6 @@ android {
     sourceSets {
         main {
             aidl.srcDirs = ['../../android/src']
-            jni.srcDirs = ['../../android/jni']
         }
     }
     buildTypes {
@@ -112,9 +111,6 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation files('libs/YoudaoBase_v2.0.0.jar')
     implementation files('libs/YoudaoTranslateOnline_v2.0.0.jar')
     implementation 'org.jetbrains:annotations-java5:15.0'

@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 project(cr3engine)
 
-set(CR3_ROOT ${PROJECT_SOURCE_DIR}/../..)
+set(CR3_ROOT src/main/jni)
 
 include_directories(${CR3_ROOT}/crengine/include)
 include_directories(${CR3_ROOT}/thirdparty/libpng)
@@ -78,14 +78,14 @@ set(CRENGINE_SRC_FILES
 #    ${CR3_ROOT}/crengine/src/crgui.cpp
 
 set(COFFEECATCH_SRC_FILES
-    ${CR3_ROOT}/android/jni/coffeecatch/coffeecatch.c
-    ${CR3_ROOT}/android/jni/coffeecatch/coffeejni.c
+    ${CR3_ROOT}/coffeecatch/coffeecatch.c
+    ${CR3_ROOT}/coffeecatch/coffeejni.c
 )
 
 set(JNI_SRC_FILES
-    ${CR3_ROOT}/android/jni/cr3engine.cpp
-    ${CR3_ROOT}/android/jni/cr3java.cpp
-    ${CR3_ROOT}/android/jni/docview.cpp
+    ${CR3_ROOT}/cr3engine.cpp
+    ${CR3_ROOT}/cr3java.cpp
+    ${CR3_ROOT}/docview.cpp
 )
 
 set(LOCAL_SRC_FILES
@@ -98,7 +98,7 @@ if("${ANDROID_ABI}" STREQUAL "armeabi-v7a" OR "${ANDROID_ABI}" STREQUAL "arm64-v
     set(LOCAL_SRC_FILES ${LOCAL_SRC_FILES} ${COFFEECATCH_SRC_FILES})
 endif("${ANDROID_ABI}" STREQUAL "armeabi-v7a" OR "${ANDROID_ABI}" STREQUAL "arm64-v8a" OR "${ANDROID_ABI}" STREQUAL "mips" OR "${ANDROID_ABI}" STREQUAL "x86")
 
-add_subdirectory(thirdparty_libs)
+add_subdirectory(src/main/jni/thirdparty_libs)
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
