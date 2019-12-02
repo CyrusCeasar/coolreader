@@ -6,19 +6,20 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import java.util.Random;
 
+import cn.cc.ereader.MainActivity;
+
 public class AboutDialog extends BaseDialog implements TabContentFactory {
-    final CoolReaderActivity mCoolReader;
+    final MainActivity mCoolReader;
 
     private View mAppTab;
     private View mLicenseTab;
 
 
-    public AboutDialog(CoolReaderActivity activity) {
+    public AboutDialog(MainActivity activity) {
         super(activity);
         mCoolReader = activity;
         setTitle(R.string.dlg_about);

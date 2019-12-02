@@ -1,6 +1,5 @@
 package org.coolreader.crengine;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import android.graphics.drawable.BitmapDrawable;
@@ -20,14 +19,16 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+import cn.cc.ereader.MainActivity;
+
 public class SelectionToolbarDlg {
 	PopupWindow mWindow;
 	View mAnchor;
-	CoolReaderActivity mCoolReader;
+	MainActivity mCoolReader;
 	ReaderView mReaderView;
 	View mPanel;
 	Selection selection;
-	static public void showDialog(CoolReaderActivity coolReader, ReaderView readerView, final Selection selection )
+	static public void showDialog(MainActivity coolReader, ReaderView readerView, final Selection selection )
 	{
 		SelectionToolbarDlg dlg = new SelectionToolbarDlg(coolReader, readerView, selection);
 		//dlg.mWindow.update(dlg.mAnchor, width, height)
@@ -124,7 +125,7 @@ public class SelectionToolbarDlg {
 		mWindow.dismiss();
 	}
 	
-	public SelectionToolbarDlg(CoolReaderActivity coolReader, ReaderView readerView, Selection sel )
+	public SelectionToolbarDlg(MainActivity coolReader, ReaderView readerView, Selection sel )
 	{
 		this.selection = sel;
 		mCoolReader = coolReader;

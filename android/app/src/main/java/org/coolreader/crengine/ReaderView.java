@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 import org.coolreader.crengine.Engine.HyphDict;
 import org.coolreader.crengine.InputDialog.InputHandler;
@@ -38,6 +37,8 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
+
+import cn.cc.ereader.MainActivity;
 
 public class ReaderView implements android.view.SurfaceHolder.Callback, Settings, OnKeyListener, OnTouchListener, OnFocusChangeListener {
 
@@ -301,7 +302,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		}
 	}
 
-	private final CoolReaderActivity mActivity;
+	private final MainActivity mActivity;
     private final Engine mEngine;
     
     private BookInfo mBookInfo;
@@ -313,7 +314,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     	return mEngine;
     }
     
-    public CoolReaderActivity getActivity()
+    public MainActivity getActivity()
     {
     	return mActivity;
     }
@@ -2722,7 +2723,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 	/**
      * Change settings.
 	 * @param newSettings are new settings
-	 * @param oldSettings are old settings, null to use mSettings
+
 	 */
 	public void updateSettings(Properties newSettings)
 	{
@@ -4683,7 +4684,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 					log.i("Restoring position : " + pos);
 					restorePositionBackground(pos);
 				}
-				CoolReaderActivity.dumpHeapAllocation();
+				MainActivity.Companion.dumpHeapAllocation();
 	        } else {
 				log.e("Error occured while trying to load document " + filename);
 				throw new IOException("Cannot read document");
@@ -5972,7 +5973,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		});
 	}
 
-	public ReaderView(CoolReaderActivity activity, Engine engine, Properties props)
+	public ReaderView(MainActivity activity, Engine engine, Properties props)
     {
         //super(activity);
 		log.i("Creating normal SurfaceView");

@@ -5,7 +5,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 import org.coolreader.crengine.CRToolBar.OnActionHandler;
 import org.coolreader.crengine.CoverpageManager.CoverpageReadyListener;
@@ -18,13 +17,15 @@ import org.coolreader.plugins.litres.LitresPlugin;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.cc.ereader.MainActivity;
+
 import static android.view.ContextMenu.ContextMenuInfo;
 
 public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 
 	public static final Logger log = L.create("cr");
 
-	private final CoolReaderActivity mActivity;
+	private final MainActivity mActivity;
 	private ViewGroup mView;
 	private LinearLayout mRecentBooksScroll;
 	private LinearLayout mFilesystemScroll;
@@ -35,7 +36,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 	private int coverHeight;
 	private BookInfo currentBook;
 	private CoverpageReadyListener coverpageListener;
-	public CRRootView(CoolReaderActivity activity) {
+	public CRRootView(MainActivity activity) {
 		super(activity);
 		this.mActivity = activity;
 		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
@@ -322,39 +323,6 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 					@Override
 					public void onClick(View v) {
 						mActivity.showBrowser(FileInfo.ONLINE_CATALOG_PLUGIN_PREFIX + LitresPlugin.PACKAGE_NAME);
-//						LitresConnection.instance().loadGenres(new ResultHandler() {
-//							@Override
-//							public void onResponse(LitresResponse response) {
-//								if (response instanceof LitresConnection.LitresGenre) {
-//									LitresConnection.LitresGenre result = (LitresConnection.LitresGenre)response;
-//									log.d("genres found: " + result.getChildCount() + " on top level");
-//								}
-//							}
-//						});
-//						LitresConnection.instance().authorize("login", "password", new ResultHandler() {
-//							@Override
-//							public void onResponse(LitresResponse response) {
-//								if (response instanceof LitresConnection.LitresAuthInfo) {
-//									LitresConnection.LitresAuthInfo result = (LitresConnection.LitresAuthInfo)response;
-//									log.d("authorization successful: " + result);
-//								} else {
-//									log.d("authorization failed");
-//								}
-//							}
-//						});
-//						LitresConnection.instance().loadAuthorsByLastName("л", new ResultHandler() {
-//							@Override
-//							public void onResponse(LitresResponse response) {
-//								if (response instanceof LitresConnection.LitresAuthors) {
-//									LitresConnection.LitresAuthors result = (LitresConnection.LitresAuthors)response;
-//									log.d("authors found: " + result.size());
-//									for (int i=0; i<result.size() && i<10; i++) {
-//										log.d(result.get(i).toString());
-//									}
-//								}
-//							}
-//						});
-//						mActivity.showToast("TODO");
 					}
 				});
 			} else {

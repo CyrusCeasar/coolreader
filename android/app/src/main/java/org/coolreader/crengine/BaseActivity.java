@@ -48,7 +48,9 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class BaseActivity extends Activity implements Settings {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class BaseActivity extends AppCompatActivity implements Settings {
 
 	private static final Logger log = L.create("ba");
 	private View mDecorView;
@@ -80,7 +82,6 @@ public class BaseActivity extends Activity implements Settings {
         mCRDBService.bind(readyCallback);
 	}
 
-	public CRDBServiceAccessor getDBService() { return mCRDBService; }
 	public CRDBService.LocalBinder getDB() { return mCRDBService != null ? mCRDBService.get() : null; }
 
 	public Properties settings() { return mSettingsManager.mSettings; }
@@ -235,10 +236,10 @@ public class BaseActivity extends Activity implements Settings {
 	}
 
 
-	protected static String PREF_FILE = "CR3LastBook";
-	protected static String PREF_LAST_BOOK = "LastBook";
-	protected static String PREF_LAST_LOCATION = "LastLocation";
-	protected static String PREF_LAST_NOTIFICATION = "LastNoticeNumber";
+	public static String PREF_FILE = "CR3LastBook";
+	public static String PREF_LAST_BOOK = "LastBook";
+	public static String PREF_LAST_LOCATION = "LastLocation";
+	public static String PREF_LAST_NOTIFICATION = "LastNoticeNumber";
 	
 	@Override
 	protected void onResume() {
@@ -837,7 +838,8 @@ public class BaseActivity extends Activity implements Settings {
 
 		long lastUpdateTimeStamp;
 		
-		public void onUserActivity() {
+		@SuppressLint("InvalidWakeLockTag")
+        public void onUserActivity() {
 			lastUserActivityTime = Utils.timeStamp();
 			if (Utils.timeInterval(lastUpdateTimeStamp) < 5000)
 				return;

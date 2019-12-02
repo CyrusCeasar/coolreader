@@ -1,15 +1,16 @@
 package org.coolreader.crengine;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import cn.cc.ereader.MainActivity;
+
 public class OPDSCatalogEditDialog extends BaseDialog {
 
-	private final CoolReaderActivity mActivity;
+	private final MainActivity mActivity;
 	private final LayoutInflater mInflater;
 	private final FileInfo mItem;
 	private final EditText nameEdit;
@@ -18,7 +19,7 @@ public class OPDSCatalogEditDialog extends BaseDialog {
 	private final EditText passwordEdit;
 	private final Runnable mOnUpdate;
 
-	public OPDSCatalogEditDialog(CoolReaderActivity activity, FileInfo item, Runnable onUpdate) {
+	public OPDSCatalogEditDialog(MainActivity activity, FileInfo item, Runnable onUpdate) {
 		super(activity, activity.getString((item.id == null) ? R.string.dlg_catalog_add_title
 				: R.string.dlg_catalog_edit_title), true,
 				false);

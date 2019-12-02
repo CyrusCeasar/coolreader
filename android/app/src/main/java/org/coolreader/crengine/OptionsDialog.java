@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 import org.coolreader.crengine.ColorPickerDialog.OnColorChangedListener;
 import org.coolreader.plugins.OnlineStorePluginManager;
@@ -36,6 +35,8 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TabWidget;
 import android.widget.TextView;
+
+import cn.cc.ereader.MainActivity;
 
 public class OptionsDialog extends BaseDialog implements TabContentFactory, OptionOwner, Settings {
 
@@ -1931,10 +1932,10 @@ public class OptionsDialog extends BaseDialog implements TabContentFactory, Opti
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		L.v("creating OptionsDialog");
-		CoolReaderActivity.dumpHeapAllocation();
+		MainActivity.Companion.dumpHeapAllocation();
 		L.v("calling gc");
 		System.gc();
-		CoolReaderActivity.dumpHeapAllocation();
+		MainActivity.Companion.dumpHeapAllocation();
 		L.v("creating options dialog");
         setCancelable(true);
         setCanceledOnTouchOutside(true);

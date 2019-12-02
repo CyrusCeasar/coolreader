@@ -17,8 +17,8 @@ public class BrowserViewLayout extends ViewGroup {
 		super(context);
 		this.activity = context;
 		this.contentView = contentView;
-		
-		
+
+
 		this.titleView = titleView;
 		this.titleView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		this.toolbarView = toolbar;
@@ -36,13 +36,13 @@ public class BrowserViewLayout extends ViewGroup {
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 	}
-	
+
 	private String browserTitle = "";
 	public void setBrowserTitle(String title) {
 		this.browserTitle = title;
 		((TextView)titleView.findViewById(R.id.title)).setText(title);
 	}
-	
+
 	public void onThemeChanged(InterfaceTheme theme) {
 		//titleView.setBackgroundResource(theme.getBrowserStatusBackground());
 		//toolbarView.setButtonAlpha(theme.getToolbarButtonAlpha());
@@ -55,7 +55,7 @@ public class BrowserViewLayout extends ViewGroup {
 		toolbarView.onThemeChanged(theme);
 		requestLayout();
 	}
-	
+
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		r -= l;
@@ -77,13 +77,13 @@ public class BrowserViewLayout extends ViewGroup {
 			toolbarView.setBackgroundResource(activity.getCurrentTheme().getBrowserToolbarBackground(false));
 		}
 	}
-	
+
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int w = MeasureSpec.getSize(widthMeasureSpec);
 		int h = MeasureSpec.getSize(heightMeasureSpec);
 
-		
+
 		toolbarView.setVertical(w > h);
 		if (w > h) {
 			// landscape
@@ -102,15 +102,15 @@ public class BrowserViewLayout extends ViewGroup {
 			toolbarView.measure(MeasureSpec.makeMeasureSpec(w, MeasureSpec.AT_MOST),
 					MeasureSpec.makeMeasureSpec(h, MeasureSpec.AT_MOST));
 			int tbHeight = toolbarView.getMeasuredHeight();
-			titleView.measure(widthMeasureSpec, 
+			titleView.measure(widthMeasureSpec,
 					MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 			int titleHeight = titleView.getMeasuredHeight();
-			contentView.measure(widthMeasureSpec, 
+			contentView.measure(widthMeasureSpec,
 					MeasureSpec.makeMeasureSpec(h - titleHeight - tbHeight, MeasureSpec.AT_MOST));
 		}
         setMeasuredDimension(w, h);
 	}
-	
+
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);

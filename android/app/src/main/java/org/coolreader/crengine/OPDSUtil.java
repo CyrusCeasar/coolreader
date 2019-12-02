@@ -29,11 +29,12 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.crengine.Engine.DelayedProgress;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import cn.cc.ereader.MainActivity;
 
 @SuppressLint("SimpleDateFormat")
 public class OPDSUtil {
@@ -434,7 +435,7 @@ xml:base="http://lib.ololo.cc/opds/">
 	}
 	
 	public static class DownloadTask {
-		final private CoolReaderActivity coolReader;
+		final private MainActivity coolReader;
 		private URL url;
 		private String username;
 		private String password;
@@ -446,7 +447,7 @@ xml:base="http://lib.ololo.cc/opds/">
 		private HttpURLConnection connection;
 		private DelayedProgress delayedProgress;
 		OPDSHandler handler;
-		public DownloadTask(CoolReaderActivity coolReader, URL url, String defaultFileName, String expectedType, String referer, DownloadCallback callback, String username, String password) {
+		public DownloadTask(MainActivity coolReader, URL url, String defaultFileName, String expectedType, String referer, DownloadCallback callback, String username, String password) {
 			this.url = url;
 			this.coolReader = coolReader;
 			this.callback = callback; 
@@ -983,7 +984,7 @@ xml:base="http://lib.ololo.cc/opds/">
 		
 	}
 	private static DownloadTask currentTask;
-	public static DownloadTask create(CoolReaderActivity coolReader, URL uri, String defaultFileName, String expectedType, String referer, DownloadCallback callback, String username, String password) {
+	public static DownloadTask create(MainActivity coolReader, URL uri, String defaultFileName, String expectedType, String referer, DownloadCallback callback, String username, String password) {
 		if (currentTask != null)
 			currentTask.cancel();
 		final DownloadTask task = new DownloadTask(coolReader, uri, defaultFileName, expectedType, referer, callback, username, password);

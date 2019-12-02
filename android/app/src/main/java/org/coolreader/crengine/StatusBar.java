@@ -1,6 +1,5 @@
 package org.coolreader.crengine;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import android.util.TypedValue;
@@ -8,8 +7,10 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import cn.cc.ereader.MainActivity;
+
 public class StatusBar extends LinearLayout implements Settings {
-		private CoolReaderActivity activity;
+		private MainActivity activity;
 		private LinearLayout content;
 		private TextView lblTitle;
 		private TextView lblPosition;
@@ -53,7 +54,7 @@ public class StatusBar extends LinearLayout implements Settings {
 			lblTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 			lblPosition.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 			if (needRelayout) {
-				CoolReaderActivity.log.d("changing status bar layout");
+//				CoolReaderActivity.log.d("changing status bar layout");
 				lblPosition.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
 				lblTitle.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
 				content.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
@@ -71,7 +72,7 @@ public class StatusBar extends LinearLayout implements Settings {
 			return needRelayout;
 		}
 		
-		public StatusBar(CoolReaderActivity context) {
+		public StatusBar(MainActivity context) {
 			super(context);
 			this.activity = context;
 			setOrientation(VERTICAL);
@@ -185,7 +186,7 @@ public class StatusBar extends LinearLayout implements Settings {
 			else
 				indicator.setPosition(0);
 			if (updated && isShown()) {
-				CoolReaderActivity.log.d("changing status bar layout");
+//				CoolReaderActivity.log.d("changing status bar layout");
 				measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
 				forceLayout();
 			}

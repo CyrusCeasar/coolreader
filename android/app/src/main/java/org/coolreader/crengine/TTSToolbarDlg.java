@@ -2,7 +2,6 @@ package org.coolreader.crengine;
 
 import java.util.HashMap;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import android.graphics.drawable.BitmapDrawable;
@@ -21,10 +20,12 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+import cn.cc.ereader.MainActivity;
+
 public class TTSToolbarDlg implements TTS.OnUtteranceCompletedListener {
 	PopupWindow mWindow;
 	View mAnchor;
-	CoolReaderActivity mCoolReader;
+	MainActivity mCoolReader;
 	ReaderView mReaderView;
 	View mPanel;
 	TTS mTTS;
@@ -33,7 +34,7 @@ public class TTSToolbarDlg implements TTS.OnUtteranceCompletedListener {
 	SeekBar sbVolume;
 	private HandlerThread mMotionWatchdog;
 
-	static public TTSToolbarDlg showDialog(CoolReaderActivity coolReader, ReaderView readerView, TTS tts)
+	static public TTSToolbarDlg showDialog(MainActivity coolReader, ReaderView readerView, TTS tts)
 	{
 		TTSToolbarDlg dlg = new TTSToolbarDlg(coolReader, readerView, tts);
 		//dlg.mWindow.update(dlg.mAnchor, width, height)
@@ -177,7 +178,7 @@ public class TTSToolbarDlg implements TTS.OnUtteranceCompletedListener {
 			moveSelection( ReaderCommand.DCMD_SELECT_NEXT_SENTENCE );
 	}
 
-	public TTSToolbarDlg(CoolReaderActivity coolReader, ReaderView readerView, TTS tts )
+	public TTSToolbarDlg(MainActivity coolReader, ReaderView readerView, TTS tts )
 	{
 		mCoolReader = coolReader;
 		mReaderView = readerView;

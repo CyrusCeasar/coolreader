@@ -14,7 +14,7 @@ public class Scanner extends FileInfoChangeSource {
 	
 	public static final Logger log = L.create("sc");
 	
-	HashMap<String, FileInfo> mFileList = new HashMap<String, FileInfo>();
+	public HashMap<String, FileInfo> mFileList = new HashMap<String, FileInfo>();
 //	ArrayList<FileInfo> mFilesForParsing = new ArrayList<FileInfo>();
 	FileInfo mRoot;
 	

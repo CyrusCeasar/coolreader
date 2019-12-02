@@ -1,13 +1,14 @@
 package org.coolreader.crengine;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.crengine.CRToolBar.OnActionHandler;
 
 import android.graphics.Rect;
 import android.view.ViewGroup;
 
+import cn.cc.ereader.MainActivity;
+
 public class ReaderViewLayout extends ViewGroup implements Settings {
-		private CoolReaderActivity activity;
+		private MainActivity activity;
 		private ReaderView contentView;
 		private StatusBar statusView;
 		private CRToolBar toolbarView;
@@ -44,7 +45,7 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 		}
 		
 		public void updateSettings(Properties settings) {
-			CoolReaderActivity.log.d("CoolReaderActivity.updateSettings()");
+//			CoolReaderActivity.log.d("CoolReaderActivity.updateSettings()");
 			nightMode = settings.getBool(PROP_NIGHT_MODE, false);
 			statusBarLocation = settings.getInt(PROP_STATUS_LOCATION, VIEWER_STATUS_TOP);
 			toolbarLocation = settings.getInt(PROP_TOOLBAR_LOCATION, VIEWER_TOOLBAR_SHORT_SIDE);
@@ -83,7 +84,7 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 //				});
 		}
 		
-		public ReaderViewLayout(CoolReaderActivity context, ReaderView contentView) {
+		public ReaderViewLayout(MainActivity context, ReaderView contentView) {
 			super(context);
 			this.activity = context;
 			this.contentView = contentView;
@@ -147,7 +148,7 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 		
 		@Override
 		protected void onLayout(boolean changed, int l, int t, int r, int b) {
-			CoolReaderActivity.log.v("onLayout(" + l + ", " + t + ", " + r + ", " + b + ")");
+//			CoolReaderActivity.log.v("onLayout(" + l + ", " + t + ", " + r + ", " + b + ")");
 			r -= l;
 			b -= t;
 			t = 0;
@@ -212,7 +213,7 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 				BackgroundThread.instance().postGUI(new Runnable() {
 					@Override
 					public void run() {
-						CoolReaderActivity.log.v("Invalidating toolbar ++++++++++");
+//						CoolReaderActivity.log.v("Invalidating toolbar ++++++++++");
 						toolbarView.forceLayout();
 						contentView.getSurface().invalidate();
 						toolbarView.invalidate();

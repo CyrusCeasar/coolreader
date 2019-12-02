@@ -1,6 +1,5 @@
 package org.coolreader.crengine;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import android.view.LayoutInflater;
@@ -11,9 +10,11 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import cn.cc.ereader.MainActivity;
+
 public class BookmarkEditDialog extends BaseDialog {
 	
-	private final CoolReaderActivity mCoolReader;
+	private final MainActivity mCoolReader;
 	private final LayoutInflater mInflater;
 	private final ReaderView mReaderView;
 	private final Bookmark mOriginalBookmark;
@@ -21,7 +22,7 @@ public class BookmarkEditDialog extends BaseDialog {
 	private final boolean mIsNew;
 	final EditText commentEdit;
 	
-	public BookmarkEditDialog(CoolReaderActivity activity, ReaderView readerView, Bookmark bookmark, boolean isNew)
+	public BookmarkEditDialog(MainActivity activity, ReaderView readerView, Bookmark bookmark, boolean isNew)
 	{
 		super(activity, "", true, false);
 		mCoolReader = activity;

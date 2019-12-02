@@ -2,7 +2,6 @@ package org.coolreader.crengine;
 
 import java.util.ArrayList;
 
-import org.coolreader.CoolReaderActivity;
 import org.coolreader.R;
 
 import android.content.Context;
@@ -26,8 +25,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import cn.cc.ereader.MainActivity;
+
 public class BookmarksDlg  extends BaseDialog {
-	CoolReaderActivity mCoolReader;
+	MainActivity mCoolReader;
 	ReaderView mReaderView;
 	private LayoutInflater mInflater;
 	BookInfo mBookInfo;
@@ -251,7 +252,7 @@ public class BookmarksDlg  extends BaseDialog {
 	
 	final static int SHORTCUT_COUNT = 10;
 	
-	public BookmarksDlg(CoolReaderActivity activity, ReaderView readerView )
+	public BookmarksDlg(MainActivity activity, ReaderView readerView )
 	{
 		super(activity, activity.getResources().getString(R.string.win_title_bookmarks), true, false);
 		mThis = this; // for inner classes

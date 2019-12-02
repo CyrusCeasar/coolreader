@@ -1,3 +1,4 @@
+/*
 // Main Class
 package org.coolreader;
 
@@ -75,9 +76,11 @@ public class CoolReaderActivity extends BaseActivity {
     private boolean justCreated = false;
 
 
-    /**
+    */
+/**
      * Called when the activity is first created.
-     */
+     *//*
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         startServices();
@@ -1073,11 +1076,13 @@ public class CoolReaderActivity extends BaseActivity {
         setLastLocation(FileInfo.ROOT_DIR_TAG);
     }
 
-    /**
+    */
+/**
      * Store last location - to resume after program restart.
      *
      * @param location is file name, directory, or special folder tag
-     */
+     *//*
+
     public void setLastLocation(String location) {
         try {
             String oldLocation = getPrefs().getString(PREF_LAST_LOCATION, null);
@@ -1136,11 +1141,13 @@ public class CoolReaderActivity extends BaseActivity {
         });
     }
 
-    /**
+    */
+/**
      * Get last stored location.
      *
      * @return
-     */
+     *//*
+
     private String getLastLocation() {
         String res = getPrefs().getString(PREF_LAST_LOCATION, null);
         if (res == null) {
@@ -1159,9 +1166,11 @@ public class CoolReaderActivity extends BaseActivity {
         return res;
     }
 
-    /**
+    */
+/**
      * Open location - book, root view, folder...
-     */
+     *//*
+
     public void showLastLocation() {
         String location = getLastLocation();
         if (location == null)
@@ -1192,3 +1201,4 @@ public class CoolReaderActivity extends BaseActivity {
 
 }
 
+*/

@@ -3,18 +3,37 @@ package org.coolreader.crengine;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
-import android.widget.*;
-import org.coolreader.CoolReaderActivity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
 import org.coolreader.R;
 import org.coolreader.crengine.CoverpageManager.CoverpageReadyListener;
 import org.coolreader.crengine.OPDSUtil.DocInfo;
 import org.coolreader.crengine.OPDSUtil.DownloadCallback;
 import org.coolreader.crengine.OPDSUtil.EntryInfo;
 import org.coolreader.db.CRDBService;
-import org.coolreader.plugins.*;
+import org.coolreader.plugins.AuthenticationCallback;
+import org.coolreader.plugins.BookInfoCallback;
+import org.coolreader.plugins.FileInfoCallback;
+import org.coolreader.plugins.OnlineStoreBook;
+import org.coolreader.plugins.OnlineStoreBookInfo;
+import org.coolreader.plugins.OnlineStorePluginManager;
+import org.coolreader.plugins.OnlineStoreWrapper;
 import org.koekak.android.ebookdownloader.SonyBookSelector;
 
 import java.io.File;
@@ -23,13 +42,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import cn.cc.ereader.MainActivity;
+
 public class FileBrowser extends LinearLayout implements FileInfoChangeListener {
 
 	public static final Logger log = L.create("fb");
 	
 	Engine mEngine;
 	Scanner mScanner;
-	CoolReaderActivity mActivity;
+	MainActivity mActivity;
 	LayoutInflater mInflater;
 	History mHistory;
 	ListView mListView;
@@ -166,7 +187,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 	}
 	
 	CoverpageManager.CoverpageReadyListener coverpageListener;
-	public FileBrowser(CoolReaderActivity activity, Engine engine, Scanner scanner, History history) {
+	public FileBrowser(MainActivity activity, Engine engine, Scanner scanner, History history) {
 		super(activity);
 		this.mActivity = activity;
 		this.mEngine = engine;

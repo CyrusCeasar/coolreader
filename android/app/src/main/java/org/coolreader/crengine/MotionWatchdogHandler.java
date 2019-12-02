@@ -11,7 +11,8 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.coolreader.CoolReaderActivity;
+
+import cn.cc.ereader.MainActivity;
 
 /**
  * Created by s-trace on 13.03.18.
@@ -25,7 +26,7 @@ public class MotionWatchdogHandler extends Handler implements SensorEventListene
     private static final String TAG = MotionWatchdogHandler.class.getSimpleName();
     private static final long STEP_TIME = 5 * 1000; // 5 seconds
     private final SensorManager mSensorManager;
-    private final CoolReaderActivity mCoolReader;
+    private final MainActivity mCoolReader;
     private final TTSToolbarDlg mTTSToolbarDlg;
     private boolean mIsStopping;
     private boolean mIsStopped;
@@ -38,7 +39,7 @@ public class MotionWatchdogHandler extends Handler implements SensorEventListene
     private final double[] mDelta = new double[3];
     private final int mTimeout;
 
-    public MotionWatchdogHandler(TTSToolbarDlg ttsToolbarDlg, CoolReaderActivity coolReader,
+    public MotionWatchdogHandler(TTSToolbarDlg ttsToolbarDlg, MainActivity coolReader,
                                  HandlerThread handlerThread, int timeout) {
         mHandlerThread = handlerThread;
         mCoolReader = coolReader;
