@@ -44,7 +44,7 @@ android {
                 }
             }
         }
-        release_minsize {
+   /*     release_minsize {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules-optimize.pro'
@@ -53,7 +53,7 @@ android {
                     arguments "-DCMAKE_BUILD_TYPE=Release"
                 }
             }
-        }
+        }*/
         debug {
             minifyEnabled false
             shrinkResources false
@@ -121,6 +121,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/YoudaoBase_v2.0.0.jar')
     implementation files('libs/YoudaoTranslateOnline_v2.0.0.jar')
+    api project(':base')
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.50'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

@@ -43,12 +43,7 @@ public class TranslateResultActivity extends Activity {
         final String input = getIntent().getStringExtra(KEY_INPUT);
         setContentView(R.layout.activity_translate);
 
-        findViewById(R.id.content).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        findViewById(R.id.content).setOnClickListener(view -> finish());
 
         progressDialog = findViewById(R.id.pb_loading);
         listView = findViewById(R.id.lv_reuslt);
@@ -56,7 +51,7 @@ public class TranslateResultActivity extends Activity {
         TranslateUtil.translate(input, new TranslateListener() {
             @Override
             public void onError(TranslateErrorCode translateErrorCode, String s) {
-                if(translateErrorCode == null){
+                if (translateErrorCode == null) {
                     return;
                 }
                 resutls.add(translateErrorCode.toString());
@@ -66,12 +61,12 @@ public class TranslateResultActivity extends Activity {
 
             @Override
             public void onResult(Translate translate, String s, String s1) {
-                if(translate == null){
+                if (translate == null) {
                     return;
                 }
                 StringBuilder sb = new StringBuilder();
 
-                if(!TextUtils.isEmpty(translate.getPhonetic())) {
+                if (!TextUtils.isEmpty(translate.getPhonetic())) {
                     resutls.add(translate.getPhonetic());
                 }
                 if (translate.getExplains() != null && !translate.getExplains().isEmpty()) {
@@ -89,7 +84,7 @@ public class TranslateResultActivity extends Activity {
 
                 }
                 Log.d(TAG, sb.toString() + s + s1);
-                final String url = String.format("http://45.78.12.192/translate_record/query?words=%s&src_content=%s&display_content=%s", input, gson.toJson(translate,Translate.class), sb.toString());
+                final String url = String.format("http://45.78.12.192/translate_record/query?words=%s&src_content=%s&display_content=%s", input, gson.toJson(translate, Translate.class), sb.toString());
                 new Thread() {
                     @Override
                     public void run() {
@@ -111,17 +106,14 @@ public class TranslateResultActivity extends Activity {
 
 
     private void notifyDataUpdate() {
-        if(resutls.isEmpty()){
+        if (resutls.isEmpty()) {
             return;
         }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressDialog.setVisibility(View.GONE);
-                listView.setVisibility(View.VISIBLE);
-                ArrayAdapter arrayAdapter = new ArrayAdapter<>(TranslateResultActivity.this, android.R.layout.simple_list_item_1, resutls);
-                listView.setAdapter(arrayAdapter);
-            }
+        runOnUiThread(() -> {
+            progressDialog.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+            ArrayAdapter arrayAdapter = new ArrayAdapter<>(TranslateResultActivity.this, android.R.layout.simple_list_item_1, resutls);
+            listView.setAdapter(arrayAdapter);
         });
 
     }

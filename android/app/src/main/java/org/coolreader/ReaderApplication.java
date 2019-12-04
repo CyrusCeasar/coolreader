@@ -1,12 +1,13 @@
 package org.coolreader;
 
-import android.app.Application;
 
 import com.youdao.sdk.app.YouDaoApplication;
 
 import org.coolreader.crengine.TranslateUtil;
 
-public class ReaderApplication extends Application{
+import cn.cyrus.translater.base.BaseApplication;
+
+public class ReaderApplication extends BaseApplication {
 
     @Override
     public void onCreate() {

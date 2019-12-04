@@ -6,12 +6,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Debug
 import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.ui.AppBarConfiguration
 import cn.cc.ereader.ui.FileBroswerFragment
 import cn.cc.ereader.ui.HomeFragment
 import cn.cc.ereader.ui.ReaderViewFragment
+import cn.cyrus.translater.feater.HomeActivity
 import org.coolreader.PhoneStateReceiver
 import org.coolreader.R
 import org.coolreader.TranslateResultActivity
@@ -992,6 +994,14 @@ class MainActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.action_settings->
+                startActivity(Intent(this,HomeActivity::class.java))
+        }
         return true
     }
 

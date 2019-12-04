@@ -20,6 +20,7 @@
         android:allowClearUserData="true"
         android:icon="@drawable/cr3_logo"
         android:label="@string/app_name"
+        android:usesCleartextTraffic="true"
         android:process="org.coolreader">
         <activity
             android:name="cn.cc.ereader.MainActivity"
@@ -101,6 +102,9 @@
                 <data android:mimeType="application/x-msword" />
             </intent-filter>
         </activity>
+        <activity android:name="cn.cyrus.translater.feater.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity
             android:name=".TranslateResultActivity"
             android:theme="@android:style/Theme.NoTitleBar" /> <!-- Database service -->
