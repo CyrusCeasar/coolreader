@@ -16,6 +16,7 @@ buildscript {
 }
 
 allprojects {
+    apply from: "${rootProject.rootDir}/config.gradle"
     repositories {
         google()
         jcenter()

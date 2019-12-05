@@ -3,16 +3,15 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion rootProject.ext.android_vars.compileSdkVersion
     defaultConfig {
-        applicationId "org.coolreader"
-        minSdkVersion 21
-        targetSdkVersion 29
+        applicationId rootProject.ext.android_vars.applicationId
+        minSdkVersion rootProject.ext.android_vars.minSdkVersion
+        targetSdkVersion rootProject.ext.android_vars.targetSdkVersion
         // When new version released, version code must be incremented at least by 8
         // for compatibility with ABI versioning of split apk (see below).
-        versionCode 2001
-        versionName "3.2.2-1"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        versionCode rootProject.ext.android_vars.versionCode
+        versionName rootProject.ext.android_vars.versionName
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_TOOLCHAIN=clang"
@@ -123,7 +122,6 @@ dependencies {
     implementation files('libs/YoudaoBase_v2.0.0.jar')
     implementation files('libs/YoudaoTranslateOnline_v2.0.0.jar')
     api project(':base')
-    implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.50'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'

@@ -1,0 +1,11 @@
+rootProject.ext{
+    android_vars = [
+            compileSdkVersion: 29,
+            buildToolsVersion: "28.0.3",
+            applicationId    : "org.coolreader",
+            minSdkVersion    : 21,
+            targetSdkVersion : 29,
+            versionCode      : 2001,
+            versionName      : "3.2.2-1"
+    ]
+}

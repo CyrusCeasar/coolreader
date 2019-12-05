@@ -12,7 +12,7 @@ fun getDiskCacheDir(context: Context, uniqueName: String): File {
     val b1 = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
     var b2 = !isExternalStorageRemovable()
     val cachePath: String = if (b1 || b2) {
-        context.getExternalCacheDir().getPath()
+        context.getExternalCacheDir()!!.getPath()
     } else {context.getCacheDir().getPath()}
     return File(cachePath + File.separator + uniqueName)
 }
