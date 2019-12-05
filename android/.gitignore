@@ -6,6 +6,12 @@ obj
 *.iml
 .gradle
 .idea
+.cxx
+gradle
+gradle.properties
+gradlew
+gradlew.bat
+local.properties
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
