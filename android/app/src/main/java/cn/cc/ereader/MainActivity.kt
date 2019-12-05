@@ -16,7 +16,6 @@ import cn.cc.ereader.ui.ReaderViewFragment
 import cn.cyrus.translater.feater.HomeActivity
 import org.coolreader.PhoneStateReceiver
 import org.coolreader.R
-import org.coolreader.TranslateResultActivity
 import org.coolreader.crengine.*
 import org.coolreader.crengine.TTS
 import org.koekak.android.ebookdownloader.SonyBookSelector

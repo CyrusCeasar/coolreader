@@ -19,8 +19,8 @@ abstract class BaseLoadFragment<T,F> : BaseLazyInitFragment() {
 
     val mDatas: ArrayList<T> = ArrayList()
 
-    lateinit var mRecyclerView: androidx.recyclerview.widget.RecyclerView
-    lateinit var mSwipeRecyclerView: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    private lateinit var mRecyclerView: RecyclerView
+    private lateinit var mSwipeRecyclerView: SwipeRefreshLayout
     lateinit var mBaseQuickAdapter: BaseItemDraggableAdapter<T, BaseViewHolder>
     lateinit var mPageManager:PageManager<F>
 
@@ -59,13 +59,13 @@ abstract class BaseLoadFragment<T,F> : BaseLazyInitFragment() {
         mBaseQuickAdapter.notifyDataSetChanged()
     }
 
-    fun injectView(recyclerView: androidx.recyclerview.widget.RecyclerView, swipeRefreshLayout: androidx.swiperefreshlayout.widget.SwipeRefreshLayout) {
+    fun injectView(recyclerView: RecyclerView, swipeRefreshLayout: SwipeRefreshLayout) {
         mRecyclerView = recyclerView
         mSwipeRecyclerView = swipeRefreshLayout
         mSwipeRecyclerView.setOnRefreshListener {
             load(onUpdateListener)
         }
-        mRecyclerView.layoutManager= androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false)
+        mRecyclerView.layoutManager= LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         mBaseQuickAdapter = getAdapter()
         mRecyclerView.adapter = mBaseQuickAdapter
         mBaseQuickAdapter.setOnLoadMoreListener({
@@ -76,7 +76,7 @@ abstract class BaseLoadFragment<T,F> : BaseLazyInitFragment() {
 
     override fun initView(layoutInflater: LayoutInflater): View? {
         val view:ViewGroup = layoutInflater.inflate(R.layout.layout_base_load, null) as ViewGroup
-        injectView(view.findViewById(R.id.rc), view as androidx.swiperefreshlayout.widget.SwipeRefreshLayout)
+        injectView(view.findViewById(R.id.rc), view as SwipeRefreshLayout)
         onInitFinished = {
             load(onUpdateListener)
         }
@@ -90,7 +90,7 @@ abstract class BaseLoadFragment<T,F> : BaseLazyInitFragment() {
     abstract fun getAdapter(): BaseItemDraggableAdapter<T, BaseViewHolder>
     abstract fun getPageManager(): PageManager<F>
     fun getEmptyView():View{
-        return  cn.cyrus.translater.base.getEmptyView("没有数据",layoutInflater)
+        return  getEmptyView("没有数据",layoutInflater)
     }
 
 

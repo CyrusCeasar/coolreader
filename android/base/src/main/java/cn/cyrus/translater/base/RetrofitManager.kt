@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class RetrofitManager {
     companion object {
-        val instance: Retrofit = Retrofit.Builder().baseUrl("http://103.91.67.151/")
+        val instance: Retrofit = Retrofit.Builder().baseUrl(httpUrl())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(OkHttpClient().newBuilder().addNetworkInterceptor(HttpLoggingInterceptor(HttpLogger()).setLevel(HttpLoggingInterceptor.Level.BODY)).build()).build()

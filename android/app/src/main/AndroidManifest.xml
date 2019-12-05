@@ -106,7 +106,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             />
         <activity
-            android:name=".TranslateResultActivity"
+            android:name="cn.cc.ereader.TranslateResultActivity"
             android:theme="@android:style/Theme.NoTitleBar" /> <!-- Database service -->
         <service android:name=".db.CRDBService" /> <!-- Stop TTS on incoming call -->
         <receiver android:name=".PhoneStateReceiver">

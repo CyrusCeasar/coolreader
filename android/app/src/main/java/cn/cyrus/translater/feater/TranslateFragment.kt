@@ -7,8 +7,10 @@ import android.view.View
 import android.widget.*
 import cn.cyrus.translater.base.*
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.youdao.sdk.ydtranslate.Translate
 import io.reactivex.functions.Consumer
+import kotlinx.android.synthetic.main.line_edit_dlg.*
 import org.coolreader.R
 
 class TranslateFragment : BaseLazyInitFragment() {
@@ -55,7 +57,11 @@ class TranslateFragment : BaseLazyInitFragment() {
         val trs = sb.toString()
         val src = jsonStr
         val trss: TranslateService = RetrofitManager.instance.create(TranslateService::class.java)
-        syncWrok(trss.query(words = p1, src_content = src, display_content = trs), Consumer {
+        val data = JsonObject()
+        data.addProperty("words",p1)
+        data.addProperty("src",src)
+        data.addProperty("show_content",trs)
+        syncWrok(trss.query(data), Consumer {
             Log.d(TAG, "result ok" + it.isResultOk())
         })
         notifyDataChange()
