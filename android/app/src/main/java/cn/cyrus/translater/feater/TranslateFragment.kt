@@ -7,10 +7,10 @@ import android.view.View
 import android.widget.*
 import cn.cyrus.translater.base.*
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.youdao.sdk.ydtranslate.Translate
 import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.line_edit_dlg.*
 import org.coolreader.R
 
 class TranslateFragment : BaseLazyInitFragment() {
@@ -50,7 +50,7 @@ class TranslateFragment : BaseLazyInitFragment() {
         }
 
 
-        val jsonStr = Gson().toJson(p0, Translate::class.java)
+        val jsonStr = GsonBuilder().disableHtmlEscaping().create().toJson(p0, Translate::class.java)
         LogUtil.json(jsonStr)
         LruDiskUtil.save(p1, jsonStr.toByteArray())//把数据缓存到本地
 

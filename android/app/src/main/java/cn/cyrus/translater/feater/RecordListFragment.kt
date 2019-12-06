@@ -1,13 +1,9 @@
 package cn.cyrus.translater.feater
 
-import android.graphics.Canvas
 import android.os.Bundle
-import android.widget.LinearLayout
-import androidx.recyclerview.widget.RecyclerView
 import cn.cyrus.translater.base.*
-import com.chad.library.adapter.base.BaseItemDraggableAdapter
+import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
-import com.chad.library.adapter.base.listener.OnItemSwipeListener
 import io.reactivex.functions.Consumer
 import org.coolreader.R
 
@@ -40,24 +36,8 @@ class RecordListFragment : DefaultLoadMoreFragment<TranslateRecord>() {
         })
     }
 
-    override fun getAdapter(): BaseItemDraggableAdapter<TranslateRecord, BaseViewHolder> {
+    override fun getAdapter(): BaseQuickAdapter<TranslateRecord, BaseViewHolder> {
         mBaseQuickAdapter = RecordAdapter(mDatas)
-        val onItemSwipeListener: OnItemSwipeListener = object : OnItemSwipeListener {
-            override fun clearView(p0: RecyclerView.ViewHolder?, p1: Int) {
-            }
-
-            override fun onItemSwiped(p0: RecyclerView.ViewHolder?, p1: Int) {
-            }
-
-            override fun onItemSwipeStart(p0: RecyclerView.ViewHolder?, p1: Int) {
-            }
-
-            override fun onItemSwipeMoving(p0: Canvas?, p1: RecyclerView.ViewHolder?, p2: Float, p3: Float, p4: Boolean) {
-            }
-
-        }
-        mBaseQuickAdapter.enableSwipeItem()
-        mBaseQuickAdapter.setOnItemSwipeListener(onItemSwipeListener)
         return mBaseQuickAdapter
     }
 
@@ -86,15 +66,14 @@ class RecordListFragment : DefaultLoadMoreFragment<TranslateRecord>() {
 
     }
 
-    class RecordAdapter(datas: List<TranslateRecord>) : BaseItemDraggableAdapter<TranslateRecord, BaseViewHolder>(R.layout.item_words, datas) {
+    class RecordAdapter(datas: List<TranslateRecord>) : BaseQuickAdapter<TranslateRecord, BaseViewHolder>(R.layout.item_words, datas) {
 
 
         override fun convert(helper: BaseViewHolder, item: TranslateRecord?) {
             helper.setText(R.id.tv_words, item!!.words_text)
             helper.setText(R.id.tv_display_content, item.display_content)
             helper.setText(R.id.tv_query_num, item.quest_num.toString())
-            helper.getView<LinearLayout>(R.id.right).setOnClickListener {
-
+         /*   helper.getView<LinearLayout>(R.id.right).setOnClickListener {
 
                 val service: TranslateRecordService = RetrofitManager.instance.create(TranslateRecordService::class.java)
                 syncWrok(service.delete(item.words_text!!), Consumer {
@@ -108,7 +87,7 @@ class RecordListFragment : DefaultLoadMoreFragment<TranslateRecord>() {
                     }
                 })
 
-            }
+            }*/
         }
     }
 }

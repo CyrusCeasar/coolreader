@@ -11,7 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.ProgressBar
 import cn.cyrus.translater.base.*
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.youdao.sdk.ydtranslate.Translate
 import com.youdao.sdk.ydtranslate.TranslateErrorCode
@@ -25,7 +25,6 @@ class TranslateResultActivity : Activity() {
     var progressDialog: ProgressBar? = null
     var listView: ListView? = null
     var resutls: MutableList<String> = ArrayList()
-    var gson = Gson()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val input = intent.getStringExtra(KEY_INPUT)
@@ -57,7 +56,8 @@ class TranslateResultActivity : Activity() {
                         sb.append(content)
                     }
                 }
-                val jsonStr = Gson().toJson(translate, Translate::class.java)
+
+                val jsonStr = GsonBuilder().disableHtmlEscaping().create().toJson(translate, Translate::class.java)
                 LogUtil.json(jsonStr)
                 LruDiskUtil.save(input, jsonStr.toByteArray())//把数据缓存到本地
 

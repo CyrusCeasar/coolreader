@@ -11,7 +11,7 @@ import cn.cyrus.translater.R
 
 
 fun getEmptyView(msg: String, layoutInflater: LayoutInflater): View {
-    var tv: TextView = layoutInflater.inflate(R.layout.empty_tv, null) as TextView
+    val tv: TextView = layoutInflater.inflate(R.layout.empty_tv, null) as TextView
     tv.text = msg
     return tv
 }

@@ -1,13 +1,9 @@
 package cn.cyrus.translater.base
 
 import cn.cyrus.translater.BuildConfig
-import com.orhanobut.logger.Logger
 import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
-import com.orhanobut.logger.FormatStrategy
-
-
-
 
 
 /**

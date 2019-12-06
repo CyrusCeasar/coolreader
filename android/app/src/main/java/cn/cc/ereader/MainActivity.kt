@@ -9,7 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.ui.AppBarConfiguration
 import cn.cc.ereader.ui.FileBroswerFragment
 import cn.cc.ereader.ui.HomeFragment
 import cn.cc.ereader.ui.ReaderViewFragment
@@ -19,7 +18,6 @@ import org.coolreader.R
 import org.coolreader.crengine.*
 import org.coolreader.crengine.TTS
 import org.koekak.android.ebookdownloader.SonyBookSelector
-import java.lang.reflect.Field
 
 class MainActivity : BaseActivity() {
     companion object {
@@ -29,30 +27,19 @@ class MainActivity : BaseActivity() {
 
         internal val LOAD_LAST_DOCUMENT_ON_START = true
 
-
-        private val info = Debug.MemoryInfo()
-        private val infoFields = Debug.MemoryInfo::class.java.fields
-
-        private fun dumpFields(fields: Array<Field>, obj: Any): String {
-            val buf = StringBuilder()
-            try {
-                for (f in fields) {
-                    if (buf.length > 0)
-                        buf.append(", ")
-                    buf.append(f.name)
-                    buf.append("=")
-                    buf.append(f.get(obj))
-                }
-            } catch (e: Exception) {
-
-            }
-
-            return buf.toString()
-        }
-
         fun dumpHeapAllocation() {
+            val info = Debug.MemoryInfo()
+            val fields = Debug.MemoryInfo::class.java.fields
             Debug.getMemoryInfo(info)
-            log.d("nativeHeapAlloc=" + Debug.getNativeHeapAllocatedSize() + ", nativeHeapSize=" + Debug.getNativeHeapSize() + ", info: " + dumpFields(infoFields, info))
+            val buf = StringBuilder()
+            for (f in fields) {
+                if (buf.length > 0)
+                    buf.append(", ")
+                buf.append(f.name)
+                buf.append("=")
+                buf.append(f.get(info))
+            }
+            log.d("nativeHeapAlloc=" + Debug.getNativeHeapAllocatedSize() + ", nativeHeapSize=" + Debug.getNativeHeapSize() + ", info: " + buf.toString())
         }
 
         val OPEN_FILE_PARAM = "FILE_TO_OPEN"
@@ -62,9 +49,7 @@ class MainActivity : BaseActivity() {
         private val DIRECTORY_LOCATION_PREFIX = "@dir:"
     }
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
 
-    lateinit var mReaderView: Fragment
 
     var readerView: ReaderView? = null
         private set
@@ -181,9 +166,9 @@ class MainActivity : BaseActivity() {
     // ignore
     var lastLocation: String?
         get() {
-            var res = prefs!!.getString(BaseActivity.PREF_LAST_LOCATION, null)
+            var res = prefs!!.getString(PREF_LAST_LOCATION, null)
             if (res == null) {
-                res = prefs!!.getString(BaseActivity.PREF_LAST_BOOK, null)
+                res = prefs!!.getString(PREF_LAST_BOOK, null)
                 if (res != null) {
                     res = BOOK_LOCATION_PREFIX + res
                     try {
@@ -997,9 +982,9 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.action_settings->
-                startActivity(Intent(this,HomeActivity::class.java))
+        when (item.itemId) {
+            R.id.action_settings ->
+                startActivity(Intent(this, HomeActivity::class.java))
         }
         return true
     }

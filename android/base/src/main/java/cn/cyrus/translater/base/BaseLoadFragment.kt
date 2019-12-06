@@ -1,13 +1,12 @@
 package cn.cyrus.translater.base
 
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import cn.cyrus.translater.R
-import com.chad.library.adapter.base.BaseItemDraggableAdapter
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 
@@ -21,7 +20,7 @@ abstract class BaseLoadFragment<T,F> : BaseLazyInitFragment() {
 
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mSwipeRecyclerView: SwipeRefreshLayout
-    lateinit var mBaseQuickAdapter: BaseItemDraggableAdapter<T, BaseViewHolder>
+    lateinit var mBaseQuickAdapter: BaseQuickAdapter<T, BaseViewHolder>
     lateinit var mPageManager:PageManager<F>
 
     val onUpdateListener: (List<T>) -> Unit = {
@@ -87,7 +86,7 @@ abstract class BaseLoadFragment<T,F> : BaseLazyInitFragment() {
 
     abstract fun load(onUpdate: (List<T>) -> Unit)
     abstract fun loadMore(onLoadMore: (List<T>) -> Unit)
-    abstract fun getAdapter(): BaseItemDraggableAdapter<T, BaseViewHolder>
+    abstract fun getAdapter(): BaseQuickAdapter<T, BaseViewHolder>
     abstract fun getPageManager(): PageManager<F>
     fun getEmptyView():View{
         return  getEmptyView("没有数据",layoutInflater)
