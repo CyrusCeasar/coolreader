@@ -7,6 +7,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <LinearLayout
@@ -139,35 +141,24 @@
             android:singleLine="true"
             android:text="@string/root_item_recent" />
 
-        <HorizontalScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/scroll_recent_books"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dip"
             android:layout_marginTop="2dip"
-            android:layout_marginRight="8dip"
+            android:layout_marginRight="4dip"
             android:layout_marginBottom="4dip"
             android:orientation="horizontal"
-            android:scrollbars="none">
+            tools:listitem="@layout/root_item_recent_book"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:scrollbars="none"/>
 
-            <LinearLayout
-                android:id="@+id/scroll_recent_books"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fadingEdge="horizontal"
-                android:fadingEdgeLength="20dip"
-                android:minHeight="?android:attr/listPreferredItemHeight"
-                android:orientation="horizontal"></LinearLayout>
-        </HorizontalScrollView>
 
         <View
             android:id="@+id/delimiter2"
             style="@style/RootDelimiter" />
 
-        <!--TextView
-            style="@style/TextAppearance.Medium"
-            android:text="File system"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/-->
 
         <TextView
             style="@style/TextAppearance.Small"
@@ -181,25 +172,21 @@
             android:singleLine="true"
             android:text="@string/root_item_filesystem" />
 
-        <HorizontalScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/scroll_filesystem"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dip"
             android:layout_marginTop="2dip"
-            android:layout_marginRight="8dip"
+            android:layout_marginRight="4dip"
             android:layout_marginBottom="4dip"
             android:orientation="horizontal"
-            android:scrollbars="none">
+            tools:listitem="@layout/root_item_dir"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:scrollbars="none"/>
 
-            <LinearLayout
-                android:id="@+id/scroll_filesystem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fadingEdge="horizontal"
-                android:fadingEdgeLength="20dip"
-                android:minHeight="?android:attr/listPreferredItemHeight"
-                android:orientation="horizontal"></LinearLayout>
-        </HorizontalScrollView>
+
+
 
         <View
             android:id="@+id/delimiter3"
@@ -217,25 +204,20 @@
             android:singleLine="true"
             android:text="@string/root_item_library" />
 
-        <HorizontalScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/scroll_library"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dip"
             android:layout_marginTop="2dip"
-            android:layout_marginRight="8dip"
+            android:layout_marginRight="4dip"
             android:layout_marginBottom="4dip"
+            tools:listitem="@layout/root_item_library"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="horizontal"
-            android:scrollbars="none">
+            android:scrollbars="none"/>
 
-            <LinearLayout
-                android:id="@+id/scroll_library"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fadingEdge="horizontal"
-                android:fadingEdgeLength="20dip"
-                android:minHeight="?android:attr/listPreferredItemHeight"
-                android:orientation="horizontal"></LinearLayout>
-        </HorizontalScrollView>
+
 
         <View
             android:id="@+id/delimiter4"
@@ -258,26 +240,22 @@
             android:singleLine="true"
             android:text="@string/root_item_online_catalogs" />
 
-        <HorizontalScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/scroll_online_catalogs"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dip"
             android:layout_marginTop="2dip"
-            android:layout_marginRight="8dip"
+            android:layout_marginRight="4dip"
             android:layout_marginBottom="4dip"
             android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/root_item_online_catalog"
             android:scrollbarDefaultDelayBeforeFade="2000"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            />
 
-            <LinearLayout
-                android:id="@+id/scroll_online_catalogs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fadingEdge="horizontal"
-                android:fadingEdgeLength="20dip"
-                android:minHeight="?android:attr/listPreferredItemHeight"
-                android:orientation="horizontal"></LinearLayout>
-        </HorizontalScrollView>
+
 
         <View
             android:id="@+id/delimiter5"

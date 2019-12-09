@@ -136,14 +136,14 @@ class MainActivity : BaseActivity() {
     // ignore
     var lastNotificationId: Int
         get() {
-            val res = prefs!!.getInt(BaseActivity.PREF_LAST_NOTIFICATION, 0)
+            val res = prefs!!.getInt(PREF_LAST_NOTIFICATION, 0)
             log.i("getLastNotification() = $res")
             return res
         }
         set(notificationId) {
             try {
                 val editor = prefs!!.edit()
-                editor.putInt(BaseActivity.PREF_LAST_NOTIFICATION, notificationId)
+                editor.putInt(PREF_LAST_NOTIFICATION, notificationId)
                 editor.commit()
             } catch (e: Exception) {
             }
@@ -172,7 +172,7 @@ class MainActivity : BaseActivity() {
                 if (res != null) {
                     res = BOOK_LOCATION_PREFIX + res
                     try {
-                        prefs!!.edit().remove(BaseActivity.PREF_LAST_BOOK).commit()
+                        prefs!!.edit().remove(PREF_LAST_BOOK).commit()
                     } catch (e: Exception) {
                     }
 
@@ -182,11 +182,11 @@ class MainActivity : BaseActivity() {
         }
         set(location) {
             try {
-                val oldLocation = prefs!!.getString(BaseActivity.PREF_LAST_LOCATION, null)
+                val oldLocation = prefs!!.getString(PREF_LAST_LOCATION, null)
                 if (oldLocation != null && oldLocation == location)
                     return
                 val editor = prefs!!.edit()
-                editor.putString(BaseActivity.PREF_LAST_LOCATION, location)
+                editor.putString(PREF_LAST_LOCATION, location)
                 editor.commit()
             } catch (e: Exception) {
             }
@@ -445,7 +445,7 @@ class MainActivity : BaseActivity() {
         if (DeviceInfo.EINK_SCREEN) {
             if (DeviceInfo.EINK_SONY) {
                 val pref = getSharedPreferences(BaseActivity.PREF_FILE, 0)
-                val res = pref.getString(BaseActivity.PREF_LAST_BOOK, null)
+                val res = pref.getString(PREF_LAST_BOOK, null)
                 if (res != null && res.length > 0) {
                     val selector = SonyBookSelector(this)
                     val l = selector.getContentId(res)

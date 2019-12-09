@@ -1,15 +1,21 @@
 package org.coolreader.crengine;
 
-import android.view.*;
-import android.widget.ImageButton;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+
 import org.coolreader.R;
-import org.coolreader.crengine.CRToolBar.OnActionHandler;
 import org.coolreader.crengine.CoverpageManager.CoverpageReadyListener;
-import org.coolreader.db.CRDBService;
-import org.coolreader.db.CRDBService.OPDSCatalogsLoadingCallback;
 import org.coolreader.plugins.OnlineStorePluginManager;
 import org.coolreader.plugins.OnlineStoreWrapper;
 import org.coolreader.plugins.litres.LitresPlugin;
@@ -17,9 +23,11 @@ import org.coolreader.plugins.litres.LitresPlugin;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import cn.cc.ereader.MainActivity;
+import cn.cyrus.translater.base.DeviceUtilKt;
 
-import static android.view.ContextMenu.ContextMenuInfo;
 
 public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 
@@ -27,35 +35,23 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 
 	private final MainActivity mActivity;
 	private ViewGroup mView;
-	private LinearLayout mRecentBooksScroll;
-	private LinearLayout mFilesystemScroll;
-	private LinearLayout mLibraryScroll;
-	private LinearLayout mOnlineCatalogsScroll;
+	private RecyclerView mRecentBooksScroll;
+	private RecyclerView mFilesystemScroll;
+	private RecyclerView mLibraryScroll;
+	private RecyclerView mOnlineCatalogsScroll;
 	private CoverpageManager mCoverpageManager;
-	private int coverWidth;
-	private int coverHeight;
+	private int coverWidth = DeviceUtilKt.dp2px(80);
+	private int coverHeight =DeviceUtilKt.dp2px(80);
 	private BookInfo currentBook;
 	private CoverpageReadyListener coverpageListener;
 	public CRRootView(MainActivity activity) {
 		super(activity);
 		this.mActivity = activity;
-		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		this.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		this.mCoverpageManager = Services.getCoverpageManager();
-
-
-		int screenHeight = mActivity.getWindowManager().getDefaultDisplay().getHeight();
-		int screenWidth = mActivity.getWindowManager().getDefaultDisplay().getWidth();
-		int h = screenHeight / 4;
-		int w = screenWidth / 4;
-		if (h > w)
-			h = w;
-    	w = h * 3 / 4;
-    	coverWidth = w;
-    	coverHeight = h;
     	setFocusable(true);
     	setFocusableInTouchMode(true);
 		createViews();
-		
 	}
 	
 	
@@ -122,7 +118,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 	}
 
 	private void setBookInfoItem(ViewGroup baseView, int viewId, String value) {
-		TextView view = (TextView)baseView.findViewById(viewId);
+		TextView view = baseView.findViewById(viewId);
 		if (view != null) {
 			if (value != null && value.length() > 0) {
 				view.setText(value);
@@ -136,14 +132,11 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
     	currentBook = book;
     	
     	// set current book cover page
-		ImageView cover = (ImageView)mView.findViewById(R.id.book_cover);
+
+		ImageView cover = mView.findViewById(R.id.book_cover);
 		if (currentBook != null) {
 			FileInfo item = currentBook.getFileInfo();
 			cover.setImageDrawable(mCoverpageManager.getCoverpageDrawableFor(mActivity.getDB(), item, coverWidth, coverHeight));
-			cover.setMinimumHeight(coverHeight);
-			cover.setMinimumWidth(coverWidth);
-			cover.setMaxHeight(coverHeight);
-			cover.setMaxWidth(coverWidth);
 			cover.setTag(new CoverpageManager.ImageItem(item, coverWidth, coverHeight));
 
 			setBookInfoItem(mView, R.id.lbl_book_author, Utils.formatAuthors(item.authors));
@@ -170,95 +163,63 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 	
 	private final static int MAX_RECENT_BOOKS = 12;
 	private void updateRecentBooks(ArrayList<BookInfo> books) {
-		ArrayList<FileInfo> files = new ArrayList<FileInfo>();
+		ArrayList<FileInfo> files = new ArrayList<>();
 		for (int i = 1; i <= MAX_RECENT_BOOKS && i < books.size(); i++)
 			files.add(books.get(i).getFileInfo());
 		if (books.size() > MAX_RECENT_BOOKS && Services.getScanner() != null)
 			files.add(Services.getScanner().createRecentRoot());
-		LayoutInflater inflater = LayoutInflater.from(mActivity);
-		mRecentBooksScroll.removeAllViews();
-		for (final FileInfo item : files) {
-			final View view = inflater.inflate(R.layout.root_item_recent_book, null);
-			ImageView cover = (ImageView)view.findViewById(R.id.book_cover);
-			TextView label = (TextView)view.findViewById(R.id.book_name);
-			cover.setMinimumHeight(coverHeight);
-			cover.setMaxHeight(coverHeight);
-			cover.setMaxWidth(coverWidth);
-			if (item.isRecentDir()) {
-				cover.setImageResource(R.drawable.cr3_button_next);
-				if (label != null) {
-					label.setText("More...");
-				}
-				view.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						mActivity.showRecentBooks();
+		mRecentBooksScroll.setAdapter(new BaseQuickAdapter<FileInfo,BaseViewHolder>(R.layout.root_item_recent_book,files) {
+
+			@Override
+			protected void convert(@NonNull BaseViewHolder helper, FileInfo item) {
+				final View view = helper.itemView;
+				ImageView cover = helper.getView(R.id.book_cover);
+				TextView label = helper.getView(R.id.book_name);
+				if (item.isRecentDir()) {
+					cover.setImageResource(R.drawable.cr3_button_next);
+					if (label != null) {
+						label.setText("More...");
 					}
-				});
-			} else {
-				cover.setMinimumWidth(coverWidth);
-				cover.setTag(new CoverpageManager.ImageItem(item, coverWidth, coverHeight));
-				cover.setImageDrawable(mCoverpageManager.getCoverpageDrawableFor(mActivity.getDB(), item, coverWidth, coverHeight));
-				if (label != null) {
-					String title = item.title;
-					String authors = Utils.formatAuthors(item.authors);
-					String s = item.getFileNameToDisplay();
-					if (!Utils.empty(title) && !Utils.empty(authors))
-						s = title + " - " + authors;
-					else if (!Utils.empty(title))
-						s = title;
-					else if (!Utils.empty(authors))
-						s = authors;
-					label.setText(s != null ? s : "");
-					label.setMaxWidth(coverWidth);
-				}
-				view.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						mActivity.loadDocument(item);
+					view.setOnClickListener(v -> mActivity.showRecentBooks());
+				} else {
+					cover.setMinimumWidth(coverWidth);
+					cover.setTag(new CoverpageManager.ImageItem(item, coverWidth, coverHeight));
+					cover.setImageDrawable(mCoverpageManager.getCoverpageDrawableFor(mActivity.getDB(), item, coverWidth, coverHeight));
+					if (label != null) {
+						String title = item.title;
+						String authors = Utils.formatAuthors(item.authors);
+						String s = item.getFileNameToDisplay();
+						if (!Utils.empty(title) && !Utils.empty(authors))
+							s = title + " - " + authors;
+						else if (!Utils.empty(title))
+							s = title;
+						else if (!Utils.empty(authors))
+							s = authors;
+						label.setText(s != null ? s : "");
 					}
-				});
-				view.setOnLongClickListener(new OnLongClickListener() {
-					@Override
-					public boolean onLongClick(View v) {
+					view.setOnClickListener(v -> mActivity.loadDocument(item));
+					view.setOnLongClickListener(v -> {
 						mActivity.editBookInfo(Services.getScanner().createRecentRoot(), item);
 						return true;
-					}
-				});
+					});
+				}
 			}
-			mRecentBooksScroll.addView(view);
-		}
-		mRecentBooksScroll.invalidate();
+		});
+
 	}
 
 	public void refreshRecentBooks() {
-		BackgroundThread.instance().postGUI(new Runnable() {
-			@Override
-			public void run() {
-				if (Services.getHistory() != null && mActivity.getDB() != null)
-					Services.getHistory().getOrLoadRecentBooks(mActivity.getDB(), new CRDBService.RecentBooksLoadingCallback() {
-						@Override
-						public void onRecentBooksListLoaded(ArrayList<BookInfo> bookList) {
-							updateCurrentBook(bookList != null && bookList.size() > 0 ? bookList.get(0) : null);
-							updateRecentBooks(bookList);
-						}
-					});
-			}
+		BackgroundThread.instance().postGUI(() -> {
+			if (Services.getHistory() != null && mActivity.getDB() != null)
+				Services.getHistory().getOrLoadRecentBooks(mActivity.getDB(), bookList -> {
+					updateCurrentBook(bookList != null && bookList.size() > 0 ? bookList.get(0) : null);
+					updateRecentBooks(bookList);
+				});
 		});
 	}
 
 	public void refreshOnlineCatalogs() {
-		mActivity.waitForCRDBService(new Runnable() {
-			@Override
-			public void run() {
-				mActivity.getDB().loadOPDSCatalogs(new OPDSCatalogsLoadingCallback() {
-					@Override
-					public void onOPDSCatalogsLoaded(ArrayList<FileInfo> catalogs) {
-						updateOnlineCatalogs(catalogs);
-					}
-				});
-			}
-		});
+		mActivity.waitForCRDBService(() -> mActivity.getDB().loadOPDSCatalogs(catalogs -> updateOnlineCatalogs(catalogs)));
 	}
 
     public void refreshFileSystemFolders() {
@@ -266,7 +227,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
         updateFilesystems(folders);
     }
 
-	ArrayList<FileInfo> lastCatalogs = new ArrayList<FileInfo>();
+	ArrayList<FileInfo> lastCatalogs = new ArrayList<>();
 	private void updateOnlineCatalogs(ArrayList<FileInfo> catalogs) {
 		String lang = mActivity.getCurrentLanguage();
 		boolean defEnableLitres = lang.toLowerCase().startsWith("ru") && !DeviceInfo.POCKETBOOK;
@@ -279,213 +240,141 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 		if (opdsRoot.dirCount() == 0)
 			opdsRoot.addItems(catalogs);
 		catalogs.add(0, opdsRoot);
-		
-//		if (lastCatalogs.equals(catalogs)) {
-//			return; // not changed
-//		}
+
 		lastCatalogs = catalogs;
-		
-		LayoutInflater inflater = LayoutInflater.from(mActivity);
-		mOnlineCatalogsScroll.removeAllViews();
-		for (final FileInfo item : catalogs) {
-			final View view = inflater.inflate(R.layout.root_item_online_catalog, null);
-			ImageView icon = (ImageView)view.findViewById(R.id.item_icon);
-			TextView label = (TextView)view.findViewById(R.id.item_name);
-			if (item.isOPDSRoot()) {
-				icon.setImageResource(R.drawable.cr3_browser_folder_opds_add);
-				label.setText("Add");
-				view.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						mActivity.editOPDSCatalog(null);
-					}
-				});
-			} else if (item.isOnlineCatalogPluginDir()) {
-				icon.setImageResource(R.drawable.plugins_logo_litres);
-				label.setText(item.filename);
-				view.setOnLongClickListener(new OnLongClickListener() {
-					@Override
-					public boolean onLongClick(View v) {
+		mOnlineCatalogsScroll.setAdapter(new BaseQuickAdapter<FileInfo,BaseViewHolder>(R.layout.root_item_online_catalog,catalogs) {
+
+			@Override
+			protected void convert(@NonNull BaseViewHolder helper, FileInfo item) {
+				final View view = helper.itemView;
+				ImageView icon = view.findViewById(R.id.item_icon);
+				TextView label = view.findViewById(R.id.item_name);
+				if (item.isOPDSRoot()) {
+					icon.setImageResource(R.drawable.cr3_browser_folder_opds_add);
+					label.setText("Add");
+					view.setOnClickListener(v -> mActivity.editOPDSCatalog(null));
+				} else if (item.isOnlineCatalogPluginDir()) {
+					icon.setImageResource(R.drawable.plugins_logo_litres);
+					label.setText(item.filename);
+					view.setOnLongClickListener(v -> {
 						OnlineStoreWrapper plugin = OnlineStorePluginManager.getPlugin(mActivity, FileInfo.ONLINE_CATALOG_PLUGIN_PREFIX + LitresPlugin.PACKAGE_NAME);
 						if (plugin != null) {
-							OnlineStoreLoginDialog dlg = new OnlineStoreLoginDialog(mActivity, plugin, new Runnable() {
-								@Override
-								public void run() {
-									mActivity.showBrowser(FileInfo.ONLINE_CATALOG_PLUGIN_PREFIX + LitresPlugin.PACKAGE_NAME);
-								}
-							});
+							OnlineStoreLoginDialog dlg = new OnlineStoreLoginDialog(mActivity, plugin, () -> mActivity.showBrowser(FileInfo.ONLINE_CATALOG_PLUGIN_PREFIX + LitresPlugin.PACKAGE_NAME));
 							dlg.show();
 						}
 						return true;
+					});
+					view.setOnClickListener(v -> mActivity.showBrowser(FileInfo.ONLINE_CATALOG_PLUGIN_PREFIX + LitresPlugin.PACKAGE_NAME));
+				} else {
+					if (label != null) {
+						label.setText(item.getFileNameToDisplay());
+						label.setMaxWidth(coverWidth * 3 / 2);
 					}
-				});
-				view.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						mActivity.showBrowser(FileInfo.ONLINE_CATALOG_PLUGIN_PREFIX + LitresPlugin.PACKAGE_NAME);
-					}
-				});
-			} else {
-				if (label != null) {
-					label.setText(item.getFileNameToDisplay());
-					label.setMaxWidth(coverWidth * 3 / 2);
-				}
-				view.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						mActivity.showCatalog(item);
-					}
-				});
-				view.setOnLongClickListener(new OnLongClickListener() {
-					@Override
-					public boolean onLongClick(View v) {
+					view.setOnClickListener(v -> mActivity.showCatalog(item));
+					view.setOnLongClickListener(v -> {
 						mActivity.editOPDSCatalog(item);
 						return true;
-					}
-				});
+					});
+				}
 			}
-			mOnlineCatalogsScroll.addView(view);
-		}
-		mOnlineCatalogsScroll.invalidate();
+		});
 	}
 
 	private void updateFilesystems(List<FileInfo> dirs) {
 
-		LayoutInflater inflater = LayoutInflater.from(mActivity);
-		mFilesystemScroll.removeAllViews();
-        int idx = 0;
-        for (final FileInfo item : dirs) {
-            if (item == null)
-                continue;
-            final View view = inflater.inflate(R.layout.root_item_dir, null);
-            ImageView icon = (ImageView) view.findViewById(R.id.item_icon);
-            TextView label = (TextView) view.findViewById(R.id.item_name);
-            if (item.getType() == FileInfo.TYPE_DOWNLOAD_DIR)
-                icon.setImageResource(R.drawable.folder_bookmark);
-            else if (item.getType() == FileInfo.TYPE_FS_ROOT)
-                icon.setImageResource(R.drawable.media_flash_sd_mmc);
-            else
-                icon.setImageResource(R.drawable.folder_blue);
-            if (item.title != null)
-            	label.setText(item.title); //  filename
-            else if (item.getType() == FileInfo.TYPE_FS_ROOT || item.getType() == FileInfo.TYPE_DOWNLOAD_DIR)
-            	label.setText(item.filename); //  filename
-            else
-            	label.setText(item.pathname); //  filename
-            label.setMaxWidth(coverWidth * 25 / 10);
-            view.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mActivity.showDirectory(item);
-                }
-            });
-            view.setOnLongClickListener(new OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    registerFoldersContextMenu(item);
-                    return false;
-                }
-            });
-            mFilesystemScroll.addView(view);
-            ++idx;
-        }
-		mFilesystemScroll.invalidate();
+		mFilesystemScroll.setAdapter(new BaseQuickAdapter<FileInfo,BaseViewHolder>(R.layout.root_item_dir,dirs) {
+
+			@Override
+			protected void convert(@NonNull BaseViewHolder helper, FileInfo item) {
+				final View view = helper.itemView;
+				ImageView icon = view.findViewById(R.id.item_icon);
+				TextView label = view.findViewById(R.id.item_name);
+				if (item.getType() == FileInfo.TYPE_DOWNLOAD_DIR)
+					icon.setImageResource(R.drawable.folder_bookmark);
+				else if (item.getType() == FileInfo.TYPE_FS_ROOT)
+					icon.setImageResource(R.drawable.media_flash_sd_mmc);
+				else
+					icon.setImageResource(R.drawable.folder_blue);
+				if (item.title != null)
+					label.setText(item.title); //  filename
+				else if (item.getType() == FileInfo.TYPE_FS_ROOT || item.getType() == FileInfo.TYPE_DOWNLOAD_DIR)
+					label.setText(item.filename); //  filename
+				else
+					label.setText(item.pathname); //  filename
+				label.setMaxWidth(coverWidth * 25 / 10);
+				view.setOnClickListener(v -> mActivity.showDirectory(item));
+				view.setOnLongClickListener(view1 -> {
+					registerFoldersContextMenu(item);
+					return false;
+				});
+			}
+		});
+
 	}
 
     private void registerFoldersContextMenu(final FileInfo folder) {
         mActivity.registerForContextMenu(mFilesystemScroll);
-        mFilesystemScroll.setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
-            @Override
-            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenuInfo contextMenuInfo) {
-                MenuInflater inflater = mActivity.getMenuInflater();
-                inflater.inflate(R.menu.cr3_favorite_folder_context_menu,contextMenu);
-                boolean isFavorite = folder.getType() == FileInfo.TYPE_NOT_SET;
-                final FileSystemFolders service = Services.getFileSystemFolders();
-                for(int idx = 0 ; idx< contextMenu.size(); ++idx){
-                    MenuItem item = contextMenu.getItem(idx);
-                    boolean enabled = isFavorite;
-                    if(item.getItemId() == R.id.folder_left) {
-                        enabled = enabled && service.canMove(folder, true);
-                        if(enabled)
-                            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem menuItem) {
-                                    service.moveFavoriteFolder(mActivity.getDB(), folder, true);
-                                    return true;
-                                }
-                            });
-                    } else if(item.getItemId() == R.id.folder_right) {
-                        enabled = enabled && service.canMove(folder, false);
-                        if(enabled)
-                            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem menuItem) {
-                                    service.moveFavoriteFolder(mActivity.getDB(), folder, false);
-                                    return true;
-                                }
-                            });
-                    } else if(item.getItemId() == R.id.folder_remove) {
-                        if(enabled)
-                            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem menuItem) {
-                                    service.removeFavoriteFolder(mActivity.getDB(), folder);
-                                    return true;
-                                }
-                            });
-                    }
-                    item.setEnabled(enabled);
-                }
-            }
-        });
+        mFilesystemScroll.setOnCreateContextMenuListener((contextMenu, view, contextMenuInfo) -> {
+			MenuInflater inflater = mActivity.getMenuInflater();
+			inflater.inflate(R.menu.cr3_favorite_folder_context_menu,contextMenu);
+			boolean isFavorite = folder.getType() == FileInfo.TYPE_NOT_SET;
+			final FileSystemFolders service = Services.getFileSystemFolders();
+			for(int idx = 0 ; idx< contextMenu.size(); ++idx){
+				MenuItem item = contextMenu.getItem(idx);
+				boolean enabled = isFavorite;
+				if(item.getItemId() == R.id.folder_left) {
+					enabled = enabled && service.canMove(folder, true);
+					if(enabled)
+						item.setOnMenuItemClickListener(menuItem -> {
+							service.moveFavoriteFolder(mActivity.getDB(), folder, true);
+							return true;
+						});
+				} else if(item.getItemId() == R.id.folder_right) {
+					enabled = enabled && service.canMove(folder, false);
+					if(enabled)
+						item.setOnMenuItemClickListener(menuItem -> {
+							service.moveFavoriteFolder(mActivity.getDB(), folder, false);
+							return true;
+						});
+				} else if(item.getItemId() == R.id.folder_remove) {
+					if(enabled)
+						item.setOnMenuItemClickListener(menuItem -> {
+							service.removeFavoriteFolder(mActivity.getDB(), folder);
+							return true;
+						});
+				}
+				item.setEnabled(enabled);
+			}
+		});
     }
 
     private void updateLibraryItems(ArrayList<FileInfo> dirs) {
-		LayoutInflater inflater = LayoutInflater.from(mActivity);
-		mLibraryScroll.removeAllViews();
-		for (final FileInfo item : dirs) {
-			final View view = inflater.inflate(R.layout.root_item_library, null);
-			ImageView image = (ImageView)view.findViewById(R.id.item_icon);
-			TextView label = (TextView)view.findViewById(R.id.item_name);
-			if (item.isSearchShortcut())
-				image.setImageResource(R.drawable.cr3_browser_find);
-			else if (item.isBooksByAuthorRoot() || item.isBooksByTitleRoot() || item.isBooksBySeriesRoot())
-				image.setImageResource(R.drawable.cr3_browser_folder_authors);
-			if (label != null) {
-				label.setText(item.filename);
-				label.setMinWidth(coverWidth);
-				label.setMaxWidth(coverWidth * 2);
-			}
-			view.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					mActivity.showDirectory(item);
+		mLibraryScroll.setAdapter(new BaseQuickAdapter<FileInfo,BaseViewHolder>(R.layout.root_item_library,dirs) {
+			@Override
+			protected void convert(@NonNull BaseViewHolder helper, FileInfo item) {
+				final View view = helper.itemView;
+				ImageView image = view.findViewById(R.id.item_icon);
+				TextView label = view.findViewById(R.id.item_name);
+				if (item.isSearchShortcut())
+					image.setImageResource(R.drawable.cr3_browser_find);
+				else if (item.isBooksByAuthorRoot() || item.isBooksByTitleRoot() || item.isBooksBySeriesRoot())
+					image.setImageResource(R.drawable.cr3_browser_folder_authors);
+				if (label != null) {
+					label.setText(item.filename);
+					label.setMinWidth(coverWidth);
+					label.setMaxWidth(coverWidth * 2);
 				}
-			});
-			mLibraryScroll.addView(view);
-		}
-		mLibraryScroll.invalidate();
+				view.setOnClickListener(v -> mActivity.showDirectory(item));
+			}
+		});
 	}
 
-//	private HorizontalListView createHScroll(int layoutId, OnLongClickListener longClickListener) {
-//		LinearLayout layout = (LinearLayout)mView.findViewById(layoutId);
-//		layout.removeAllViews();
-//		HorizontalListView view = new HorizontalListView(mActivity, null);
-//		view.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-////		view.setFadingEdgeLength(10);
-////		view.setHorizontalFadingEdgeEnabled(true);
-//		layout.addView(view);
-//		if (longClickListener != null)
-//			layout.setOnLongClickListener(longClickListener); 
-//		return view;
-//	}
-	
 	private void updateDelimiterTheme(int viewId) {
 		View view = mView.findViewById(viewId);
 		InterfaceTheme theme = mActivity.getCurrentTheme();
 		view.setBackgroundResource(theme.getRootDelimiterResourceId());
 		view.setMinimumHeight(theme.getRootDelimiterHeight());
-		view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, theme.getRootDelimiterHeight()));
+		view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, theme.getRootDelimiterHeight()));
 	}
 	
 	private void createViews() {
@@ -499,118 +388,58 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 		updateDelimiterTheme(R.id.delimiter4);
 		updateDelimiterTheme(R.id.delimiter5);
 		
-		mRecentBooksScroll = (LinearLayout)mView.findViewById(R.id.scroll_recent_books);
+		mRecentBooksScroll = mView.findViewById(R.id.scroll_recent_books);
 		
-		mFilesystemScroll = (LinearLayout)mView.findViewById(R.id.scroll_filesystem);
+		mFilesystemScroll = mView.findViewById(R.id.scroll_filesystem);
 
-		mLibraryScroll = (LinearLayout)mView.findViewById(R.id.scroll_library);
+		mLibraryScroll = mView.findViewById(R.id.scroll_library);
 		
-		mOnlineCatalogsScroll = (LinearLayout)mView.findViewById(R.id.scroll_online_catalogs);
+		mOnlineCatalogsScroll = mView.findViewById(R.id.scroll_online_catalogs);
 
 		updateCurrentBook(Services.getHistory().getLastBook());
 		
 
-		((ImageButton)mView.findViewById(R.id.btn_menu)).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				showMenu();
-			}
-		});
+		mView.findViewById(R.id.btn_menu).setOnClickListener(v -> showMenu());
 
-		mView.findViewById(R.id.current_book).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (currentBook != null) {
-					mActivity.loadDocument(currentBook.getFileInfo());
-				}
-				
+		mView.findViewById(R.id.current_book).setOnClickListener(v -> {
+			if (currentBook != null) {
+				mActivity.loadDocument(currentBook.getFileInfo());
 			}
+
 		});
-		mView.findViewById(R.id.current_book).setOnLongClickListener(new OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-				if (currentBook != null)
-					mActivity.editBookInfo(Services.getScanner().createRecentRoot(), currentBook.getFileInfo());
-				return true;
-			}
+		mView.findViewById(R.id.current_book).setOnLongClickListener(v -> {
+			if (currentBook != null)
+				mActivity.editBookInfo(Services.getScanner().createRecentRoot(), currentBook.getFileInfo());
+			return true;
 		});
 
 		refreshRecentBooks();
 
-        Services.getFileSystemFolders().addListener(new FileInfoChangeListener() {
-            @Override
-            public void onChange(FileInfo object, boolean onlyProperties) {
-                BackgroundThread.instance().postGUI(new Runnable() {
-              			@Override
-              			public void run() {
-              				refreshFileSystemFolders();
-              			}
-              		});
-            }
-        });
+        Services.getFileSystemFolders().addListener((object, onlyProperties) -> BackgroundThread.instance().postGUI(new Runnable() {
+				  @Override
+				  public void run() {
+					  refreshFileSystemFolders();
+				  }
+			  }));
 
-        mActivity.waitForCRDBService(new Runnable() {
-            @Override
-            public void run() {
-                Services.getFileSystemFolders().loadFavoriteFolders(mActivity.getDB());
-            }
-        });
+        mActivity.waitForCRDBService(() -> Services.getFileSystemFolders().loadFavoriteFolders(mActivity.getDB()));
 
-		BackgroundThread.instance().postGUI(new Runnable() {
-			@Override
-			public void run() {
-				refreshOnlineCatalogs();
-			}
-		});
+		BackgroundThread.instance().postGUI(() -> refreshOnlineCatalogs());
 
-		BackgroundThread.instance().postGUI(new Runnable() {
-			@Override
-			public void run() {
-				if (Services.getScanner() != null)
-					updateLibraryItems(Services.getScanner().getLibraryItems());
-			}
+		BackgroundThread.instance().postGUI(() -> {
+			if (Services.getScanner() != null)
+				updateLibraryItems(Services.getScanner().getLibraryItems());
 		});
 
 		removeAllViews();
 		addView(mView);
-		//setFocusable(false);
-		//setFocusableInTouchMode(false);
-//		requestFocus();
-//		setOnTouchListener(new OnTouchListener() {
-//			@Override
-//			public boolean onTouch(View v, MotionEvent event) {
-//				return true;
-//			}
-//		});
 	}
 
-
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		log.d("CRRootView.onTouchEvent(" + event.getAction() + ")");
-		return false;
-	}
-	
-	
-
-	@Override
-	public void onWindowFocusChanged(boolean hasWindowFocus) {
-		log.d("CRRootView.onWindowFocusChanged(" + hasWindowFocus + ")");
-		super.onWindowFocusChanged(hasWindowFocus);
-	}
 
 	public void onCoverpagesReady(ArrayList<CoverpageManager.ImageItem> files) {
 		//invalidate();
 		log.d("CRRootView.onCoverpagesReady(" + files + ")");
 		CoverpageManager.invalidateChildImages(mView, files);
-//		for (int i=0; i<mRecentBooksScroll.getChildCount(); i++) {
-//			mRecentBooksScroll.getChildAt(i).invalidate();
-//		}
-//		//mRecentBooksScroll.invalidate();
-		//ImageView cover = (ImageView)mView.findViewById(R.id.book_cover);
-		//cover.invalidate();
-//		//mView.invalidate();
 	}
 
 	@Override
@@ -642,30 +471,27 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 			ReaderAction.OPTIONS,
 			ReaderAction.EXIT,	
 		};
-		mActivity.showActionsPopupMenu(actions, new OnActionHandler() {
-			@Override
-			public boolean onActionSelected(ReaderAction item) {
-				if (item == ReaderAction.EXIT) {
-					mActivity.finish();
-					return true;
-				} else if (item == ReaderAction.ABOUT) {
-					mActivity.showAboutDialog();
-					return true;
-				} else if (item == ReaderAction.RECENT_BOOKS) {
-					mActivity.showRecentBooks();
-					return true;
-				} else if (item == ReaderAction.CURRENT_BOOK) {
-					mActivity.showCurrentBook();
-					return true;
-				} else if (item == ReaderAction.USER_MANUAL) {
-					mActivity.showManual();
-					return true;
-				} else if (item == ReaderAction.OPTIONS) {
-					mActivity.showBrowserOptionsDialog();
-					return true;
-				}
-				return false;
+		mActivity.showActionsPopupMenu(actions, item -> {
+			if (item == ReaderAction.EXIT) {
+				mActivity.finish();
+				return true;
+			} else if (item == ReaderAction.ABOUT) {
+				mActivity.showAboutDialog();
+				return true;
+			} else if (item == ReaderAction.RECENT_BOOKS) {
+				mActivity.showRecentBooks();
+				return true;
+			} else if (item == ReaderAction.CURRENT_BOOK) {
+				mActivity.showCurrentBook();
+				return true;
+			} else if (item == ReaderAction.USER_MANUAL) {
+				mActivity.showManual();
+				return true;
+			} else if (item == ReaderAction.OPTIONS) {
+				mActivity.showBrowserOptionsDialog();
+				return true;
 			}
+			return false;
 		});
 	}
 

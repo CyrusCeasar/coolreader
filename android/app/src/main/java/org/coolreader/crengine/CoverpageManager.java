@@ -132,7 +132,6 @@ public class CoverpageManager {
 	
 	/**
 	 * Constructor.
-	 * @param activity is CoolReaderActivity main activity.
 	 */
 	public CoverpageManager () {
 	}
