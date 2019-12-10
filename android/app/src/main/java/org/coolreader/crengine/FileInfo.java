@@ -5,13 +5,14 @@ import org.coolreader.R;
 import org.coolreader.plugins.OnlineStoreBook;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.zip.ZipEntry;
 
-public class FileInfo {
+public class FileInfo implements Serializable {
 
 	public final static String RECENT_DIR_TAG = "@recent";
 	public final static String SEARCH_RESULT_DIR_TAG = "@searchResults";

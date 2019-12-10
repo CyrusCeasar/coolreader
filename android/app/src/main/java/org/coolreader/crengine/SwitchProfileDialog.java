@@ -15,11 +15,11 @@ import android.widget.TextView;
 import cn.cc.ereader.MainActivity;
 
 public class SwitchProfileDialog extends BaseDialog {
-	MainActivity mCoolReader;
+	BaseActivity mCoolReader;
 	ReaderView mReaderView;
 	ListView mListView;
 	int currentProfile;
-	public SwitchProfileDialog(MainActivity coolReader, ReaderView readerView)
+	public SwitchProfileDialog(BaseActivity coolReader, ReaderView readerView)
 	{
 		super(coolReader, coolReader.getResources().getString(R.string.action_switch_settings_profile), false, false);
         setCancelable(true);

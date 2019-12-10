@@ -16,7 +16,7 @@ class PositionIndicator extends View {
 	private int color = 0;
 	private int percent = 0;
 	
-	public PositionIndicator(MainActivity context) {
+	public PositionIndicator(ReaderActivity context) {
 		super(context);
 		setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		this.color = context.settings().getColor(Settings.PROP_STATUS_FONT_COLOR, 0);

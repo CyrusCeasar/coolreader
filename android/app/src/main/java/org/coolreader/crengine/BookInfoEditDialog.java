@@ -393,13 +393,7 @@ public class BookInfoEditDialog extends BaseDialog {
 	@Override
 	protected void onPositiveButtonClick() {
 		save();
-		mActivity.loadDocument(mBookInfo.getFileInfo(), new Runnable() {
-			@Override
-			public void run() {
-				// error occured
-				// ignoring
-			}
-		});
+		ReaderActivity.Companion.loadDocument(getContext(),mBookInfo.getFileInfo().path);
 		super.onPositiveButtonClick();
 	}
 

@@ -128,15 +128,6 @@ public class BackgroundThread extends Thread {
 	private Runnable guard( final Runnable r )
 	{
 		return r;
-//		if ( !USE_LOCK )
-//			return r;
-//		return new Runnable() {
-//			public void run() {
-//				synchronized (LOCK) {
-//					r.run();
-//				}
-//			}
-//		};
 	}
 
 	/**

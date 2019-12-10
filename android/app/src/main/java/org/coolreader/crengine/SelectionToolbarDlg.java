@@ -24,11 +24,11 @@ import cn.cc.ereader.MainActivity;
 public class SelectionToolbarDlg {
 	PopupWindow mWindow;
 	View mAnchor;
-	MainActivity mCoolReader;
+	ReaderActivity mCoolReader;
 	ReaderView mReaderView;
 	View mPanel;
 	Selection selection;
-	static public void showDialog(MainActivity coolReader, ReaderView readerView, final Selection selection )
+	static public void showDialog(ReaderActivity coolReader, ReaderView readerView, final Selection selection )
 	{
 		SelectionToolbarDlg dlg = new SelectionToolbarDlg(coolReader, readerView, selection);
 		//dlg.mWindow.update(dlg.mAnchor, width, height)
@@ -125,7 +125,7 @@ public class SelectionToolbarDlg {
 		mWindow.dismiss();
 	}
 	
-	public SelectionToolbarDlg(MainActivity coolReader, ReaderView readerView, Selection sel )
+	public SelectionToolbarDlg(ReaderActivity coolReader, ReaderView readerView, Selection sel )
 	{
 		this.selection = sel;
 		mCoolReader = coolReader;

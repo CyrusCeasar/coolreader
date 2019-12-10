@@ -336,7 +336,7 @@ public class OnlineStoreBookInfoDialog extends BaseDialog {
 //		FileInfo parent = Services.getScanner().findParent(fileInfo, Services.getScanner().getRoot());
 //		FileInfo bookFileInfo = parent.findItemByPathName(book.getAbsolutePath());
 		dismiss();
-		mActivity.loadDocument(book.getAbsolutePath(), null);
+		ReaderActivity.Companion.loadDocument(getContext(),book.getAbsolutePath());
 	}
 }
 

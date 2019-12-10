@@ -1,6 +1,11 @@
-package org.coolreader.crengine;
+package org.coolreader.crengine.filebrowser;
 
 import org.coolreader.R;
+import org.coolreader.crengine.BaseActivity;
+import org.coolreader.crengine.CRToolBar;
+import org.coolreader.crengine.InterfaceTheme;
+import org.coolreader.crengine.L;
+import org.coolreader.crengine.Utils;
 
 import android.view.KeyEvent;
 import android.view.LayoutInflater;

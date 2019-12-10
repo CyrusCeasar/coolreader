@@ -10,7 +10,7 @@ import android.widget.TextView;
 import cn.cc.ereader.MainActivity;
 
 public class StatusBar extends LinearLayout implements Settings {
-		private MainActivity activity;
+		private ReaderActivity activity;
 		private LinearLayout content;
 		private TextView lblTitle;
 		private TextView lblPosition;
@@ -72,7 +72,7 @@ public class StatusBar extends LinearLayout implements Settings {
 			return needRelayout;
 		}
 		
-		public StatusBar(MainActivity context) {
+		public StatusBar(ReaderActivity context) {
 			super(context);
 			this.activity = context;
 			setOrientation(VERTICAL);

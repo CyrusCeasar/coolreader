@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import cn.cc.ereader.MainActivity
 import org.coolreader.R
 import org.coolreader.crengine.*
+import org.coolreader.crengine.filebrowser.BrowserViewLayout
+import org.coolreader.crengine.filebrowser.FileBrowser
 
 class FileBroswerFragment(activity: MainActivity) : Fragment() {
 

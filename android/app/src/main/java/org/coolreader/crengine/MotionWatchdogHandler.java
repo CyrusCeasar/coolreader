@@ -26,7 +26,7 @@ public class MotionWatchdogHandler extends Handler implements SensorEventListene
     private static final String TAG = MotionWatchdogHandler.class.getSimpleName();
     private static final long STEP_TIME = 5 * 1000; // 5 seconds
     private final SensorManager mSensorManager;
-    private final MainActivity mCoolReader;
+    private final ReaderActivity mCoolReader;
     private final TTSToolbarDlg mTTSToolbarDlg;
     private boolean mIsStopping;
     private boolean mIsStopped;
@@ -39,7 +39,7 @@ public class MotionWatchdogHandler extends Handler implements SensorEventListene
     private final double[] mDelta = new double[3];
     private final int mTimeout;
 
-    public MotionWatchdogHandler(TTSToolbarDlg ttsToolbarDlg, MainActivity coolReader,
+    public MotionWatchdogHandler(TTSToolbarDlg ttsToolbarDlg, ReaderActivity coolReader,
                                  HandlerThread handlerThread, int timeout) {
         mHandlerThread = handlerThread;
         mCoolReader = coolReader;

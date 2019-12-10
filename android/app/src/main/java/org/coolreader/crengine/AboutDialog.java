@@ -13,13 +13,13 @@ import java.util.Random;
 import cn.cc.ereader.MainActivity;
 
 public class AboutDialog extends BaseDialog implements TabContentFactory {
-    final MainActivity mCoolReader;
+    final BaseActivity mCoolReader;
 
     private View mAppTab;
     private View mLicenseTab;
 
 
-    public AboutDialog(MainActivity activity) {
+    public AboutDialog(BaseActivity activity) {
         super(activity);
         mCoolReader = activity;
         setTitle(R.string.dlg_about);

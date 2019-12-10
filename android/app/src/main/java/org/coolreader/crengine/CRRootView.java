@@ -90,13 +90,14 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
 			long duration = Utils.timeInterval(backDownTs);
 			L.v("CRRootView.onKeyUp(" + keyCode + ") duration = " + duration);
-			if (duration > 700 && duration < 10000 || !mActivity.isBookOpened()) {
-				mActivity.finish();
-				return true;
-			} else {
+			if (duration > 700 && duration < 10000 ) {
+                mActivity.finish();
+                return true;
+            }
+		/*	} else {
 				mActivity.showReader();
 				return true;
-			}
+			}*/
 		}
 		return super.onKeyUp(keyCode, event);
 	}
@@ -197,7 +198,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 							s = authors;
 						label.setText(s != null ? s : "");
 					}
-					view.setOnClickListener(v -> mActivity.loadDocument(item));
+					view.setOnClickListener(v -> ReaderActivity.Companion.loadDocument(getContext(),item.pathname));
 					view.setOnLongClickListener(v -> {
 						mActivity.editBookInfo(Services.getScanner().createRecentRoot(), item);
 						return true;
@@ -403,7 +404,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 
 		mView.findViewById(R.id.current_book).setOnClickListener(v -> {
 			if (currentBook != null) {
-				mActivity.loadDocument(currentBook.getFileInfo());
+				ReaderActivity.Companion.loadDocument(getContext(),currentBook.getFileInfo().pathname);
 			}
 
 		});
@@ -482,10 +483,10 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 				mActivity.showRecentBooks();
 				return true;
 			} else if (item == ReaderAction.CURRENT_BOOK) {
-				mActivity.showCurrentBook();
+//				mActivity.showCurrentBook();
 				return true;
 			} else if (item == ReaderAction.USER_MANUAL) {
-				mActivity.showManual();
+//				mActivity.showManual();
 				return true;
 			} else if (item == ReaderAction.OPTIONS) {
 				mActivity.showBrowserOptionsDialog();

@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import cn.cc.ereader.MainActivity;
 
 public class ReaderViewLayout extends ViewGroup implements Settings {
-		private MainActivity activity;
+		private ReaderActivity activity;
 		private ReaderView contentView;
 		private StatusBar statusView;
 		private CRToolBar toolbarView;
@@ -84,7 +84,7 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 //				});
 		}
 		
-		public ReaderViewLayout(MainActivity context, ReaderView contentView) {
+		public ReaderViewLayout(ReaderActivity context, ReaderView contentView) {
 			super(context);
 			this.activity = context;
 			this.contentView = contentView;

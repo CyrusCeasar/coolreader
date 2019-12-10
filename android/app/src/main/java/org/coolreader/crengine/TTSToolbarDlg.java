@@ -25,7 +25,7 @@ import cn.cc.ereader.MainActivity;
 public class TTSToolbarDlg implements TTS.OnUtteranceCompletedListener {
 	PopupWindow mWindow;
 	View mAnchor;
-	MainActivity mCoolReader;
+	ReaderActivity mCoolReader;
 	ReaderView mReaderView;
 	View mPanel;
 	TTS mTTS;
@@ -34,7 +34,7 @@ public class TTSToolbarDlg implements TTS.OnUtteranceCompletedListener {
 	SeekBar sbVolume;
 	private HandlerThread mMotionWatchdog;
 
-	static public TTSToolbarDlg showDialog(MainActivity coolReader, ReaderView readerView, TTS tts)
+	static public TTSToolbarDlg showDialog(ReaderActivity coolReader, ReaderView readerView, TTS tts)
 	{
 		TTSToolbarDlg dlg = new TTSToolbarDlg(coolReader, readerView, tts);
 		//dlg.mWindow.update(dlg.mAnchor, width, height)
@@ -178,7 +178,7 @@ public class TTSToolbarDlg implements TTS.OnUtteranceCompletedListener {
 			moveSelection( ReaderCommand.DCMD_SELECT_NEXT_SENTENCE );
 	}
 
-	public TTSToolbarDlg(MainActivity coolReader, ReaderView readerView, TTS tts )
+	public TTSToolbarDlg(ReaderActivity coolReader, ReaderView readerView, TTS tts )
 	{
 		mCoolReader = coolReader;
 		mReaderView = readerView;

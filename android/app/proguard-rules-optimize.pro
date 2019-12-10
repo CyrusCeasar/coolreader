@@ -167,7 +167,7 @@
 	void setOnOverflowHandler(org.coolreader.crengine.CRToolBar$OnOverflowHandler);
 }
 
--keep,includedescriptorclasses class org.coolreader.crengine.FileBrowser {
+-keep,includedescriptorclasses class org.coolreader.crengine.filebrowser.FileBrowser {
 	void setSortOrder(org.coolreader.crengine.FileInfo$SortOrder);
 }
 

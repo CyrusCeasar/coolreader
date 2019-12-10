@@ -302,7 +302,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		}
 	}
 
-	private final MainActivity mActivity;
+	private final ReaderActivity mActivity;
     private final Engine mEngine;
     
     private BookInfo mBookInfo;
@@ -314,7 +314,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     	return mEngine;
     }
     
-    public MainActivity getActivity()
+    public ReaderActivity getActivity()
     {
     	return mActivity;
     }
@@ -2177,10 +2177,11 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 							// cannot navigate - no data on stack
 							if (cmd == ReaderCommand.DCMD_LINK_BACK) {
 								// TODO: exit from activity in some cases?
-								if (mActivity.isPreviousFrameHome())
+								getActivity().finish();
+/*								if (mActivity.isPreviousFrameHome())
 									mActivity.showRootWindow();
 								else
-									mActivity.showBrowser(!mActivity.isBrowserCreated() ? getOpenedFileInfo() : null);
+									mActivity.showBrowser(!mActivity.isBrowserCreated() ? getOpenedFileInfo() : null);*/
 							}
 						}
 					}
@@ -2195,10 +2196,12 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		log.i("On command " + cmd + (param!=0?" ("+param+")":" "));
 		switch ( cmd ) {
 		case DCMD_FILE_BROWSER_ROOT:
-			mActivity.showRootWindow();
+//			mActivity.showRootWindow();
+			getActivity().finish();
 			break;
 		case DCMD_ABOUT:
-			mActivity.showAboutDialog();
+			AboutDialog dlg = new AboutDialog(getActivity());
+			dlg.show();
 			break;
 		case DCMD_SWITCH_PROFILE:
 			showSwitchProfileDialog();
@@ -2313,7 +2316,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 			doEngineCommand(cmd, param);
 			break;
 		case DCMD_RECENT_BOOKS_LIST:
-			mActivity.showRecentBooks();
+//			mActivity.showRecentBooks();
 			break;
 		case DCMD_SEARCH:
 			showSearchDialog(null);
@@ -2334,13 +2337,13 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 			showTOC();
 			break;
 		case DCMD_FILE_BROWSER:
-			mActivity.showBrowser(!mActivity.isBrowserCreated() ? getOpenedFileInfo() : null);
+//			mActivity.showBrowser(!mActivity.isBrowserCreated() ? getOpenedFileInfo() : null);
 			break;
 		case DCMD_CURRENT_BOOK_DIRECTORY:
-			mActivity.showBrowser(getOpenedFileInfo());
+//			mActivity.showBrowser(getOpenedFileInfo());
 			break;
 		case DCMD_OPTIONS_DIALOG:
-			mActivity.showOptionsDialog(OptionsDialog.Mode.READER);
+//			mActivity.showOptionsDialog(OptionsDialog.Mode.READER);
 			break;
 		case DCMD_READER_MENU:
 			mActivity.showReaderMenu();
@@ -2484,8 +2487,8 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
 		int updMode      = props.getInt(PROP_APP_SCREEN_UPDATE_MODE, 0);
 		int updInterval  = props.getInt(PROP_APP_SCREEN_UPDATE_INTERVAL, 10);
-		mActivity.setScreenUpdateMode(updMode, surface);
-		mActivity.setScreenUpdateInterval(updInterval, surface);		
+		mActivity.backlightControl.setScreenUpdateMode(updMode, surface);
+		mActivity.backlightControl.setScreenUpdateInterval(updInterval, surface);
 		
 		doc.applySettings(props);
         //syncViewSettings(props, save, saveDelayed);
@@ -2949,7 +2952,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 			}
 			if ( fi.isDirectory ) {
 				log.v("loadDocument() : is a directory, opening browser");
-				mActivity.showBrowser(fi);
+//				mActivity.showBrowser(fi);
 				return true;
 			}
 		} else {
@@ -3594,8 +3597,8 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 			index = n-1;
 		if ( index != currentBrightnessValueIndex ) {
 			currentBrightnessValueIndex = index;
-			int newValue = OptionsDialog.mBacklightLevels[currentBrightnessValueIndex]; 
-			mActivity.setScreenBacklightLevel(newValue);
+			int newValue = OptionsDialog.mBacklightLevels[currentBrightnessValueIndex];
+			mActivity.backlightControl.setScreenBacklightLevel(newValue);
 		}
 		
 	}
@@ -4728,7 +4731,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		    			mActivity.showReader();
 		        	}
 		        });
-		        mActivity.setLastBook(filename);
+//		        mActivity.setLastBook(filename);
 			}
 		}
 		public void fail( Exception e )
@@ -5973,7 +5976,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		});
 	}
 
-	public ReaderView(MainActivity activity, Engine engine, Properties props)
+	public ReaderView(ReaderActivity activity, Engine engine, Properties props)
     {
         //super(activity);
 		log.i("Creating normal SurfaceView");

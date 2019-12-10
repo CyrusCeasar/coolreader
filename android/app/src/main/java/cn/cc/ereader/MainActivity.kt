@@ -11,19 +11,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import cn.cc.ereader.ui.FileBroswerFragment
 import cn.cc.ereader.ui.HomeFragment
-import cn.cc.ereader.ui.ReaderViewFragment
 import cn.cyrus.translater.feater.HomeActivity
-import org.coolreader.PhoneStateReceiver
 import org.coolreader.R
 import org.coolreader.crengine.*
-import org.coolreader.crengine.TTS
+import org.coolreader.crengine.filebrowser.BrowserViewLayout
+import org.coolreader.crengine.filebrowser.FileBrowser
 import org.koekak.android.ebookdownloader.SonyBookSelector
 
 class MainActivity : BaseActivity() {
     companion object {
         val log = L.create("cr")
 
-        val CLOSE_BOOK_ON_STOP = false
 
         internal val LOAD_LAST_DOCUMENT_ON_START = true
 
@@ -50,10 +48,6 @@ class MainActivity : BaseActivity() {
     }
 
 
-
-    var readerView: ReaderView? = null
-        private set
-    private var mReaderFrame: ReaderViewLayout? = null
     private var mBrowser: FileBrowser? = null
     private var mBrowserFrame: BrowserViewLayout? = null
     private var mHomeFrame: CRRootView? = null
@@ -68,8 +62,7 @@ class MainActivity : BaseActivity() {
     internal var fileToLoadOnStart: String? = null
 
     private var isFirstStart = true
-    internal var initialBatteryState = -1
-    internal var intentReceiver: BroadcastReceiver? = null
+
 
     private var justCreated = false
 
@@ -83,43 +76,6 @@ class MainActivity : BaseActivity() {
 
     val isBrowserCreated: Boolean
         get() = mBrowserFrame != null
-
-
-    // ========================================================================================
-    // TTS
-    internal var tts: TTS? = null
-    internal var ttsInitialized: Boolean = false
-    internal var ttsError: Boolean = false
-
-
-    // ============================================================
-    private var am: AudioManager? = null
-    private var maxVolume: Int = 0
-
-    val audioManager: AudioManager?
-        get() {
-            if (am == null) {
-                am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                maxVolume = am!!.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            }
-            return am
-        }
-
-    var volume: Int
-        get() {
-            val am = audioManager
-            return if (am != null) {
-                am.getStreamVolume(AudioManager.STREAM_MUSIC) * 100 / maxVolume
-            } else 0
-        }
-        set(volume) {
-            val am = audioManager
-            am?.setStreamVolume(AudioManager.STREAM_MUSIC, volume * maxVolume / 100, 0)
-        }
-
-
-    val isBookOpened: Boolean
-        get() = if (readerView == null) false else readerView!!.isBookLoaded
 
 
     private var mPreferences: SharedPreferences? = null
@@ -150,20 +106,7 @@ class MainActivity : BaseActivity() {
 
         }
 
-    /**
-     * Get last stored location.
-     *
-     * @return
-     */
-    /**
-     * Store last location - to resume after program restart.
-     *
-     * @param location is file name, directory, or special folder tag
-     */
-    // import last book value from previous releases
-    // ignore
-    // not changed
-    // ignore
+
     var lastLocation: String?
         get() {
             var res = prefs!!.getString(PREF_LAST_LOCATION, null)
@@ -211,24 +154,11 @@ class MainActivity : BaseActivity() {
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         //==========================================
-        // Battery state listener
-        intentReceiver = object : BroadcastReceiver() {
 
-            override fun onReceive(context: Context, intent: Intent) {
-                val level = intent.getIntExtra("level", 0)
-                if (readerView != null)
-                    readerView!!.batteryState = level
-                else
-                    initialBatteryState = level
-            }
-
-        }
-        registerReceiver(intentReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
 
         volumeControlStream = AudioManager.STREAM_MUSIC
 
-        if (initialBatteryState >= 0 && readerView != null)
-            readerView!!.batteryState = initialBatteryState
+
 
 
         N2EpdController.n2MainActivity = this
@@ -261,15 +191,8 @@ class MainActivity : BaseActivity() {
     override fun onDestroy() {
 
         log.i("CoolReaderActivity.onDestroy() entered")
-        if (!CLOSE_BOOK_ON_STOP && readerView != null)
-            readerView!!.close()
 
-        if (tts != null) {
-            tts!!.shutdown()
-            tts = null
-            ttsInitialized = false
-            ttsError = false
-        }
+
 
 
         if (mHomeFrame != null)
@@ -277,16 +200,6 @@ class MainActivity : BaseActivity() {
         mDestroyed = true
 
 
-        if (intentReceiver != null) {
-            unregisterReceiver(intentReceiver)
-            intentReceiver = null
-        }
-
-
-        if (readerView != null) {
-            readerView!!.destroy()
-        }
-        readerView = null
 
         log.i("CoolReaderActivity.onDestroy() exiting")
         super.onDestroy()
@@ -296,7 +209,7 @@ class MainActivity : BaseActivity() {
 
     override fun applyAppSetting(key: String, value: String) {
         super.applyAppSetting(key, value)
-        val flg = "1" == value
+     /*   val flg = "1" == value
         if (key == Settings.PROP_APP_KEY_BACKLIGHT_OFF) {
             isKeyBacklightDisabled = flg
         } else if (key == Settings.PROP_APP_SCREEN_BACKLIGHT_LOCK) {
@@ -341,15 +254,10 @@ class MainActivity : BaseActivity() {
                 mBrowser!!.isSimpleViewMode = flg
         } else if (key == Settings.PROP_APP_FILE_BROWSER_HIDE_EMPTY_FOLDERS) {
             Services.getScanner().setHideEmptyDirs(flg)
-        }
+        }*/
         //
     }
 
-    override fun setFullscreen(fullscreen: Boolean) {
-        super.setFullscreen(fullscreen)
-        if (mReaderFrame != null)
-            mReaderFrame!!.updateFullscreen(fullscreen)
-    }
 
     private fun extractFileName(uri: Uri?): String? {
         return if (uri != null) {
@@ -388,27 +296,28 @@ class MainActivity : BaseActivity() {
             log.d("extras=" + intent.extras!!)
             fileToOpen = intent.extras!!.getString(OPEN_FILE_PARAM)
         }
-        if (fileToOpen != null) {
-            // patch for opening of books from ReLaunch (under Nook Simple Touch)
-            while (fileToOpen!!.indexOf("%2F") >= 0) {
-                fileToOpen = fileToOpen.replace("%2F", "/")
-            }
-            log.d("FILE_TO_OPEN = $fileToOpen")
-            loadDocument(fileToOpen, Runnable {
-                showToast("Cannot open book")
-                showRootWindow()
-            })
-            return true
-        } else {
-            log.d("No file to open")
-            return false
-        }
+        showRootWindow()
+        return true
+        /*  if (fileToOpen != null) {
+              // patch for opening of books from ReLaunch (under Nook Simple Touch)
+              while (fileToOpen!!.indexOf("%2F") >= 0) {
+                  fileToOpen = fileToOpen.replace("%2F", "/")
+              }
+              log.d("FILE_TO_OPEN = $fileToOpen")
+              loadDocument(fileToOpen, Runnable {
+                  showToast("Cannot open book")
+
+              })
+              return true
+          } else {
+              log.d("No file to open")
+              return false
+          }*/
+
     }
 
     override fun onPause() {
         super.onPause()
-        if (readerView != null)
-            readerView!!.onAppPause()
         Services.getCoverpageManager().removeCoverpageReadyListener(mHomeFrame)
     }
 
@@ -439,8 +348,6 @@ class MainActivity : BaseActivity() {
         super.onResume()
         //Properties props = SettingsManager.instance(this).get();
 
-        if (readerView != null)
-            readerView!!.onAppResume()
 
         if (DeviceInfo.EINK_SCREEN) {
             if (DeviceInfo.EINK_SONY) {
@@ -468,12 +375,7 @@ class MainActivity : BaseActivity() {
         super.onStart()
 
 
-        PhoneStateReceiver.setPhoneActivityHandler {
-            if (readerView != null) {
-                readerView!!.stopTTS()
-                readerView!!.save()
-            }
-        }
+
 
 
         if (mHomeFrame == null) {
@@ -496,10 +398,10 @@ class MainActivity : BaseActivity() {
         }
 
 
-        if (isBookOpened) {
-            showOpenedBook()
-            return
-        }
+        /*    if (isBookOpened) {
+                showOpenedBook()
+                return
+            }*/
 
         if (!isFirstStart)
             return
@@ -507,8 +409,9 @@ class MainActivity : BaseActivity() {
 
         if (justCreated) {
             justCreated = false
-            if (!processIntent(intent))
-                showLastLocation()
+            processIntent(intent)
+            /*  if (!processIntent(intent))
+                  showLastLocation()*/
         }
 
 
@@ -523,8 +426,6 @@ class MainActivity : BaseActivity() {
         super.onStop()
         stopped = true
         // will close book at onDestroy()
-        if (CLOSE_BOOK_ON_STOP)
-            readerView!!.close()
 
 
         log.i("CoolReaderActivity.onStop() exiting")
@@ -560,11 +461,7 @@ class MainActivity : BaseActivity() {
         if (mHomeFrame != null) {
             mHomeFrame!!.refreshOnlineCatalogs()
         }
-        if (mReaderFrame != null) {
-            mReaderFrame!!.updateSettings(props)
-            if (readerView != null)
-                readerView!!.updateSettings(props)
-        }
+
         for ((key1, value1) in changedProps) {
             val key = key1 as String
             val value = value1 as String
@@ -573,10 +470,6 @@ class MainActivity : BaseActivity() {
 
     }
 
-    override fun allowLowBrightness(): Boolean {
-        // override to force higher brightness in non-reading mode (to avoid black screen on some devices when brightness level set to small value)
-        return mCurrentFrame === mReaderFrame
-    }
 
     private fun setCurrentFrame(newFrame: ViewGroup?) {
         if (mCurrentFrame !== newFrame) {
@@ -592,8 +485,6 @@ class MainActivity : BaseActivity() {
 
 
             mCurrentFrame!!.requestFocus()
-            if (mCurrentFrame !== mReaderFrame)
-                releaseBacklightControl()
             if (mCurrentFrame === mHomeFrame) {
                 // update recent books
                 mHomeFrame!!.refreshRecentBooks()
@@ -608,45 +499,11 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    fun showReader() {
-        runInReader(Runnable {
-            // do nothing
-        })
-    }
 
     fun showRootWindow() {
         setCurrentFrame(mHomeFrame)
     }
 
-    private fun runInReader(task: Runnable) {
-        waitForCRDBService {
-            if (mReaderFrame != null) {
-                task.run()
-                setCurrentFrame(mReaderFrame)
-                if (readerView != null && readerView!!.surface != null) {
-                    readerView!!.surface.isFocusable = true
-                    readerView!!.surface.isFocusableInTouchMode = true
-                    readerView!!.surface.requestFocus()
-                } else {
-                    log.w("runInReader: mReaderView or mReaderView.getSurface() is null")
-                }
-            } else {
-                val r = ReaderViewFragment(this)
-                readerView = r.readerView
-                mReaderFrame = r.mReaderFrame
-                task.run()
-                setCurrentFrame(mReaderFrame)
-                if (readerView!!.surface != null) {
-                    readerView!!.surface.isFocusable = true
-                    readerView!!.surface.isFocusableInTouchMode = true
-                    readerView!!.surface.requestFocus()
-                }
-                if (initialBatteryState >= 0)
-                    readerView!!.batteryState = initialBatteryState
-            }
-        }
-
-    }
 
     private fun runInBrowser(task: Runnable) {
         waitForCRDBService {
@@ -665,23 +522,6 @@ class MainActivity : BaseActivity() {
 
     }
 
-    fun showManual() {
-        loadDocument("@manual", null)
-    }
-
-    fun loadDocument(item: String, callback: Runnable?) {
-        runInReader(Runnable { readerView!!.loadDocument(item, callback) })
-    }
-
-    @JvmOverloads
-    fun loadDocument(item: FileInfo, callback: Runnable? = null) {
-        log.d("Activities.loadDocument(" + item.pathname + ")")
-        loadDocument(item.pathName, null)
-    }
-
-    fun showOpenedBook() {
-        showReader()
-    }
 
     fun showBrowser(dir: FileInfo) {
         runInBrowser(Runnable { mBrowser!!.showDirectory(dir, null) })
@@ -718,137 +558,15 @@ class MainActivity : BaseActivity() {
     }
 
 
-    // Dictionary support
-
-
-    fun findInDictionary(s: String?) {
-
-        if (s != null && s.length != 0) {
-            var start: Int
-            var end: Int
-
-            // Skip over non-letter characters at the beginning and end of the search string
-            start = 0
-            while (start < s.length) {
-                if (Character.isLetterOrDigit(s[start]))
-                    break
-                start++
-            }
-            end = s.length - 1
-            while (end >= start) {
-                if (Character.isLetterOrDigit(s[end]))
-                    break
-                end--
-            }
-
-            if (end > start) {
-                val pattern = s.substring(start, end + 1)
-                TranslateResultActivity.startThis(pattern, this)
-            }
-        }
-    }
-
-
     fun showAboutDialog() {
         val dlg = AboutDialog(this@MainActivity)
         dlg.show()
     }
 
-    fun initTTS(listener: TTS.OnTTSCreatedListener): Boolean {
-        if (ttsError || !TTS.isFound()) {
-            if (!ttsError) {
-                ttsError = true
-                showToast("TTS is not available")
-            }
-            return false
-        }
-        if (ttsInitialized && tts != null) {
-            BackgroundThread.instance().executeGUI { listener.onCreated(tts) }
-            return true
-        }
-        if (ttsInitialized && tts != null) {
-            showToast("TTS initialization is already called")
-            return false
-        }
-        showToast("Initializing TTS")
-        tts = TTS(this, TTS.OnInitListener { status ->
-            //tts.shutdown();
-            L.i("TTS init status: $status")
-            if (status == TTS.SUCCESS) {
-                ttsInitialized = true
-                BackgroundThread.instance().executeGUI { listener.onCreated(tts) }
-            } else {
-                ttsError = true
-                BackgroundThread.instance().executeGUI { showToast("Cannot initialize TTS") }
-            }
-        })
-        return true
-    }
-
-    fun showOptionsDialog(mode: OptionsDialog.Mode) {
-        BackgroundThread.instance().postBackground {
-            val mFontFaces = Engine.getFontFaceList()
-            BackgroundThread.instance().executeGUI {
-                val dlg = OptionsDialog(this@MainActivity, readerView, mFontFaces, mode)
-                dlg.show()
-            }
-        }
-    }
-
-    fun updateCurrentPositionStatus(book: FileInfo, position: Bookmark, props: PositionProperties) {
-        mReaderFrame!!.statusBar.updateCurrentPositionStatus(book, position, props)
-    }
-
-
-    override fun setDimmingAlpha(dimmingAlpha: Int) {
-        if (readerView != null)
-            readerView!!.setDimmingAlpha(dimmingAlpha)
-    }
-
-    fun showReaderMenu() {
-        //
-        if (mReaderFrame != null) {
-            mReaderFrame!!.showMenu()
-        }
-    }
-
-
-    fun sendBookFragment(bookInfo: BookInfo, text: String) {
-        val emailIntent = Intent(Intent.ACTION_SEND)
-        emailIntent.type = "text/plain"
-        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, bookInfo.fileInfo.getAuthors() + " " + bookInfo.fileInfo.getTitle())
-        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, text)
-        startActivity(Intent.createChooser(emailIntent, null))
-    }
-
-    fun showBookmarksDialog() {
-        BackgroundThread.instance().executeGUI {
-            val dlg = BookmarksDlg(this@MainActivity, readerView)
-            dlg.show()
-        }
-    }
-
-    fun openURL(url: String) {
-        try {
-            val i = Intent(Intent.ACTION_VIEW)
-            i.data = Uri.parse(url)
-            startActivity(i)
-        } catch (e: Exception) {
-            log.e("Exception $e while trying to open URL $url")
-            showToast("Cannot open URL $url")
-        }
-
-    }
-
-    fun closeBookIfOpened(book: FileInfo) {
-        if (readerView == null)
-            return
-        readerView!!.closeIfOpened(book)
-    }
 
     fun askDeleteBook(item: FileInfo) {
         askConfirmation(R.string.win_title_confirm_book_delete) {
-            closeBookIfOpened(item)
+            //            closeBookIfOpened(item)
             var file = Services.getScanner().findFileInTree(item)
             if (file == null)
                 file = item
@@ -876,10 +594,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    fun saveSetting(name: String, value: String) {
-        if (readerView != null)
-            readerView!!.saveSetting(name, value)
-    }
 
     fun editBookInfo(currDirectory: FileInfo, item: FileInfo) {
         Services.getHistory().getOrCreateBookInfo(db, item) { bookInfo ->
@@ -914,9 +628,6 @@ class MainActivity : BaseActivity() {
             mHomeFrame!!.refreshOnlineCatalogs()
     }
 
-    fun setLastBook(path: String) {
-        lastLocation = BOOK_LOCATION_PREFIX + path
-    }
 
     fun setLastDirectory(path: String) {
         lastLocation = DIRECTORY_LOCATION_PREFIX + path
@@ -946,32 +657,33 @@ class MainActivity : BaseActivity() {
     /**
      * Open location - book, root view, folder...
      */
-    fun showLastLocation() {
-        var location = lastLocation
-        if (location == null)
-            location = FileInfo.ROOT_DIR_TAG
-        if (location.startsWith(BOOK_LOCATION_PREFIX)) {
-            location = location.substring(BOOK_LOCATION_PREFIX.length)
-            loadDocument(location, null)
-            return
-        }
-        if (location.startsWith(DIRECTORY_LOCATION_PREFIX)) {
-            location = location.substring(DIRECTORY_LOCATION_PREFIX.length)
-            showBrowser(location)
-            return
-        }
-        if (location == FileInfo.RECENT_DIR_TAG) {
-            showBrowser(location)
-            return
-        }
-        // TODO: support other locations as well
-        showRootWindow()
-    }
+    /* fun showLastLocation() {
+         var location = lastLocation
+         if (location == null)
+             location = FileInfo.ROOT_DIR_TAG
+         if (location.startsWith(BOOK_LOCATION_PREFIX)) {
+             location = location.substring(BOOK_LOCATION_PREFIX.length)
+             loadDocument(location, null)
+
+             return
+         }
+         if (location.startsWith(DIRECTORY_LOCATION_PREFIX)) {
+             location = location.substring(DIRECTORY_LOCATION_PREFIX.length)
+             showBrowser(location)
+             return
+         }
+         if (location == FileInfo.RECENT_DIR_TAG) {
+             showBrowser(location)
+             return
+         }
+         // TODO: support other locations as well
+         showRootWindow()
+     }*/
 
     fun showCurrentBook() {
-        val bi = Services.getHistory().lastBook
-        if (bi != null)
-            loadDocument(bi.fileInfo)
+        /*   val bi = Services.getHistory().lastBook
+           if (bi != null)
+               loadDocument(bi.fileInfo)*/
     }
 
 

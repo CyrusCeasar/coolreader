@@ -28,7 +28,7 @@ import android.widget.TextView;
 import cn.cc.ereader.MainActivity;
 
 public class BookmarksDlg  extends BaseDialog {
-	MainActivity mCoolReader;
+	ReaderActivity mCoolReader;
 	ReaderView mReaderView;
 	private LayoutInflater mInflater;
 	BookInfo mBookInfo;
@@ -252,7 +252,7 @@ public class BookmarksDlg  extends BaseDialog {
 	
 	final static int SHORTCUT_COUNT = 10;
 	
-	public BookmarksDlg(MainActivity activity, ReaderView readerView )
+	public BookmarksDlg(ReaderActivity activity, ReaderView readerView )
 	{
 		super(activity, activity.getResources().getString(R.string.win_title_bookmarks), true, false);
 		mThis = this; // for inner classes

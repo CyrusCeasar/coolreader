@@ -14,7 +14,7 @@ import cn.cc.ereader.MainActivity;
 
 public class BookmarkEditDialog extends BaseDialog {
 	
-	private final MainActivity mCoolReader;
+	private final BaseActivity mCoolReader;
 	private final LayoutInflater mInflater;
 	private final ReaderView mReaderView;
 	private final Bookmark mOriginalBookmark;
@@ -22,7 +22,7 @@ public class BookmarkEditDialog extends BaseDialog {
 	private final boolean mIsNew;
 	final EditText commentEdit;
 	
-	public BookmarkEditDialog(MainActivity activity, ReaderView readerView, Bookmark bookmark, boolean isNew)
+	public BookmarkEditDialog(BaseActivity activity, ReaderView readerView, Bookmark bookmark, boolean isNew)
 	{
 		super(activity, "", true, false);
 		mCoolReader = activity;
