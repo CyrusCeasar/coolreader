@@ -3,6 +3,7 @@ package org.coolreader.crengine;
 import java.util.ArrayList;
 
 import org.coolreader.R;
+import org.coolreader.crengine.filebrowser.FileBrowserActivity;
 import org.coolreader.db.CRDBService;
 
 import android.text.Editable;
@@ -16,7 +17,7 @@ import cn.cc.ereader.MainActivity;
 
 public class BookSearchDialog extends BaseDialog {
 	
-	private final MainActivity mCoolReader;
+	private final FileBrowserActivity mCoolReader;
 	private final LayoutInflater mInflater;
 	final EditText authorEdit;
 	final EditText titleEdit;
@@ -29,7 +30,7 @@ public class BookSearchDialog extends BaseDialog {
 	private boolean searchActive = false;
 	private boolean closing = false;
 	
-	public BookSearchDialog(MainActivity activity, SearchCallback callback)
+	public BookSearchDialog(FileBrowserActivity activity, SearchCallback callback)
 	{
 		super(activity, activity.getString( R.string.dlg_book_search), true, false);
 		mCoolReader = activity;

@@ -64,7 +64,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 	
 	Engine mEngine;
 	Scanner mScanner;
-	MainActivity mActivity;
+	FileBrowserActivity mActivity;
 	LayoutInflater mInflater;
 	History mHistory;
 	ListView mListView;
@@ -158,8 +158,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 		public boolean onKeyDown(int keyCode, KeyEvent event) {
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				if ( isRootDir() ) {
-					mActivity.showRootWindow();
-
+					mActivity.finish();
 				}
 				showParentDirectory();
 				return true;
@@ -183,7 +182,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 	}
 	
 	CoverpageManager.CoverpageReadyListener coverpageListener;
-	public FileBrowser(MainActivity activity, Engine engine, Scanner scanner, History history) {
+	public FileBrowser(FileBrowserActivity activity, Engine engine, Scanner scanner, History history) {
 		super(activity);
 		this.mActivity = activity;
 		this.mEngine = engine;
@@ -261,7 +260,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 			mActivity.showToast("Sorry, sort order selection is not yet implemented");
 			return true;
 		case R.id.book_recent_books:
-			showRecentBooks();
+			showDirectory(mScanner.getRecentDir(), null);
 			return true;
 		case R.id.book_opds_root:
 			showOPDSRootDirectory();
@@ -345,7 +344,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 	public void showParentDirectory()
 	{
 		if (currDirectory == null || currDirectory.parent == null || currDirectory.parent.isRootDir())
-			mActivity.showRootWindow();
+			mActivity.finish();
 		else
 			showDirectory(currDirectory.parent, currDirectory);
 	}
@@ -374,10 +373,6 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 		return currDirectory!=null && currDirectory.isRecentDir();
 	}
 
-	public void showRecentBooks()
-	{
-		showDirectory(mScanner.getRecentDir(), null);
-	}
 
 
 	public void showSearchResult( FileInfo[] books ) {
@@ -396,7 +391,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 				}
 			} else {
 				if (currDirectory == null || currDirectory.isRootDir())
-					mActivity.showRootWindow();
+					mActivity.finish();
 			}
 		});
 		dlg.show();
@@ -705,7 +700,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 		BackgroundThread.ensureGUI();
 		if (fileOrDir != null) {
 			if (fileOrDir.isRootDir()) {
-				mActivity.showRootWindow();
+				mActivity.finish();
 				return;
 			}
 			if (fileOrDir.isOnlineCatalogPluginDir()) {

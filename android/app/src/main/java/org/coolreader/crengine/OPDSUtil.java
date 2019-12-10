@@ -30,11 +30,11 @@ import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.coolreader.crengine.Engine.DelayedProgress;
+import org.coolreader.crengine.filebrowser.FileBrowserActivity;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import cn.cc.ereader.MainActivity;
 
 @SuppressLint("SimpleDateFormat")
 public class OPDSUtil {
@@ -42,31 +42,7 @@ public class OPDSUtil {
 	public static final boolean EXTENDED_LOG = false;
     public static final int CONNECT_TIMEOUT = 60000;
     public static final int READ_TIMEOUT = 60000;
-	/*
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:relevance="http://a9.com/-/opensearch/extensions/relevance/1.0/" 
-xmlns="http://www.w3.org/2005/Atom" 
-xml:base="http://lib.ololo.cc/opds/">
-<id>http://lib.ololo.cc/opds/</id>
-<updated>2011-05-31T10:28:22+04:00</updated>
-<title>OPDS: lib.ololo.cc</title>
-<subtitle>Librusec mirror.</subtitle>
-<author>
-  <name>ololo team</name>
-  <uri>http://lib.ololo.cc</uri><email>libololo@gmail.com</email>
-</author>
-<icon>http://lib.ololo.cc/book.png</icon>
-<link rel="self" title="This Page" type="application/atom+xml" href="/opds/"/>
-<link rel="alternate" type="text/html" title="HTML Page" href="/"/>
-<entry>
-   <updated>2011-05-31T10:28:22+04:00</updated>
-   <id>http://lib.ololo.cc/opds/asearch/</id>
-   <title>sample type</title>
-   <content type="text">sample content</content>
-   <link type="application/atom+xml" href="http://lib.ololo.cc/opds/asearch/"/>
-</entry>
-</feed>
-	 */
+
 	/**
 	 * Callback interface for OPDS.
 	 */
@@ -435,7 +411,7 @@ xml:base="http://lib.ololo.cc/opds/">
 	}
 	
 	public static class DownloadTask {
-		final private MainActivity coolReader;
+		final private FileBrowserActivity coolReader;
 		private URL url;
 		private String username;
 		private String password;
@@ -447,7 +423,7 @@ xml:base="http://lib.ololo.cc/opds/">
 		private HttpURLConnection connection;
 		private DelayedProgress delayedProgress;
 		OPDSHandler handler;
-		public DownloadTask(MainActivity coolReader, URL url, String defaultFileName, String expectedType, String referer, DownloadCallback callback, String username, String password) {
+		public DownloadTask(FileBrowserActivity coolReader, URL url, String defaultFileName, String expectedType, String referer, DownloadCallback callback, String username, String password) {
 			this.url = url;
 			this.coolReader = coolReader;
 			this.callback = callback; 
@@ -984,7 +960,7 @@ xml:base="http://lib.ololo.cc/opds/">
 		
 	}
 	private static DownloadTask currentTask;
-	public static DownloadTask create(MainActivity coolReader, URL uri, String defaultFileName, String expectedType, String referer, DownloadCallback callback, String username, String password) {
+	public static DownloadTask create(FileBrowserActivity coolReader, URL uri, String defaultFileName, String expectedType, String referer, DownloadCallback callback, String username, String password) {
 		if (currentTask != null)
 			currentTask.cancel();
 		final DownloadTask task = new DownloadTask(coolReader, uri, defaultFileName, expectedType, referer, callback, username, password);

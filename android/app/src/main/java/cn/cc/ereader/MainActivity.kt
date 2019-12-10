@@ -1,6 +1,7 @@
 package cn.cc.ereader
 
-import android.content.*
+import android.content.Intent
+import android.content.SharedPreferences
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
@@ -9,19 +10,16 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import cn.cc.ereader.ui.FileBroswerFragment
 import cn.cc.ereader.ui.HomeFragment
 import cn.cyrus.translater.feater.HomeActivity
 import org.coolreader.R
 import org.coolreader.crengine.*
-import org.coolreader.crengine.filebrowser.BrowserViewLayout
-import org.coolreader.crengine.filebrowser.FileBrowser
+import org.coolreader.crengine.filebrowser.FileBrowserActivity
 import org.koekak.android.ebookdownloader.SonyBookSelector
 
 class MainActivity : BaseActivity() {
     companion object {
         val log = L.create("cr")
-
 
         internal val LOAD_LAST_DOCUMENT_ON_START = true
 
@@ -42,14 +40,10 @@ class MainActivity : BaseActivity() {
 
         val OPEN_FILE_PARAM = "FILE_TO_OPEN"
 
-        val OPEN_DIR_PARAM = "DIR_TO_OPEN"
-        private val BOOK_LOCATION_PREFIX = "@book:"
-        private val DIRECTORY_LOCATION_PREFIX = "@dir:"
+
     }
 
 
-    private var mBrowser: FileBrowser? = null
-    private var mBrowserFrame: BrowserViewLayout? = null
     private var mHomeFrame: CRRootView? = null
     var mEngine: Engine? = null
     //View startupView;
@@ -57,39 +51,22 @@ class MainActivity : BaseActivity() {
     private var mCurrentFrame: ViewGroup? = null
     var previousFrame: ViewGroup? = null
         private set
-
-
     internal var fileToLoadOnStart: String? = null
-
     private var isFirstStart = true
-
-
     private var justCreated = false
-
     internal var mDestroyed = false
-
-
     private var stopped = false
-
     val isPreviousFrameHome: Boolean
         get() = previousFrame != null && previousFrame === mHomeFrame
-
-    val isBrowserCreated: Boolean
-        get() = mBrowserFrame != null
-
-
     private var mPreferences: SharedPreferences? = null
-
     private val prefs: SharedPreferences?
         get() {
             if (mPreferences == null)
-                mPreferences = getSharedPreferences(BaseActivity.PREF_FILE, 0)
+                mPreferences = getSharedPreferences(PREF_FILE, 0)
             return mPreferences
         }
 
     internal var CURRENT_NOTIFICATOIN_VERSION = 1
-
-    // ignore
     var lastNotificationId: Int
         get() {
             val res = prefs!!.getInt(PREF_LAST_NOTIFICATION, 0)
@@ -106,37 +83,6 @@ class MainActivity : BaseActivity() {
 
         }
 
-
-    var lastLocation: String?
-        get() {
-            var res = prefs!!.getString(PREF_LAST_LOCATION, null)
-            if (res == null) {
-                res = prefs!!.getString(PREF_LAST_BOOK, null)
-                if (res != null) {
-                    res = BOOK_LOCATION_PREFIX + res
-                    try {
-                        prefs!!.edit().remove(PREF_LAST_BOOK).commit()
-                    } catch (e: Exception) {
-                    }
-
-                }
-            }
-            return res
-        }
-        set(location) {
-            try {
-                val oldLocation = prefs!!.getString(PREF_LAST_LOCATION, null)
-                if (oldLocation != null && oldLocation == location)
-                    return
-                val editor = prefs!!.edit()
-                editor.putString(PREF_LAST_LOCATION, location)
-                editor.commit()
-            } catch (e: Exception) {
-            }
-
-        }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         startServices()
         super.onCreate(savedInstanceState)
@@ -148,44 +94,16 @@ class MainActivity : BaseActivity() {
         isFirstStart = true
         justCreated = true
 
-
         mEngine = Engine.getInstance(this)
 
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        //==========================================
-
-
         volumeControlStream = AudioManager.STREAM_MUSIC
-
-
-
-
         N2EpdController.n2MainActivity = this
 
         showRootWindow()
 
         log.i("CoolReaderActivity.onCreate() exiting")
 
-
-        /*   val fab: FloatingActionButton = findViewById(R.id.fab)
-           fab.setOnClickListener { view ->
-               Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                       .setAction("Action", null).show()
-           }*/
-        /*  val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-          val navView: NavigationView = findViewById(R.id.nav_view)
-          val navController = findNavController(R.id.nav_host_fragment)
-          // Passing each menu ID as a set of Ids because each
-          // menu should be considered as top level destinations.
-          appBarConfiguration = AppBarConfiguration(setOf(
-                  R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
-                  R.id.nav_tools, R.id.nav_share, R.id.nav_send), drawerLayout)
-          setupActionBarWithNavController(navController, appBarConfiguration)
-          navView.setupWithNavController(navController)*/
-//        navController = findViewById(R.id.container)
     }
-//    lateinit var navController:View
 
 
     override fun onDestroy() {
@@ -198,7 +116,6 @@ class MainActivity : BaseActivity() {
         if (mHomeFrame != null)
             mHomeFrame!!.onClose()
         mDestroyed = true
-
 
 
         log.i("CoolReaderActivity.onDestroy() exiting")
@@ -374,10 +291,6 @@ class MainActivity : BaseActivity() {
         log.i("CoolReaderActivity.onStart() version=$version, fileToLoadOnStart=$fileToLoadOnStart")
         super.onStart()
 
-
-
-
-
         if (mHomeFrame == null) {
             waitForCRDBService {
                 Services.getHistory().loadFromDB(db!!, 200)
@@ -398,10 +311,6 @@ class MainActivity : BaseActivity() {
         }
 
 
-        /*    if (isBookOpened) {
-                showOpenedBook()
-                return
-            }*/
 
         if (!isFirstStart)
             return
@@ -410,11 +319,7 @@ class MainActivity : BaseActivity() {
         if (justCreated) {
             justCreated = false
             processIntent(intent)
-            /*  if (!processIntent(intent))
-                  showLastLocation()*/
         }
-
-
         stopped = false
 
         log.i("CoolReaderActivity.onStart() exiting")
@@ -436,25 +341,9 @@ class MainActivity : BaseActivity() {
         super.setCurrentTheme(theme)
         if (mHomeFrame != null)
             mHomeFrame!!.onThemeChange(theme)
-        if (mBrowser != null)
-            mBrowser!!.onThemeChanged()
-        if (mBrowserFrame != null)
-            mBrowserFrame!!.onThemeChanged(theme)
         //getWindow().setBackgroundDrawable(theme.getActionBarBackgroundDrawableBrowser());
     }
 
-    fun directoryUpdated(dir: FileInfo, selected: FileInfo?) {
-        if (dir.isOPDSRoot)
-            mHomeFrame!!.refreshOnlineCatalogs()
-        else if (dir.isRecentDir)
-            mHomeFrame!!.refreshRecentBooks()
-        if (mBrowser != null)
-            mBrowser!!.refreshDirectory(dir, selected)
-    }
-
-    override fun directoryUpdated(dir: FileInfo) {
-        directoryUpdated(dir, null)
-    }
 
     override fun onSettingsChanged(props: Properties, oldProps: Properties?) {
         val changedProps = if (oldProps != null) props.diff(oldProps) else props
@@ -482,19 +371,14 @@ class MainActivity : BaseActivity() {
                 replace(R.id.container, mCurrentFrame!!.tag as Fragment)
             }
 
-
-
             mCurrentFrame!!.requestFocus()
             if (mCurrentFrame === mHomeFrame) {
                 // update recent books
                 mHomeFrame!!.refreshRecentBooks()
-                setLastLocationRoot()
+//                setLastLocationRoot()
                 mCurrentFrame!!.invalidate()
             }
-            if (mCurrentFrame === mBrowserFrame) {
-                // update recent books directory
-                mBrowser!!.refreshDirectory(Services.getScanner().recentDir!!, null)
-            }
+
             onUserActivity()
         }
     }
@@ -504,139 +388,10 @@ class MainActivity : BaseActivity() {
         setCurrentFrame(mHomeFrame)
     }
 
-
-    private fun runInBrowser(task: Runnable) {
-        waitForCRDBService {
-            if (mBrowserFrame != null) {
-                task.run()
-                setCurrentFrame(mBrowserFrame)
-            } else {
-
-                val fileBroswerFragment = FileBroswerFragment(this)
-                mBrowser = fileBroswerFragment.mBrowser
-                mBrowserFrame = fileBroswerFragment.mBrowserFrame
-                setCurrentFrame(mBrowserFrame)
-                task.run()
-            }
-        }
-
-    }
-
-
-    fun showBrowser(dir: FileInfo) {
-        runInBrowser(Runnable { mBrowser!!.showDirectory(dir, null) })
-    }
-
-    fun showBrowser(dir: String) {
-        runInBrowser(Runnable { mBrowser!!.showDirectory(Services.getScanner().pathToFileInfo(dir), null) })
-    }
-
-    fun showRecentBooks() {
-        log.d("Activities.showRecentBooks() is called")
-        runInBrowser(Runnable { mBrowser!!.showRecentBooks() })
-    }
-
-    fun showOnlineCatalogs() {
-        log.d("Activities.showOnlineCatalogs() is called")
-        runInBrowser(Runnable { mBrowser!!.showOPDSRootDirectory() })
-    }
-
-    fun showDirectory(path: FileInfo) {
-        log.d("Activities.showDirectory($path) is called")
-        showBrowser(path)
-    }
-
-    fun showCatalog(path: FileInfo) {
-        log.d("Activities.showCatalog($path) is called")
-        runInBrowser(Runnable { mBrowser!!.showDirectory(path, null) })
-    }
-
-
-    fun setBrowserTitle(title: String) {
-        if (mBrowserFrame != null)
-            mBrowserFrame!!.setBrowserTitle(title)
-    }
-
-
     fun showAboutDialog() {
         val dlg = AboutDialog(this@MainActivity)
         dlg.show()
     }
-
-
-    fun askDeleteBook(item: FileInfo) {
-        askConfirmation(R.string.win_title_confirm_book_delete) {
-            //            closeBookIfOpened(item)
-            var file = Services.getScanner().findFileInTree(item)
-            if (file == null)
-                file = item
-            if (file.deleteFile()) {
-                Services.getHistory().removeBookInfo(db, file, true, true)
-            }
-            if (file.parent != null)
-                directoryUpdated(file.parent)
-        }
-    }
-
-    fun askDeleteRecent(item: FileInfo) {
-        askConfirmation(R.string.win_title_confirm_history_record_delete) {
-            Services.getHistory().removeBookInfo(db, item, true, false)
-            directoryUpdated(Services.getScanner().createRecentRoot())
-        }
-    }
-
-    fun askDeleteCatalog(item: FileInfo?) {
-        askConfirmation(R.string.win_title_confirm_catalog_delete) {
-            if (item != null && item.isOPDSDir) {
-                db!!.removeOPDSCatalog(item.id)
-                directoryUpdated(Services.getScanner().createRecentRoot())
-            }
-        }
-    }
-
-
-    fun editBookInfo(currDirectory: FileInfo, item: FileInfo) {
-        Services.getHistory().getOrCreateBookInfo(db, item) { bookInfo ->
-            var bookInfo = bookInfo
-            if (bookInfo == null)
-                bookInfo = BookInfo(item)
-            val dlg = BookInfoEditDialog(this@MainActivity, currDirectory, bookInfo,
-                    currDirectory.isRecentDir)
-            dlg.show()
-        }
-    }
-
-    fun editOPDSCatalog(opds: FileInfo?) {
-        var opds = opds
-        if (opds == null) {
-            opds = FileInfo()
-            opds.isDirectory = true
-            opds.pathname = FileInfo.OPDS_DIR_PREFIX + "http://"
-            opds.filename = "New Catalog"
-            opds.isListed = true
-            opds.isScanned = true
-            opds.parent = Services.getScanner().opdsRoot
-        }
-        val dlg = OPDSCatalogEditDialog(this@MainActivity, opds, Runnable { refreshOPDSRootDirectory(true) })
-        dlg.show()
-    }
-
-    fun refreshOPDSRootDirectory(showInBrowser: Boolean) {
-        if (mBrowser != null)
-            mBrowser!!.refreshOPDSRootDirectory(showInBrowser)
-        if (mHomeFrame != null)
-            mHomeFrame!!.refreshOnlineCatalogs()
-    }
-
-
-    fun setLastDirectory(path: String) {
-        lastLocation = DIRECTORY_LOCATION_PREFIX + path
-    }
-
-    fun setLastLocationRoot() {
-        lastLocation = FileInfo.ROOT_DIR_TAG
-    }
-
 
     fun showNotifications() {
         val lastNoticeId = lastNotificationId
@@ -680,13 +435,6 @@ class MainActivity : BaseActivity() {
          showRootWindow()
      }*/
 
-    fun showCurrentBook() {
-        /*   val bi = Services.getHistory().lastBook
-           if (bi != null)
-               loadDocument(bi.fileInfo)*/
-    }
-
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
@@ -700,6 +448,15 @@ class MainActivity : BaseActivity() {
         }
         return true
     }
+
+    fun showBrowser(dir: String) {
+        FileBrowserActivity.showDirectory(this,Services.getScanner().pathToFileInfo(dir))
+    }
+
+    fun showRecentBooks() {
+        FileBrowserActivity.showDirectory(this,Services.getScanner().getRecentDir())
+    }
+
 
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.coolreader.R;
 import org.coolreader.crengine.CoverpageManager.CoverpageBitmapReadyListener;
+import org.coolreader.crengine.filebrowser.FileBrowserActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -29,16 +30,15 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 
-import cn.cc.ereader.MainActivity;
 
 public class BookInfoEditDialog extends BaseDialog {
-	private MainActivity mActivity;
+	private FileBrowserActivity mActivity;
 	private BookInfo mBookInfo;
 	private FileInfo mParentDir;
 	private LayoutInflater mInflater;
 	private int mWindowSize;
 	private boolean mIsRecentBooksItem;
-	public BookInfoEditDialog(MainActivity activity, FileInfo baseDir, BookInfo book, boolean isRecentBooksItem)
+	public BookInfoEditDialog(FileBrowserActivity activity, FileInfo baseDir, BookInfo book, boolean isRecentBooksItem)
 	{
 		super(activity, null, false, false);
 		this.mParentDir = baseDir;

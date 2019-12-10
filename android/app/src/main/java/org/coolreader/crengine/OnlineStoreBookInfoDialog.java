@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.coolreader.R;
 import org.coolreader.crengine.CoverpageManager.CoverpageBitmapReadyListener;
+import org.coolreader.crengine.filebrowser.FileBrowserActivity;
 import org.coolreader.plugins.BookInfoCallback;
 import org.coolreader.plugins.DownloadBookCallback;
 import org.coolreader.plugins.OnlineStoreBook;
@@ -33,7 +34,7 @@ import android.widget.TextView;
 import cn.cc.ereader.MainActivity;
 
 public class OnlineStoreBookInfoDialog extends BaseDialog {
-	private MainActivity mActivity;
+	private FileBrowserActivity mActivity;
 	private OnlineStoreBookInfo mBookInfo;
 	private FileInfo mFileInfo;
 	private LayoutInflater mInflater;
@@ -46,7 +47,7 @@ public class OnlineStoreBookInfoDialog extends BaseDialog {
 	
 	private ViewGroup mContentView;
 	
-	public OnlineStoreBookInfoDialog(MainActivity activity, OnlineStoreBookInfo book, FileInfo fileInfo)
+	public OnlineStoreBookInfoDialog(FileBrowserActivity activity, OnlineStoreBookInfo book, FileInfo fileInfo)
 	{
 		super(activity, null, false, false);
 		DisplayMetrics outMetrics = new DisplayMetrics();
