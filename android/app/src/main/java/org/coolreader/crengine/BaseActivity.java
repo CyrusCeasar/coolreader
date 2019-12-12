@@ -282,7 +282,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     }
 
     public int getPalmTipPixels() {
-        return densityDpi / 3; // 1/3"
+        return densityDpi / 10; // 1/3"
     }
 
     public int getDensityDpi() {

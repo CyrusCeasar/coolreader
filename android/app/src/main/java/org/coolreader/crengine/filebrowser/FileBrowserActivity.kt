@@ -49,28 +49,18 @@ class FileBrowserActivity : BaseActivity() {
 
             mBrowserToolBar = CRToolBar(this, ReaderAction.createList(
                     ReaderAction.FILE_BROWSER_UP,
-                    ReaderAction.CURRENT_BOOK,
                     ReaderAction.OPTIONS,
-                    ReaderAction.FILE_BROWSER_ROOT,
-                    ReaderAction.RECENT_BOOKS,
-                    ReaderAction.CURRENT_BOOK_DIRECTORY,
-                    ReaderAction.OPDS_CATALOGS,
-                    ReaderAction.SEARCH,
-                    ReaderAction.SCAN_DIRECTORY_RECURSIVE,
-                    ReaderAction.EXIT
+                    ReaderAction.FILE_BROWSER_ROOT
             ), false)
             mBrowserToolBar!!.setBackgroundResource(R.drawable.ui_status_background_browser_dark)
             mBrowserToolBar!!.setOnActionHandler { item ->
                 when (item.cmd) {
-                    ReaderCommand.DCMD_EXIT ->
-                        //
-                        finish()
-                    ReaderCommand.DCMD_FILE_BROWSER_ROOT -> finish()
+                    ReaderCommand.DCMD_EXIT ->finish()
+                    ReaderCommand.DCMD_FILE_BROWSER_ROOT -> mBrowser!!.showDirectory(Services.getScanner().libraryItems[0],null)
                     ReaderCommand.DCMD_FILE_BROWSER_UP -> mBrowser!!.showParentDirectory()
                     ReaderCommand.DCMD_OPDS_CATALOGS -> mBrowser!!.showOPDSRootDirectory()
                     ReaderCommand.DCMD_RECENT_BOOKS_LIST -> mBrowser!!.showDirectory(Services.getScanner().getRecentDir(), null)
                     ReaderCommand.DCMD_SEARCH -> mBrowser!!.showFindBookDialog()
-                    /*  ReaderCommand.DCMD_CURRENT_BOOK -> activity.showCurrentBook()*/
                     ReaderCommand.DCMD_OPTIONS_DIALOG -> showBrowserOptionsDialog()
                     ReaderCommand.DCMD_SCAN_DIRECTORY_RECURSIVE -> mBrowser!!.scanCurrentDirectoryRecursive()
                     else -> {
@@ -82,6 +72,7 @@ class FileBrowserActivity : BaseActivity() {
             mBrowserFrame = BrowserViewLayout(this, mBrowser, mBrowserToolBar, mBrowserTitleBar)
             mBrowserFrame!!.tag = this
             setContentView(mBrowserFrame)
+            showDirectory(intent.getSerializableExtra(KEY_FILE_INFO) as FileInfo)
         }
     }
 
@@ -136,6 +127,7 @@ class FileBrowserActivity : BaseActivity() {
         if (mBrowser != null)
             mBrowser!!.refreshDirectory(dir, selected)
     }
+
 
     override fun directoryUpdated(dir: FileInfo) {
         directoryUpdated(dir, null)

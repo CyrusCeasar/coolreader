@@ -15,7 +15,6 @@ import com.chad.library.adapter.base.BaseViewHolder;
 
 import org.coolreader.R;
 import org.coolreader.crengine.CoverpageManager.CoverpageReadyListener;
-import org.coolreader.crengine.filebrowser.FileBrowser;
 import org.coolreader.crengine.filebrowser.FileBrowserActivity;
 import org.coolreader.plugins.OnlineStorePluginManager;
 import org.coolreader.plugins.OnlineStoreWrapper;

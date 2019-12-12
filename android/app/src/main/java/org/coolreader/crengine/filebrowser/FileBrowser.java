@@ -56,8 +56,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import cn.cc.ereader.MainActivity;
-
 public class FileBrowser extends LinearLayout implements FileInfoChangeListener {
 
 	public static final Logger log = L.create("fb");

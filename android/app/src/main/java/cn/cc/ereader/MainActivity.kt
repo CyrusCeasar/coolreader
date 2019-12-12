@@ -44,20 +44,16 @@ class MainActivity : BaseActivity() {
     }
 
 
-    private var mHomeFrame: CRRootView? = null
+     var mHomeFrame: CRRootView? =null
     var mEngine: Engine? = null
     //View startupView;
     //CRDB mDB;
-    private var mCurrentFrame: ViewGroup? = null
-    var previousFrame: ViewGroup? = null
-        private set
     internal var fileToLoadOnStart: String? = null
     private var isFirstStart = true
     private var justCreated = false
     internal var mDestroyed = false
     private var stopped = false
-    val isPreviousFrameHome: Boolean
-        get() = previousFrame != null && previousFrame === mHomeFrame
+
     private var mPreferences: SharedPreferences? = null
     private val prefs: SharedPreferences?
         get() {
@@ -86,8 +82,6 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         startServices()
         super.onCreate(savedInstanceState)
-        contentView = layoutInflater.inflate(R.layout.container, null)
-        setContentView(contentView)
         // apply settings
         onSettingsChanged(settings(), null)
 
@@ -99,79 +93,70 @@ class MainActivity : BaseActivity() {
         volumeControlStream = AudioManager.STREAM_MUSIC
         N2EpdController.n2MainActivity = this
 
-        showRootWindow()
-
-        log.i("CoolReaderActivity.onCreate() exiting")
-
+        waitForCRDBService {
+            mHomeFrame = CRRootView(this)
+            setContentView(mHomeFrame)
+        }
     }
 
 
     override fun onDestroy() {
 
-        log.i("CoolReaderActivity.onDestroy() entered")
-
-
-
-
-        if (mHomeFrame != null)
-            mHomeFrame!!.onClose()
+        mHomeFrame!!.onClose()
         mDestroyed = true
 
-
-        log.i("CoolReaderActivity.onDestroy() exiting")
         super.onDestroy()
-
         Services.stopServices()
     }
 
     override fun applyAppSetting(key: String, value: String) {
         super.applyAppSetting(key, value)
-     /*   val flg = "1" == value
-        if (key == Settings.PROP_APP_KEY_BACKLIGHT_OFF) {
-            isKeyBacklightDisabled = flg
-        } else if (key == Settings.PROP_APP_SCREEN_BACKLIGHT_LOCK) {
-            var n = 0
-            try {
-                n = Integer.parseInt(value)
-            } catch (e: NumberFormatException) {
-                // ignore
-            }
+        /*   val flg = "1" == value
+           if (key == Settings.PROP_APP_KEY_BACKLIGHT_OFF) {
+               isKeyBacklightDisabled = flg
+           } else if (key == Settings.PROP_APP_SCREEN_BACKLIGHT_LOCK) {
+               var n = 0
+               try {
+                   n = Integer.parseInt(value)
+               } catch (e: NumberFormatException) {
+                   // ignore
+               }
 
-            setScreenBacklightDuration(n)
-        } else if (key == Settings.PROP_APP_BOOK_SORT_ORDER) {
-            if (mBrowser != null)
-                mBrowser!!.setSortOrder(value)
-        } else if (key == Settings.PROP_APP_FILE_BROWSER_SIMPLE_MODE) {
-            if (mBrowser != null)
-                mBrowser!!.isSimpleViewMode = flg
-        } else if (key == Settings.PROP_APP_SHOW_COVERPAGES) {
-            if (mBrowser != null)
-                mBrowser!!.setCoverPagesEnabled(flg)
-        } else if (key == Settings.PROP_APP_BOOK_PROPERTY_SCAN_ENABLED) {
-            Services.getScanner().dirScanEnabled = flg
-        } else if (key == Settings.PROP_FONT_FACE) {
-            if (mBrowser != null)
-                mBrowser!!.setCoverPageFontFace(value)
-        } else if (key == Settings.PROP_APP_COVERPAGE_SIZE) {
-            var n = 0
-            try {
-                n = Integer.parseInt(value)
-            } catch (e: NumberFormatException) {
-                // ignore
-            }
+               setScreenBacklightDuration(n)
+           } else if (key == Settings.PROP_APP_BOOK_SORT_ORDER) {
+               if (mBrowser != null)
+                   mBrowser!!.setSortOrder(value)
+           } else if (key == Settings.PROP_APP_FILE_BROWSER_SIMPLE_MODE) {
+               if (mBrowser != null)
+                   mBrowser!!.isSimpleViewMode = flg
+           } else if (key == Settings.PROP_APP_SHOW_COVERPAGES) {
+               if (mBrowser != null)
+                   mBrowser!!.setCoverPagesEnabled(flg)
+           } else if (key == Settings.PROP_APP_BOOK_PROPERTY_SCAN_ENABLED) {
+               Services.getScanner().dirScanEnabled = flg
+           } else if (key == Settings.PROP_FONT_FACE) {
+               if (mBrowser != null)
+                   mBrowser!!.setCoverPageFontFace(value)
+           } else if (key == Settings.PROP_APP_COVERPAGE_SIZE) {
+               var n = 0
+               try {
+                   n = Integer.parseInt(value)
+               } catch (e: NumberFormatException) {
+                   // ignore
+               }
 
-            if (n < 0)
-                n = 0
-            else if (n > 2)
-                n = 2
-            if (mBrowser != null)
-                mBrowser!!.setCoverPageSizeOption(n)
-        } else if (key == Settings.PROP_APP_FILE_BROWSER_SIMPLE_MODE) {
-            if (mBrowser != null)
-                mBrowser!!.isSimpleViewMode = flg
-        } else if (key == Settings.PROP_APP_FILE_BROWSER_HIDE_EMPTY_FOLDERS) {
-            Services.getScanner().setHideEmptyDirs(flg)
-        }*/
+               if (n < 0)
+                   n = 0
+               else if (n > 2)
+                   n = 2
+               if (mBrowser != null)
+                   mBrowser!!.setCoverPageSizeOption(n)
+           } else if (key == Settings.PROP_APP_FILE_BROWSER_SIMPLE_MODE) {
+               if (mBrowser != null)
+                   mBrowser!!.isSimpleViewMode = flg
+           } else if (key == Settings.PROP_APP_FILE_BROWSER_HIDE_EMPTY_FOLDERS) {
+               Services.getScanner().setHideEmptyDirs(flg)
+           }*/
         //
     }
 
@@ -213,24 +198,8 @@ class MainActivity : BaseActivity() {
             log.d("extras=" + intent.extras!!)
             fileToOpen = intent.extras!!.getString(OPEN_FILE_PARAM)
         }
-        showRootWindow()
+        onUserActivity()
         return true
-        /*  if (fileToOpen != null) {
-              // patch for opening of books from ReLaunch (under Nook Simple Touch)
-              while (fileToOpen!!.indexOf("%2F") >= 0) {
-                  fileToOpen = fileToOpen.replace("%2F", "/")
-              }
-              log.d("FILE_TO_OPEN = $fileToOpen")
-              loadDocument(fileToOpen, Runnable {
-                  showToast("Cannot open book")
-
-              })
-              return true
-          } else {
-              log.d("No file to open")
-              return false
-          }*/
-
     }
 
     override fun onPause() {
@@ -291,26 +260,17 @@ class MainActivity : BaseActivity() {
         log.i("CoolReaderActivity.onStart() version=$version, fileToLoadOnStart=$fileToLoadOnStart")
         super.onStart()
 
-        if (mHomeFrame == null) {
-            waitForCRDBService {
-                Services.getHistory().loadFromDB(db!!, 200)
+        waitForCRDBService {
+            Services.getHistory().loadFromDB(db!!, 200)
 
-                val m = HomeFragment(this)
-                mHomeFrame = m.mHomeFrame
+            onUserActivity()
+            setSystemUiVisibility()
 
-                Services.getCoverpageManager().addCoverpageReadyListener(mHomeFrame)
-                mHomeFrame!!.requestFocus()
+            notifySettingsChanged()
 
-                showRootWindow()
-                setSystemUiVisibility()
+            showNotifications()
 
-                notifySettingsChanged()
-
-                showNotifications()
-            }
         }
-
-
 
         if (!isFirstStart)
             return
@@ -341,7 +301,6 @@ class MainActivity : BaseActivity() {
         super.setCurrentTheme(theme)
         if (mHomeFrame != null)
             mHomeFrame!!.onThemeChange(theme)
-        //getWindow().setBackgroundDrawable(theme.getActionBarBackgroundDrawableBrowser());
     }
 
 
@@ -359,34 +318,6 @@ class MainActivity : BaseActivity() {
 
     }
 
-
-    private fun setCurrentFrame(newFrame: ViewGroup?) {
-        if (mCurrentFrame !== newFrame) {
-            previousFrame = mCurrentFrame
-            log.i("New current frame: " + newFrame!!.javaClass.toString())
-            mCurrentFrame = newFrame
-
-
-            supportFragmentManager.inTransaction {
-                replace(R.id.container, mCurrentFrame!!.tag as Fragment)
-            }
-
-            mCurrentFrame!!.requestFocus()
-            if (mCurrentFrame === mHomeFrame) {
-                // update recent books
-                mHomeFrame!!.refreshRecentBooks()
-//                setLastLocationRoot()
-                mCurrentFrame!!.invalidate()
-            }
-
-            onUserActivity()
-        }
-    }
-
-
-    fun showRootWindow() {
-        setCurrentFrame(mHomeFrame)
-    }
 
     fun showAboutDialog() {
         val dlg = AboutDialog(this@MainActivity)
@@ -450,13 +381,12 @@ class MainActivity : BaseActivity() {
     }
 
     fun showBrowser(dir: String) {
-        FileBrowserActivity.showDirectory(this,Services.getScanner().pathToFileInfo(dir))
+        FileBrowserActivity.showDirectory(this, Services.getScanner().pathToFileInfo(dir))
     }
 
     fun showRecentBooks() {
-        FileBrowserActivity.showDirectory(this,Services.getScanner().getRecentDir())
+        FileBrowserActivity.showDirectory(this, Services.getScanner().getRecentDir())
     }
-
 
 
 }

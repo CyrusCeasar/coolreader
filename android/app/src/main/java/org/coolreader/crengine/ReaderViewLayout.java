@@ -61,27 +61,10 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 			if (isToolbarVisible())
 				toolbarView.showOverflowMenu();
 			else
-				toolbarView.showAsPopup(this, new OnActionHandler() {
-					@Override
-					public boolean onActionSelected(ReaderAction item) {
-						activity.getReaderView().onAction(item);
-						return true;
-					}
+				toolbarView.showAsPopup(this, item -> {
+					activity.getReaderView().onAction(item);
+					return true;
 				}, null);
-//			new OnOverflowHandler() {
-//					@Override
-//					public boolean onOverflowActions(ArrayList<ReaderAction> actions) {
-//						toolbarView.showOverflowMenu();
-////						activity.showActionsPopupMenu(actions, new OnActionHandler() {
-////							@Override
-////							public boolean onActionSelected(ReaderAction item) {
-////								activity.getReaderView().onAction(item);
-////								return true;
-////							}
-////						});
-//						return false;
-//					}
-//				});
 		}
 		
 		public ReaderViewLayout(ReaderActivity context, ReaderView contentView) {
@@ -92,26 +75,14 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 			statusBackground = contentView.createToolbarBackgroundDrawable();
 			this.statusView.setBackgroundDrawable(statusBackground);
 			toolbarBackground = contentView.createToolbarBackgroundDrawable();
-			this.toolbarView = new CRToolBar(context, ReaderAction.createList(new ReaderAction[] {
-				ReaderAction.GO_BACK,
-				ReaderAction.TOC,
-				ReaderAction.SEARCH,
-				ReaderAction.OPTIONS,
-				ReaderAction.BOOKMARKS,
-				ReaderAction.FILE_BROWSER_ROOT,
-				ReaderAction.TOGGLE_DAY_NIGHT,
-				ReaderAction.TOGGLE_SELECTION_MODE,
-				ReaderAction.GO_PAGE,
-				ReaderAction.GO_PERCENT,
-				ReaderAction.FILE_BROWSER,
-				ReaderAction.TTS_PLAY,
-				ReaderAction.GO_FORWARD,
-				ReaderAction.RECENT_BOOKS,
-				ReaderAction.OPEN_PREVIOUS_BOOK,
-				ReaderAction.TOGGLE_AUTOSCROLL,
-				ReaderAction.ABOUT,
-				ReaderAction.EXIT,
-			}), false);
+			this.toolbarView = new CRToolBar(context, ReaderAction.createList(ReaderAction.GO_BACK,
+					ReaderAction.TOC,
+					ReaderAction.SEARCH,
+					ReaderAction.OPTIONS,
+					ReaderAction.BOOKMARKS,
+					ReaderAction.TOGGLE_DAY_NIGHT,
+					ReaderAction.GO_PAGE,
+					ReaderAction.TTS_PLAY), false);
 			this.toolbarView.setBackgroundDrawable(toolbarBackground);
 			this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 			this.addView(toolbarView);
@@ -129,16 +100,6 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 		}
 
 		public void onThemeChanged(InterfaceTheme theme) {
-//			if (DeviceInfo.EINK_SCREEN) {
-//				statusView.setBackgroundColor(0xFFFFFFFF);
-//				toolbarView.setBackgroundColor(0xFFFFFFFF);
-//			} else if (nightMode) {
-//				statusView.setBackgroundColor(0xFF000000);
-//				toolbarView.setBackgroundColor(0xFF000000);
-//			} else {
-//				statusView.setBackgroundResource(theme.getReaderStatusBackground());
-//				toolbarView.setBackgroundResource(theme.getReaderToolbarBackground(toolbarView.isVertical()));
-//			}
 			toolbarView.updateNightMode(nightMode);
 			toolbarView.setButtonAlpha(theme.getToolbarButtonAlpha());
 			toolbarView.onThemeChanged(theme);
@@ -148,7 +109,6 @@ public class ReaderViewLayout extends ViewGroup implements Settings {
 		
 		@Override
 		protected void onLayout(boolean changed, int l, int t, int r, int b) {
-//			CoolReaderActivity.log.v("onLayout(" + l + ", " + t + ", " + r + ", " + b + ")");
 			r -= l;
 			b -= t;
 			t = 0;

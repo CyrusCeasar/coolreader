@@ -2,6 +2,7 @@ package org.coolreader.crengine;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 
 
@@ -9,6 +10,8 @@ import android.view.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+
+import cn.cyrus.translater.base.LogUtil;
 
 
 public class SettingsManager implements Settings{
@@ -174,7 +177,26 @@ public class SettingsManager implements Settings{
 			new DefTapAction(5, false, ReaderAction.READER_MENU),
 			new DefTapAction(5, true, ReaderAction.OPTIONS),
 		};
-		
+	private static DefTapAction[] DEF_TAP_ACTIONS2 = {
+			new DefTapAction(1, false, ReaderAction.START_SELECTION),
+			new DefTapAction(2, false, ReaderAction.START_SELECTION),
+			new DefTapAction(4, false, ReaderAction.START_SELECTION),
+			new DefTapAction(1, true, ReaderAction.START_SELECTION), // back by link
+			new DefTapAction(2, true, ReaderAction.START_SELECTION),
+			new DefTapAction(4, true, ReaderAction.START_SELECTION),
+			new DefTapAction(3, false, ReaderAction.START_SELECTION),
+			new DefTapAction(6, false, ReaderAction.START_SELECTION),
+			new DefTapAction(7, false, ReaderAction.START_SELECTION),
+			new DefTapAction(8, false, ReaderAction.START_SELECTION),
+			new DefTapAction(9, false, ReaderAction.START_SELECTION),
+			new DefTapAction(3, true, ReaderAction.START_SELECTION),
+			new DefTapAction(6, true, ReaderAction.START_SELECTION),
+			new DefTapAction(7, true, ReaderAction.START_SELECTION),
+			new DefTapAction(8, true, ReaderAction.START_SELECTION),
+			new DefTapAction(9, true, ReaderAction.START_SELECTION),
+			new DefTapAction(5, false, ReaderAction.START_SELECTION),
+			new DefTapAction(5, true, ReaderAction.START_SELECTION),
+	};
 		
 		private boolean isValidFontFace(String face) {
 			String[] fontFaces = Engine.getFontFaceList();
@@ -252,20 +274,21 @@ public class SettingsManager implements Settings{
 	        for ( DefTapAction ka : DEF_TAP_ACTIONS ) {
 	        	String paramName = ka.longPress ? ReaderView.PROP_APP_TAP_ZONE_ACTIONS_TAP + ".long." + ka.zone : ReaderView.PROP_APP_TAP_ZONE_ACTIONS_TAP + "." + ka.zone;
 	        	String value = props.getProperty(paramName);
+				Log.d(paramName+"   "+value,LogUtil.Companion.getTAG());
 	        	if (ReaderAction.READER_MENU.id.equals(value))
 	        		menuTapActionFound = true;
 	        }
 
           // default tap zone actions
-	        for ( DefTapAction ka : DEF_TAP_ACTIONS ) {
+	        for ( DefTapAction ka : DEF_TAP_ACTIONS2 ) {
 	        	String paramName = ka.longPress ? ReaderView.PROP_APP_TAP_ZONE_ACTIONS_TAP + ".long." + ka.zone : ReaderView.PROP_APP_TAP_ZONE_ACTIONS_TAP + "." + ka.zone;
-	        	
-	        	if (ka.zone == 5 && !activity.hasHardwareMenuKey() && !menuTapActionFound && !menuKeyActionFound) {
+				Log.d(paramName+"   "+ka.action,LogUtil.Companion.getTAG());
+	       /* 	if (ka.zone == 5 && !activity.hasHardwareMenuKey() && !menuTapActionFound && !menuKeyActionFound) {
 	        		// force assignment of central tap zone
 	        		props.setProperty(paramName, ka.action.id);
-	        	} else {
+	        	} else {*/
 	        		props.applyDefault(paramName, ka.action.id);
-	        	}
+//	        	}
 	        }
 	        
 	        if (DeviceInfo.EINK_NOOK) {

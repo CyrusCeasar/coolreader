@@ -39,6 +39,7 @@ import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 
 import cn.cc.ereader.MainActivity;
+import cn.cyrus.translater.base.LogUtil;
 
 public class ReaderView implements android.view.SurfaceHolder.Callback, Settings, OnKeyListener, OnTouchListener, OnFocusChangeListener {
 
@@ -382,6 +383,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 			else if (doubleTapSelectionEnabled || tapActionType == TAP_ACTION_TYPE_LONGPRESS)
 				action = ReaderAction.START_SELECTION;
 		}
+		LogUtil.Companion.d(action.toString(),LogUtil.Companion.getTAG());
 		return action;
 	}
 	
@@ -4635,26 +4637,18 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     		//mBitmap = null;
 	        //showProgress(1000, R.string.progress_loading);
 	        //draw();
-	        BackgroundThread.instance().postGUI(new Runnable() {
-				@Override
-				public void run() {
-					bookView.draw(false);
-				}
-			});
+	        BackgroundThread.instance().postGUI(() -> bookView.draw(false));
 	        //init();
 	        // close existing document
 			log.v("LoadDocumentTask : closing current book");
 	        close();
 	        if (props != null) {
 		        setAppSettings(props, oldSettings);
-	    		BackgroundThread.instance().postBackground(new Runnable() {
-	    			@Override
-	    			public void run() {
-	    				log.v("LoadDocumentTask : switching current profile");
-	    				applySettings(props);
-	    				log.i("Switching done");
-	    			}
-	    		});
+	    		BackgroundThread.instance().postBackground(() -> {
+					log.v("LoadDocumentTask : switching current profile");
+					applySettings(props);
+					log.i("Switching done");
+				});
 	        }
 		}
 
