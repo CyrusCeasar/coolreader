@@ -18,10 +18,6 @@ public class ReaderAction {
     private boolean mayAssignOnTap = true;
     private boolean activateWithLongMenuKey = false;
 
-    private ReaderAction setActivateWithLongMenuKey() {
-        this.activateWithLongMenuKey = true;
-        return this;
-    }
 
     private ReaderAction setIconId(int iconId) {
         this.iconId = iconId;
@@ -33,7 +29,6 @@ public class ReaderAction {
         return this;
     }
 
-    //private ReaderAction dontAssignOnKey() { mayAssignOnKey=false; return this; }
     private ReaderAction dontAssignOnTap() {
         mayAssignOnTap = false;
         return this;
@@ -256,20 +251,8 @@ public class ReaderAction {
         return findById(id);
     }
 
-    public static ReaderAction findForKey(int keyCode, Properties settings) {
-        String id = settings.getProperty(getKeyProp(keyCode, NORMAL));
-        return findById(id);
-    }
 
-    public static ReaderAction findForLongKey(int keyCode, Properties settings) {
-        String id = settings.getProperty(getKeyProp(keyCode, LONG));
-        return findById(id);
-    }
 
-    public static ReaderAction findForDoubleKey(int keyCode, Properties settings) {
-        String id = settings.getProperty(getKeyProp(keyCode, DOUBLE));
-        return findById(id);
-    }
 
     public static ArrayList<ReaderAction> createList(ReaderAction... actions) {
         ArrayList<ReaderAction> list = new ArrayList<ReaderAction>(actions.length);

@@ -611,73 +611,7 @@ public class OptionsDialog extends BaseDialog implements TabContentFactory, Opti
 		}
 	}
 
-	class KeyMapOption extends SubmenuOption {
-		public KeyMapOption( OptionOwner owner, String label ) {
-			super(owner, label, PROP_APP_KEY_ACTIONS_PRESS);
-		}
-		private void addKey( OptionsListView list, int keyCode, String keyName ) {
-			final String propName = ReaderAction.getKeyProp(keyCode, ReaderAction.NORMAL);
-			final String longPropName = ReaderAction.getKeyProp(keyCode, ReaderAction.LONG);
-			final String dblPropName = ReaderAction.getKeyProp(keyCode, ReaderAction.DOUBLE);
-			list.add(new ActionOption(mOwner, keyName, propName, false, false));
-			list.add(new ActionOption(mOwner, keyName + " " + getContext().getString(R.string.options_app_key_long_press), longPropName, false, true));
-			list.add(new ActionOption(mOwner, keyName + " " + getContext().getString(R.string.options_app_key_double_press), dblPropName, false, false));
-		}
-		public void onSelect() {
-			BaseDialog dlg = new BaseDialog(mActivity, label, false, false);
-			OptionsListView listView = new OptionsListView(getContext());
-			if ( DeviceInfo.NOOK_NAVIGATION_KEYS ) {
-				addKey(listView, ReaderView.KEYCODE_PAGE_TOPLEFT, "Top left navigation button");
-				addKey(listView, ReaderView.KEYCODE_PAGE_BOTTOMLEFT, "Bottom left navigation button");
-				addKey(listView, ReaderView.KEYCODE_PAGE_TOPRIGHT, "Top right navigation button");
-				addKey(listView, ReaderView.NOOK_12_KEY_NEXT_LEFT, "Bottom right navigation button");
-//				addKey(listView, ReaderView.KEYCODE_PAGE_BOTTOMRIGHT, "Bottom right navigation button");
 
-				// on rooted Nook, side navigation keys may be reassigned on some standard android keycode
-				addKey(listView, KeyEvent.KEYCODE_MENU, "Menu");
-				addKey(listView, KeyEvent.KEYCODE_BACK, "Back");
-				addKey(listView, KeyEvent.KEYCODE_SEARCH, "Search");
-				
-				addKey(listView, KeyEvent.KEYCODE_HOME, "Home");
-				
-				addKey(listView, KeyEvent.KEYCODE_2, "Up");
-				addKey(listView, KeyEvent.KEYCODE_8, "Down");
-			} else if ( DeviceInfo.SONY_NAVIGATION_KEYS ) {
-//				addKey(listView, KeyEvent.KEYCODE_DPAD_UP, "Prev button");
-//				addKey(listView, KeyEvent.KEYCODE_DPAD_DOWN, "Next button");
-				addKey(listView, ReaderView.SONY_DPAD_UP_SCANCODE, "Prev button");
-				addKey(listView, ReaderView.SONY_DPAD_DOWN_SCANCODE, "Next button");
-				addKey(listView, ReaderView.SONY_DPAD_LEFT_SCANCODE, "Left button");
-				addKey(listView, ReaderView.SONY_DPAD_RIGHT_SCANCODE, "Right button");
-//				addKey(listView, ReaderView.SONY_MENU_SCANCODE, "Menu");
-//				addKey(listView, ReaderView.SONY_BACK_SCANCODE, "Back");
-//				addKey(listView, ReaderView.SONY_HOME_SCANCODE, "Home");
-				addKey(listView, KeyEvent.KEYCODE_MENU, "Menu");
-				addKey(listView, KeyEvent.KEYCODE_BACK, "Back");
-
-				addKey(listView, KeyEvent.KEYCODE_HOME, "Home");
-			} else {
-				addKey(listView, KeyEvent.KEYCODE_MENU, "Menu");
-				addKey(listView, KeyEvent.KEYCODE_BACK, "Back");
-				addKey(listView, KeyEvent.KEYCODE_DPAD_LEFT, "Left");
-				addKey(listView, KeyEvent.KEYCODE_DPAD_RIGHT, "Right");
-				addKey(listView, KeyEvent.KEYCODE_DPAD_UP, "Up");
-				addKey(listView, KeyEvent.KEYCODE_DPAD_DOWN, "Down");
-				addKey(listView, KeyEvent.KEYCODE_DPAD_CENTER, "Center");
-				addKey(listView, KeyEvent.KEYCODE_SEARCH, "Search");
-				addKey(listView, KeyEvent.KEYCODE_VOLUME_UP, "Volume Up");
-				addKey(listView, KeyEvent.KEYCODE_VOLUME_DOWN, "Volume Down");
-				addKey(listView, KeyEvent.KEYCODE_CAMERA, "Camera");
-				addKey(listView, KeyEvent.KEYCODE_HEADSETHOOK, "Headset Hook");
-				addKey(listView, ReaderView.KEYCODE_ESCAPE, "Escape");
-			}
-
-			dlg.setView(listView);
-			dlg.show();
-		}
-
-		public String getValueLabel() { return ">"; }
-	}
 	
 	class StatusBarOption extends SubmenuOption {
 		public StatusBarOption( OptionOwner owner, String label ) {
@@ -1858,10 +1792,9 @@ public class OptionsDialog extends BaseDialog implements TabContentFactory, Opti
 		mOptionsPage.add(new ListOption(this, getString(R.string.options_page_margin_bottom), PROP_PAGE_MARGIN_BOTTOM).add(mMargins).setDefaultValue("5").setIconId(R.drawable.cr3_option_text_margin_bottom));
 		
 		mOptionsControls = new OptionsListView(getContext());
-		mOptionsControls.add(new KeyMapOption(this, getString(R.string.options_app_key_actions)).setIconId(R.drawable.cr3_option_controls_keys));
 		mOptionsControls.add(new TapZoneOption(this, getString(R.string.options_app_tapzones_normal), PROP_APP_TAP_ZONE_ACTIONS_TAP).setIconId(R.drawable.cr3_option_controls_tapzones));
 		mOptionsControls.add(new ListOption(this, getString(R.string.options_controls_tap_secondary_action_type), PROP_APP_SECONDARY_TAP_ACTION_TYPE).add(mTapSecondaryActionType, mTapSecondaryActionTypeTitles).setDefaultValue(String.valueOf(TAP_ACTION_TYPE_LONGPRESS)));
-		mOptionsControls.add(new BoolOption(this, getString(R.string.options_app_double_tap_selection), PROP_APP_DOUBLE_TAP_SELECTION).setDefaultValue("0").setIconId(R.drawable.cr3_option_touch));
+		mOptionsControls.add(new BoolOption(this, getString(R.string.options_app_double_tap_selection), PROP_APP_DOUBLE_TAP_SELECTION).setDefaultValue("1").setIconId(R.drawable.cr3_option_touch));
 		if ( !DeviceInfo.EINK_SCREEN )
 			mOptionsControls.add(new BoolOption(this, getString(R.string.options_controls_enable_volume_keys), PROP_CONTROLS_ENABLE_VOLUME_KEYS).setDefaultValue("1"));
 		mOptionsControls.add(new BoolOption(this, getString(R.string.options_app_tapzone_hilite), PROP_APP_TAP_ZONE_HILIGHT).setDefaultValue("0").setIconId(R.drawable.cr3_option_touch));

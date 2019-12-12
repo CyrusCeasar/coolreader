@@ -35,13 +35,12 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
-import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 
 import cn.cc.ereader.MainActivity;
 import cn.cyrus.translater.base.LogUtil;
 
-public class ReaderView implements android.view.SurfaceHolder.Callback, Settings, OnKeyListener, OnTouchListener, OnFocusChangeListener {
+public class ReaderView implements android.view.SurfaceHolder.Callback, Settings, OnTouchListener, OnFocusChangeListener {
 
 	public static final Logger log = L.create("rv", Log.VERBOSE);
 	public static final Logger alog = L.create("ra", Log.WARN);
@@ -201,32 +200,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 	
 	private DocView doc;
 	
-    // additional key codes for Nook
-    public static final int NOOK_KEY_PREV_LEFT = 96;
-    public static final int NOOK_KEY_PREV_RIGHT = 98;
-    public static final int NOOK_KEY_NEXT_RIGHT = 97;    
-    public static final int NOOK_KEY_SHIFT_UP = 101;
-    public static final int NOOK_KEY_SHIFT_DOWN = 100;
 
-    // nook 1 & 2
-    public static final int NOOK_12_KEY_NEXT_LEFT = 95;
-   
-    // Nook touch buttons
-    public static final int KEYCODE_PAGE_BOTTOMLEFT = 0x5d; // fwd = 93 (
-    //    public static final int KEYCODE_PAGE_BOTTOMRIGHT = 158; // 0x5f; // fwd = 95
-    public static final int KEYCODE_PAGE_TOPLEFT = 0x5c; // back = 92
-    public static final int KEYCODE_PAGE_TOPRIGHT = 0x5e; // back = 94
-    
-    public static final int SONY_DPAD_UP_SCANCODE = 105;
-    public static final int SONY_DPAD_DOWN_SCANCODE = 106;
-    public static final int SONY_DPAD_LEFT_SCANCODE = 125;
-    public static final int SONY_DPAD_RIGHT_SCANCODE = 126;
-    
-    public static final int KEYCODE_ESCAPE = 111; // KeyEvent constant since API 11
-
-    //    public static final int SONY_MENU_SCANCODE = 357;
-//    public static final int SONY_BACK_SCANCODE = 158;
-//    public static final int SONY_HOME_SCANCODE = 102;
     
     public static final int PAGE_ANIMATION_NONE = 0;
     public static final int PAGE_ANIMATION_PAPER = 1;
@@ -559,7 +533,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 	    return false;
 	}	
 	
-	private int mSelectionAction = SELECTION_ACTION_TOOLBAR;
+	private int mSelectionAction = SELECTION_ACTION_DICTIONARY;
 	private int mMultiSelectionAction = SELECTION_ACTION_TOOLBAR;
 	private void onSelectionComplete( Selection sel ) {
 		int iSelectionAction;
@@ -648,7 +622,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 //	private int selectionStartY = 0;
 //	private int selectionEndX = 0;
 //	private int selectionEndY = 0;
-	private boolean doubleTapSelectionEnabled = false;
+	private boolean doubleTapSelectionEnabled = true;
 	private boolean gesturePageFlippingEnabled = true;
 	private int secondaryTapActionType = TAP_ACTION_TYPE_LONGPRESS;
 	private boolean selectionModeActive = false;
@@ -2646,8 +2620,8 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         	enableVolumeKeys = flg;
         } else if ( PROP_APP_SELECTION_ACTION.equals(key) ) {
         	try {
-        		int n = Integer.valueOf(value);
-        		mSelectionAction = n;
+        	/*	int n = Integer.valueOf(value);
+        		mSelectionAction = n;*/
         	} catch ( Exception e ) {
         		// ignore
         	}
@@ -5676,7 +5650,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		});
 	}
 
-	@Override
+/*	@Override
 	public boolean onKey(View v, int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getAction() == KeyEvent.ACTION_DOWN)
@@ -5684,14 +5658,14 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		else if (event.getAction() == KeyEvent.ACTION_UP)
 			return onKeyUp(keyCode, event);
 		return false;
-	}
+	}*/
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		return onTouchEvent(event);
 	}
 
-	public boolean onKeyDown(int keyCode, final KeyEvent event) {
+	/*public boolean onKeyDown(int keyCode, final KeyEvent event) {
 		
 		if (keyCode == 0)
 			keyCode = event.getScanCode();
@@ -5809,18 +5783,18 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 			actionToRepeat = null;
 		}
 		
-/*		if ( keyCode>=KeyEvent.KEYCODE_0 && keyCode<=KeyEvent.KEYCODE_9 ) {
+*//*		if ( keyCode>=KeyEvent.KEYCODE_0 && keyCode<=KeyEvent.KEYCODE_9 ) {
 			// will process in keyup handler
 			startTrackingKey(event);
 			return true;
-		}*/
+		}*//*
 		if ( action.isNone() && longAction.isNone() )
 			return false;
 		startTrackingKey(event);
 		return true;
-	}
+	}*/
 
-	public boolean onKeyUp(int keyCode, final KeyEvent event) {
+	/*public boolean onKeyUp(int keyCode, final KeyEvent event) {
 		if (keyCode == 0)
 			keyCode = event.getScanCode();
 		mActivity.onUserActivity();
@@ -5860,7 +5834,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 		ReaderAction dblAction = ReaderAction.findForDoubleKey( keyCode, mSettings );
 		stopTracking();
 
-/*		if ( keyCode>=KeyEvent.KEYCODE_0 && keyCode<=KeyEvent.KEYCODE_9 && tracked ) {
+*//*		if ( keyCode>=KeyEvent.KEYCODE_0 && keyCode<=KeyEvent.KEYCODE_9 && tracked ) {
 			// goto/set shortcut bookmark
 			int shortcut = keyCode - KeyEvent.KEYCODE_0;
 			if ( shortcut==0 )
@@ -5870,7 +5844,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 			else
 				goToBookmark(shortcut);
 			return true;
-		}*/
+		}*//*
 		if ( action.isNone() || !tracked ) {
 			return false;
 		}
@@ -5914,7 +5888,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
 		// not processed
 		return false;
-	}
+	}*/
 
 	public boolean onTouchEvent(MotionEvent event) {
 		
@@ -5978,7 +5952,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
 		bookView = (BookView)surface;
 		surface.setOnTouchListener(this);
-		surface.setOnKeyListener(this);
+//		surface.setOnKeyListener(this);
 		surface.setOnFocusChangeListener(this);
         doc = new DocView(Engine.lock);
         doc.setReaderCallback(readerCallback);
