@@ -40,7 +40,7 @@ import org.coolreader.crengine.OptionsDialog;
 import org.coolreader.crengine.PositionProperties;
 import org.coolreader.crengine.Properties;
 import org.coolreader.crengine.ReaderAction;
-import org.coolreader.crengine.ReaderView;
+import org.coolreader.crengine.reader.ReaderView;
 import org.coolreader.crengine.ReaderViewLayout;
 import org.coolreader.crengine.Services;
 import org.coolreader.crengine.TTS;

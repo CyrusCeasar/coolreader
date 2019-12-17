@@ -3,6 +3,7 @@ package org.coolreader.crengine;
 import java.util.ArrayList;
 
 import org.coolreader.R;
+import org.coolreader.crengine.reader.ReaderView;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -24,8 +25,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import cn.cc.ereader.MainActivity;
 
 public class BookmarksDlg  extends BaseDialog {
 	ReaderActivity mCoolReader;

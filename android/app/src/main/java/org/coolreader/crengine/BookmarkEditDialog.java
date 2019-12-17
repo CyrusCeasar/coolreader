@@ -1,6 +1,7 @@
 package org.coolreader.crengine;
 
 import org.coolreader.R;
+import org.coolreader.crengine.reader.ReaderView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
-
-import cn.cc.ereader.MainActivity;
 
 public class BookmarkEditDialog extends BaseDialog {
 	

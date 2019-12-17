@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.coolreader.R;
+import org.coolreader.crengine.reader.ReaderView;
 import org.coolreader.db.CRDBService;
 import org.coolreader.db.CRDBServiceAccessor;
 
@@ -237,7 +238,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
         super.onPause();
     }
 
-    protected void einkRefresh() {
+    public void einkRefresh() {
         EinkScreen.Refresh();
     }
 
@@ -282,7 +283,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     }
 
     public int getPalmTipPixels() {
-        return densityDpi / 10; // 1/3"
+        return densityDpi / 20; // 1/3"
     }
 
     public int getDensityDpi() {
@@ -751,9 +752,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     }
 
 
-    public ClipboardManager getClipboardmanager() {
-        return (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-    }
+  
 
 
     public void showHomeScreen() {

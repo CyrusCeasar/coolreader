@@ -9,6 +9,7 @@ import android.view.View
 import cn.cc.ereader.MainActivity
 import org.coolreader.R
 import org.coolreader.crengine.*
+import org.coolreader.crengine.reader.ReaderView
 
 class FileBrowserActivity : BaseActivity() {
 

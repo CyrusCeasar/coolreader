@@ -10,6 +10,7 @@ import android.os.Bundle
 import cn.cc.ereader.MainActivity
 import cn.cc.ereader.TranslateResultActivity
 import org.coolreader.PhoneStateReceiver
+import org.coolreader.crengine.reader.ReaderView
 
 class ReaderActivity : BaseActivity() {
 

@@ -13,5 +13,5 @@ public class Selection {
 	public String chapter;
 	public int percent;
 	
-	boolean isEmpty() { return startPos==null || endPos==null; }
+	public boolean isEmpty() { return startPos==null || endPos==null; }
 }

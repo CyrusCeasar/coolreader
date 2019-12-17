@@ -1,10 +1,7 @@
 package org.coolreader.crengine.filebrowser;
 
 import android.content.Context;
-import android.view.ContextMenu;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,40 +93,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 			setChoiceMode(CHOICE_MODE_SINGLE);
 		}
 
-		@Override
-		public void createContextMenu(ContextMenu menu) {
-			log.d("createContextMenu()");
-			menu.clear();
-		    MenuInflater inflater = mActivity.getMenuInflater();
-		    if ( isRecentDir() ) {
-			    inflater.inflate(R.menu.cr3_file_browser_recent_context_menu, menu);
-			    menu.setHeaderTitle(mActivity.getString(R.string.context_menu_title_recent_book));
-		    } else if (currDirectory.isOPDSRoot()) {
-			    inflater.inflate(R.menu.cr3_file_browser_opds_context_menu, menu);
-			    menu.setHeaderTitle(mActivity.getString(R.string.menu_title_catalog));
-		    } else if (selectedItem!=null && selectedItem.isOPDSDir()) {
-			    inflater.inflate(R.menu.cr3_file_browser_opds_dir_context_menu, menu);
-			    menu.setHeaderTitle(mActivity.getString(R.string.menu_title_catalog));
-		    } else if (selectedItem!=null && selectedItem.isOPDSBook()) {
-			    inflater.inflate(R.menu.cr3_file_browser_opds_book_context_menu, menu);
-			    menu.setHeaderTitle(mActivity.getString(R.string.menu_title_catalog));
-            } else if (selectedItem!=null && selectedItem.isDirectory && !selectedItem.isOPDSDir()) {
-                inflater.inflate(R.menu.cr3_file_browser_file_folder_context_menu, menu);
-                menu.setHeaderTitle(mActivity.getString(R.string.context_menu_title_folder));
-		    } else if (selectedItem!=null && selectedItem.isDirectory) {
-			    inflater.inflate(R.menu.cr3_file_browser_folder_context_menu, menu);
-			    menu.setHeaderTitle(mActivity.getString(R.string.context_menu_title_book));
-		    } else {
-			    inflater.inflate(R.menu.cr3_file_browser_context_menu, menu);
-			    menu.setHeaderTitle(mActivity.getString(R.string.context_menu_title_book));
-		    }
-		    for ( int i=0; i<menu.size(); i++ ) {
-		    	menu.getItem(i).setOnMenuItemClickListener(item -> {
-					onContextItemSelected(item);
-					return true;
-				});
-		    }
-		}
+
 
 
 		@Override
@@ -152,21 +116,6 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 			return true;
 		}
 
-		@Override
-		public boolean onKeyDown(int keyCode, KeyEvent event) {
-			if (keyCode == KeyEvent.KEYCODE_BACK) {
-				if ( isRootDir() ) {
-					mActivity.finish();
-				}
-				showParentDirectory();
-				return true;
-			}
-			if (keyCode == KeyEvent.KEYCODE_SEARCH) {
-				showFindBookDialog();
-				return true;
-			}
-			return super.onKeyDown(keyCode, event);
-		}
 
 		@Override
 		public void setSelection(int position) {
@@ -242,10 +191,10 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 	FileInfo selectedItem = null;
 	
 	public boolean onContextItemSelected(MenuItem item) {
-		
+
 		if ( selectedItem==null )
 			return false;
-			
+
 		switch (item.getItemId()) {
 		case R.id.book_open:
 			log.d("book_open menu item selected");
@@ -1262,15 +1211,5 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 		});
 	}
 
-
-	@Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-		mActivity.onUserActivity();
-       if( this.mListView != null ) {
-            if (this.mListView.onKeyDown(keyCode, event))
-            	return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 }
 

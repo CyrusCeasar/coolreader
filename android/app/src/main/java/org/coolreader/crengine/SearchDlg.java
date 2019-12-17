@@ -1,6 +1,7 @@
 package org.coolreader.crengine;
 
 import org.coolreader.R;
+import org.coolreader.crengine.reader.ReaderView;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

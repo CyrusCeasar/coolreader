@@ -1,6 +1,7 @@
 package org.coolreader.crengine;
 
 import org.coolreader.crengine.Engine.HyphDict;
+import org.coolreader.crengine.reader.ReaderView;
 
 import android.os.Handler;
 

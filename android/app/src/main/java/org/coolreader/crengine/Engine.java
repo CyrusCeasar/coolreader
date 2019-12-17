@@ -38,10 +38,6 @@ public class Engine {
 
 	private BaseActivity mActivity;
 	
-	
-	// private final View mMainView;
-	// private final ExecutorService mExecutor =
-	// Executors.newFixedThreadPool(1);
 
 	/**
 	 * Get storage root directories.
@@ -157,24 +153,6 @@ public class Engine {
 						task.done();
 					}
 				});
-				// } catch ( final FatalError e ) {
-				// TODO:
-				// Handler h = view.getHandler();
-				//
-				// if ( h==null ) {
-				// View root = view.getRootView();
-				// h = root.getHandler();
-				// }
-				// if ( h==null ) {
-				// //
-				// e.handle();
-				// } else {
-				// h.postAtFrontOfQueue(new Runnable() {
-				// public void run() {
-				// e.handle();
-				// }
-				// });
-				// }
 			} catch (final Exception e) {
 				log.e("exception while running task "
 						+ task.getClass().getName(), e);
@@ -258,23 +236,6 @@ public class Engine {
 	private static int PROGRESS_STYLE = ProgressDialog.STYLE_HORIZONTAL;
 	private Drawable progressIcon = null;
 
-	// public void setProgressDrawable( final BitmapDrawable drawable )
-	// {
-	// if ( enable_progress ) {
-	// mBackgroundThread.executeGUI( new Runnable() {
-	// public void run() {
-	// // show progress
-	// log.v("showProgress() - in GUI thread");
-	// if ( mProgress!=null && progressShown ) {
-	// hideProgress();
-	// progressIcon = drawable;
-	// showProgress(mProgressPos, mProgressMessage);
-	// //mProgress.setIcon(drawable);
-	// }
-	// }
-	// });
-	// }
-	// }
 	public void showProgress(final int mainProgress, final int resourceId) {
 		showProgress(mainProgress,
 				mActivity.getResources().getString(resourceId));
@@ -538,7 +499,6 @@ public class Engine {
 	/**
 	 * Initialize CoolReaderActivity Engine
 	 * 
-	 * @param fontList
 	 *            is array of .ttf font pathnames to load
 	 */
 	private Engine(BaseActivity activity) {
@@ -975,15 +935,7 @@ public class Engine {
 			}
 		}
 		// internal flash
-//		if (cacheDirName == null) {
-//			File cacheDir = mActivity.getCacheDir();
-//			if (!cacheDir.isDirectory())
-//				cacheDir.mkdir();
-//			cacheDirName = createCacheDir(cacheDir, null);
-//			// File cacheDir = mActivity.getDir("cache", Context.MODE_PRIVATE);
-////			if (cacheDir.isDirectory() && cacheDir.canWrite())
-////				cacheDirName = cacheDir.getAbsolutePath();
-//		}
+
 		// set cache directory for engine
 		if (cacheDirName != null) {
 			log.i(cacheDirName
@@ -1292,8 +1244,7 @@ public class Engine {
 					mountPointsToAdd.add(point);
 			}
 		}
-		// add mount points
-		
+
 		for (String point : mountPointsToAdd) {
 			if (point == null)
 				continue;
@@ -1315,9 +1266,7 @@ public class Engine {
 			}
 		}
 		
-		// auto detection
-		//autoAddRoots(map, "/", SYSTEM_ROOT_PATHS);
-		//autoAddRoots(map, "/mnt", new String[] {});
+
 		
 		mountedRootsMap = map;
 		Collection<File> list = new ArrayList<File>();
@@ -1355,47 +1304,21 @@ public class Engine {
 			
 			log.i("*** " + f + " '" + label + "' isDirectory=" + path.isDirectory() + " canRead=" + path.canRead() + " canWrite=" + path.canRead() + " isLink=" + isLink(f));
 		}
-		
-//		testPathNormalization("/sdcard/books/test.fb2");
-//		testPathNormalization("/mnt/sdcard/downloads/test.fb2");
-//		testPathNormalization("/mnt/sd/dir/test.fb2");
+
 	}
 	
-//	private void testPathNormalization(String path) {
-//		Log.i("cr3", "normalization: " + path + " => " + normalizePathUsingRootLinks(new File(path)));
-//	}
-	
 
-	// public void waitTasksCompletion()
-	// {
-	// log.i("waiting for engine tasks completion");
-	// try {
-	// mExecutor.awaitTermination(0, TimeUnit.SECONDS);
-	// } catch (InterruptedException e) {
-	// // ignore
-	// }
-	// }
 
 	/**
 	 * Uninitialize engine.
 	 */
 	public void uninit() {
-//		log.i("Engine.uninit() is called for " + hashCode());
-//		if (initialized) {
-//			synchronized(this) {
-//				uninitInternal();
-//			}
-//			initialized = false;
-//		}
 		instance = null;
 	}
 
 	protected void finalize() throws Throwable {
 		log.i("Engine.finalize() is called for " + hashCode());
-		// if ( initialized ) {
-		// //uninitInternal();
-		// initialized = false;
-		// }
+
 	}
 
 	private static String[] findFonts() {
@@ -1436,48 +1359,16 @@ public class Engine {
 	}
 
 	private String SO_NAME = "lib" + LIBRARY_NAME + ".so";
-//	private static boolean force_install_library = false;
+
 
 	private static void installLibrary() {
 		try {
-//			if (force_install_library)
-//				throw new Exception("forcing install");
-			// try loading library w/o manual installation
 			log.i("trying to load library " + LIBRARY_NAME
 					+ " w/o installation");
 			System.loadLibrary(LIBRARY_NAME);
-			// try invoke native method
-			//log.i("trying execute native method ");
-			//setHyphenationMethod(HYPH_NONE, new byte[] {});
+
 			log.i(LIBRARY_NAME + " loaded successfully");
-//		} catch (Exception ee) {
-//			log.i(SO_NAME + " not found using standard paths, will install manually");
-//			File sopath = mActivity.getDir("libs", Context.MODE_PRIVATE);
-//			File soname = new File(sopath, SO_NAME);
-//			try {
-//				sopath.mkdirs();
-//				File zip = new File(mActivity.getPackageCodePath());
-//				ZipFile zipfile = new ZipFile(zip);
-//				ZipEntry zipentry = zipfile.getEntry("lib/armeabi/" + SO_NAME);
-//				if (!soname.exists() || zipentry.getSize() != soname.length()) {
-//					InputStream is = zipfile.getInputStream(zipentry);
-//					OutputStream os = new FileOutputStream(soname);
-//					Log.i("cr3",
-//							"Installing JNI library "
-//									+ soname.getAbsolutePath());
-//					final int BUF_SIZE = 0x10000;
-//					byte[] buf = new byte[BUF_SIZE];
-//					int n;
-//					while ((n = is.read(buf)) > 0)
-//						os.write(buf, 0, n);
-//					is.close();
-//					os.close();
-//				} else {
-//					log.i("JNI library " + soname.getAbsolutePath()
-//							+ " is up to date");
-//				}
-//				System.load(soname.getAbsolutePath());
-//				//setHyphenationMethod(HYPH_NONE, new byte[] {});
+
 			} catch (Exception e) {
 				log.e("cannot install " + LIBRARY_NAME + " library", e);
 				throw new RuntimeException("Cannot load JNI library");

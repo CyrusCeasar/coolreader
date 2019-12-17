@@ -1,6 +1,7 @@
 package org.coolreader.crengine;
 
 import org.coolreader.R;
+import org.coolreader.crengine.reader.ReaderView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +12,6 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
-
-import cn.cc.ereader.MainActivity;
 
 public class SwitchProfileDialog extends BaseDialog {
 	BaseActivity mCoolReader;

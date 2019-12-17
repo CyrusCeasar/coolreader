@@ -1,11 +1,9 @@
 package org.coolreader.crengine;
 
-import org.coolreader.crengine.CRToolBar.OnActionHandler;
+import org.coolreader.crengine.reader.ReaderView;
 
 import android.graphics.Rect;
 import android.view.ViewGroup;
-
-import cn.cc.ereader.MainActivity;
 
 public class ReaderViewLayout extends ViewGroup implements Settings {
 		private ReaderActivity activity;

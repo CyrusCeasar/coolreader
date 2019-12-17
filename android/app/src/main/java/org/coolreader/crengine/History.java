@@ -122,7 +122,7 @@ public class History extends FileInfoChangeSource {
 			return null;
 		return mBooks.get(index).getLastPosition();
 	}
-	protected void updateRecentDir()
+	public void updateRecentDir()
 	{
 		Log.v("cr3", "History.updateRecentDir()");
 		if ( mRecentBooksFolder!=null ) { 

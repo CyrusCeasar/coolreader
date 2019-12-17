@@ -5,6 +5,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 
+import org.coolreader.crengine.reader.ReaderView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -77,7 +78,7 @@ public class SettingsManager implements Settings{
 				this.action = action;
 			}
 			public String getProp() {
-				return ReaderView.PROP_APP_KEY_ACTIONS_PRESS + ReaderAction.getTypeString(type) + keyCode;			
+				return ReaderView.PROP_APP_KEY_ACTIONS_PRESS + ReaderAction.getTypeString(type) + keyCode;
 			}
 		}
 

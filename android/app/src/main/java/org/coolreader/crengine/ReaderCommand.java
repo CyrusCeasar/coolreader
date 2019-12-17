@@ -4,7 +4,7 @@ public enum ReaderCommand
 {
 	DCMD_NONE(0),
 	DCMD_REPEAT(1), // repeat last action
-	
+
 	//definitions from crengine/include/lvdocview.h
 	DCMD_BEGIN(100),
 	DCMD_LINEUP(101),
@@ -37,7 +37,7 @@ public enum ReaderCommand
 	DCMD_REQUEST_RENDER(128),
 	DCMD_GO_PAGE_DONT_SAVE_HISTORY(129),
 	DCMD_SET_INTERNAL_STYLES(130),
-	
+
     DCMD_SELECT_FIRST_SENTENCE(131), // select first sentence on page
     DCMD_SELECT_NEXT_SENTENCE(132), // move selection to next sentence
     DCMD_SELECT_PREV_SENTENCE(133), // move selection to next sentence
@@ -48,8 +48,8 @@ public enum ReaderCommand
 
 	DCMD_SET_DOC_FONTS(137),
 
-    
-	
+
+
 	// definitions from android/jni/readerview.h
 	DCMD_OPEN_RECENT_BOOK(2000),
 	DCMD_CLOSE_BOOK(2001),
@@ -92,20 +92,20 @@ public enum ReaderCommand
 
 	DCMD_USER_MANUAL(2034),
 	DCMD_CURRENT_BOOK_DIRECTORY(2035),
-	
+
 	DCMD_OPDS_CATALOGS(2050),
 	DCMD_FILE_BROWSER_ROOT(2051),
 	DCMD_FILE_BROWSER_UP(2052),
 	DCMD_CURRENT_BOOK(2053),
 	DCMD_SCAN_DIRECTORY_RECURSIVE(2054),
 	;
-	
-	final int nativeId;
+
+ public 	final int nativeId;
 	private ReaderCommand( int nativeId )
 	{
 		this.nativeId = nativeId;
 	}
-	
+
 	public int getNativeId() {
 		return nativeId;
 	}

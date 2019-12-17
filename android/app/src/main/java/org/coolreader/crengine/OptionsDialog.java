@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.coolreader.R;
 import org.coolreader.crengine.ColorPickerDialog.OnColorChangedListener;
+import org.coolreader.crengine.reader.ReaderView;
 import org.coolreader.plugins.OnlineStorePluginManager;
 
 import android.content.Context;

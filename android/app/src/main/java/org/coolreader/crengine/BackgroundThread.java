@@ -3,12 +3,13 @@ package org.coolreader.crengine;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-import org.coolreader.crengine.ReaderView.Sync;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+
+import org.coolreader.crengine.reader.Sync;
 
 /**
  * Allows running tasks either in background thread or in GUI thread.
@@ -77,7 +78,7 @@ public class BackgroundThread extends Thread {
 
 	/**
 	 * Set view to post GUI tasks to.
-	 * @param guiTarget is view to post GUI tasks to.
+	 is view to post GUI tasks to.
 	 */
 	public void setGUIHandler(Handler guiHandler) {
 		this.guiHandler = guiHandler;

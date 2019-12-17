@@ -3,6 +3,7 @@ package org.coolreader.crengine;
 import java.util.ArrayList;
 
 import org.coolreader.R;
+import org.coolreader.crengine.reader.ReaderView;
 
 import cn.cyrus.translater.base.LogUtil;
 

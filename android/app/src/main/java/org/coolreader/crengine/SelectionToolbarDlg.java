@@ -1,6 +1,8 @@
 package org.coolreader.crengine;
 
 import org.coolreader.R;
+import org.coolreader.crengine.reader.MoveSelectionCallback;
+import org.coolreader.crengine.reader.ReaderView;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
@@ -19,7 +21,7 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-import cn.cc.ereader.MainActivity;
+import cn.cyrus.translater.base.DeviceUtilKt;
 
 public class SelectionToolbarDlg {
 	PopupWindow mWindow;
@@ -66,7 +68,7 @@ public class SelectionToolbarDlg {
 		L.d("changeSelectionBound(" + (start?"start":"end") + ", " + delta + ")");
 		setReaderMode();
 		ReaderCommand cmd = start ? ReaderCommand.DCMD_SELECT_MOVE_LEFT_BOUND_BY_WORDS : ReaderCommand.DCMD_SELECT_MOVE_RIGHT_BOUND_BY_WORDS; 
-		mReaderView.moveSelection(cmd, delta, new ReaderView.MoveSelectionCallback() {
+		mReaderView.moveSelection(cmd, delta, new MoveSelectionCallback() {
 			
 			@Override
 			public void onNewSelection(Selection selection) {
@@ -153,7 +155,7 @@ public class SelectionToolbarDlg {
 		mPanel = panel;
 		mPanel.findViewById(R.id.selection_copy).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				mReaderView.copyToClipboard(selection.text);
+				DeviceUtilKt.copyToClipboard(mCoolReader,selection.text);
 				closeDialog(true);
 			}
 		});

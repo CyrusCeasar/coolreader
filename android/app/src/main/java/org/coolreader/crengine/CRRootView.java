@@ -56,53 +56,6 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
     }
 
 
-    private long menuDownTs = 0;
-    private long backDownTs = 0;
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
-            //L.v("CRRootView.onKeyDown(" + keyCode + ")");
-            if (event.getRepeatCount() == 0)
-                menuDownTs = Utils.timeStamp();
-            return true;
-        }
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-            //L.v("CRRootView.onKeyDown(" + keyCode + ")");
-            if (event.getRepeatCount() == 0)
-                backDownTs = Utils.timeStamp();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
-            long duration = Utils.timeInterval(menuDownTs);
-            L.v("CRRootView.onKeyUp(" + keyCode + ") duration = " + duration);
-            if (duration > 700 && duration < 10000)
-                mActivity.showBrowserOptionsDialog();
-            else
-                showMenu();
-            return true;
-        }
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-            long duration = Utils.timeInterval(backDownTs);
-            L.v("CRRootView.onKeyUp(" + keyCode + ") duration = " + duration);
-            if (duration > 700 && duration < 10000) {
-                mActivity.finish();
-                return true;
-            }
-		/*	} else {
-				mActivity.showReader();
-				return true;
-			}*/
-        }
-        return super.onKeyUp(keyCode, event);
-    }
-
-
     private InterfaceTheme lastTheme;
 
     public void onThemeChange(InterfaceTheme theme) {

@@ -3,6 +3,8 @@ package org.coolreader.crengine;
 import java.util.HashMap;
 
 import org.coolreader.R;
+import org.coolreader.crengine.reader.MoveSelectionCallback;
+import org.coolreader.crengine.reader.ReaderView;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
@@ -19,8 +21,6 @@ import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-
-import cn.cc.ereader.MainActivity;
 
 public class TTSToolbarDlg implements TTS.OnUtteranceCompletedListener {
 	PopupWindow mWindow;
@@ -94,7 +94,7 @@ public class TTSToolbarDlg implements TTS.OnUtteranceCompletedListener {
 	
 	private void moveSelection( ReaderCommand cmd )
 	{
-		mReaderView.moveSelection(cmd, 0, new ReaderView.MoveSelectionCallback() {
+		mReaderView.moveSelection(cmd, 0, new MoveSelectionCallback() {
 			
 			@Override
 			public void onNewSelection(Selection selection) {
