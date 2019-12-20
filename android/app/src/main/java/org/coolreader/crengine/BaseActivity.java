@@ -15,7 +15,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.ClipboardManager;
 import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -36,7 +35,6 @@ import org.coolreader.crengine.reader.ReaderView;
 import org.coolreader.db.CRDBService;
 import org.coolreader.db.CRDBServiceAccessor;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,12 +42,12 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
+import cn.ReaderApplication;
 
 public class BaseActivity extends AppCompatActivity implements Settings {
 
     private static final Logger log = L.create("ba");
-    private View mDecorView;
-
+    protected SettingsManager mSettingsManager = null;
     private CRDBServiceAccessor mCRDBService;
 
     protected void unbindCRDBService() {
@@ -63,7 +61,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
         backlightControl.release();
     }
 
-   public   ScreenBacklightControl backlightControl;
+    public ScreenBacklightControl backlightControl;
 
     protected void bindCRDBService() {
         if (mCRDBService == null) {
@@ -92,34 +90,13 @@ public class BaseActivity extends AppCompatActivity implements Settings {
         return mSettingsManager.mSettings;
     }
 
-    private SettingsManager mSettingsManager;
 
     protected void startServices() {
         // create settings
-        mSettingsManager= SettingsManager.getInstance(this);
         // create rest of settings
         Services.startServices(this);
     }
 
-    private final static int SYSTEM_UI_FLAG_IMMERSIVE_STICKY = 4096;
-
-    @SuppressLint("NewApi")
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus && (DeviceInfo.getSDKLevel() >= 19)) {
-            int flag = 0;
-            if (mFullscreen)
-                flag |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN;
-
-            mDecorView.setSystemUiVisibility(flag);
-        }
-    }
 
     /**
      * Called when the activity is first created.
@@ -127,9 +104,8 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         log.i("BaseActivity.onCreate() entered");
-        mSettingsManager = SettingsManager.getInstance(this);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mDecorView = getWindow().getDecorView();
+        mSettingsManager = ((ReaderApplication) getApplication()).getMSettingsManager();
 
         super.onCreate(savedInstanceState);
         backlightControl = new ScreenBacklightControl(this);
@@ -178,7 +154,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
         }
 
         // load settings
-        Properties props = settings();
+        Properties props = mSettingsManager.mSettings;
         String theme = props.getProperty(ReaderView.PROP_APP_THEME, DeviceInfo.FORCE_LIGHT_THEME ? "WHITE" : "LIGHT");
         String lang = props.getProperty(ReaderView.PROP_APP_LOCALE, Lang.DEFAULT.code);
         setLanguage(lang);
@@ -211,11 +187,6 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     @Override
     protected void onStart() {
         super.onStart();
-
-//		Properties props = settings().get();
-//		String theme = props.getProperty(ReaderView.PROP_APP_THEME, DeviceInfo.FORCE_LIGHT_THEME ? "WHITE" : "LIGHT");
-//		setCurrentTheme(theme);
-
         mIsStarted = true;
         mPaused = false;
         backlightControl.onUserActivity();
@@ -270,17 +241,6 @@ public class BaseActivity extends AppCompatActivity implements Settings {
         return mVersion;
     }
 
-    public Properties loadSettings(int profile) {
-        return mSettingsManager.loadSettings(profile);
-    }
-
-    public void saveSettings(int profile, Properties settings) {
-        mSettingsManager.saveSettings(profile, settings);
-    }
-
-    public void saveSettings(File f, Properties settings) {
-        mSettingsManager.saveSettings(f, settings);
-    }
 
     public int getPalmTipPixels() {
         return densityDpi / 20; // 1/3"
@@ -290,9 +250,6 @@ public class BaseActivity extends AppCompatActivity implements Settings {
         return densityDpi;
     }
 
-    public float getDiagonalInches() {
-        return diagonalInches;
-    }
 
     public boolean isSmartphone() {
         return diagonalInches <= 6.2; //5.8;
@@ -336,28 +293,17 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     public void updateBackground() {
         TypedArray a = getTheme().obtainStyledAttributes(new int[]{android.R.attr.windowBackground, android.R.attr.background, android.R.attr.textColor, android.R.attr.colorBackground, android.R.attr.colorForeground, android.R.attr.listPreferredItemHeight});
         int bgRes = a.getResourceId(0, 0);
-        //int clText = a.getColor(1, 0);
         int clBackground = a.getColor(2, 0);
-        //int clForeground = a.getColor(3, 0);
         preferredItemHeight = densityDpi / 3; //a.getDimensionPixelSize(5, 36);
-        //View contentView = getContentView();
         if (contentView != null) {
             if (bgRes != 0) {
-                //Drawable d = getResources().getDrawable(bgRes);
-                //log.v("Setting background resource " + d.getIntrinsicWidth() + "x" + d.getIntrinsicHeight());
-                //contentView.setBackgroundResource(null);
+
                 contentView.setBackgroundResource(bgRes);
-                //getWindow().setBackgroundDrawableResource(bgRes);//Drawable(d);
-                //getWindow().setBackgroundDrawable(d);
             } else if (clBackground != 0) {
                 contentView.setBackgroundColor(clBackground);
-                //getWindow().setBackgroundDrawable(Utils.solidColorDrawable(clBackground));
             }
         } else {
-//			if (bgRes != 0)
-//				getWindow().setBackgroundDrawableResource(bgRes);
-//			else if (clBackground != 0)
-//				getWindow().setBackgroundDrawable(Utils.solidColorDrawable(clBackground));
+
         }
         a.recycle();
         Display display = getWindowManager().getDefaultDisplay();
@@ -430,9 +376,6 @@ public class BaseActivity extends AppCompatActivity implements Settings {
         return false;
     }
 
-    // support pre API LEVEL 9
-    final static public int ActivityInfo_SCREEN_ORIENTATION_SENSOR_PORTRAIT = 7;
-    final static public int ActivityInfo_SCREEN_ORIENTATION_SENSOR_LANDSCAPE = 6;
     final static public int ActivityInfo_SCREEN_ORIENTATION_REVERSE_PORTRAIT = 9;
     final static public int ActivityInfo_SCREEN_ORIENTATION_REVERSE_LANDSCAPE = 8;
     final static public int ActivityInfo_SCREEN_ORIENTATION_FULL_SENSOR = 10;
@@ -479,26 +422,6 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     public void onConfigurationChanged(Configuration newConfig) {
         // pass
         orientationFromSensor = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ? 1 : 0;
-        //final int orientation = newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-//		if ( orientation!=screenOrientation ) {
-//			log.d("Screen orientation has been changed: ask for change");
-//			AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-//			dlg.setTitle(R.string.win_title_screen_orientation_change_apply);//R.string.win_title_options_apply);
-//			dlg.setPositiveButton(R.string.dlg_button_ok, new OnClickListener() {
-//				public void onClick(DialogInterface arg0, int arg1) {
-//					//onPositiveButtonClick();
-//					Properties oldSettings = mReaderView.getSettings();
-//					Properties newSettings = new Properties(oldSettings);
-//					newSettings.setInt(ReaderView.PROP_APP_SCREEN_ORIENTATION, orientation==ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE ? 1 : 0);
-//					mReaderView.setSettings(newSettings, oldSettings);
-//				}
-//			});
-//			dlg.setNegativeButton(R.string.dlg_button_cancel, new OnClickListener() {
-//				public void onClick(DialogInterface arg0, int arg1) {
-//					//onNegativeButtonClick();
-//				}
-//			});
-//		}
         super.onConfigurationChanged(newConfig);
     }
 
@@ -510,7 +433,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
 
     public void applyFullscreen(Window wnd) {
         if (mFullscreen) {
-            //mActivity.getWindow().requestFeature(Window.)
+            //mContext.getWindow().requestFeature(Window.)
             wnd.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {
@@ -585,58 +508,14 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     }
 
     private final static int SYSTEM_UI_FLAG_LOW_PROFILE = 1;
-//	private final static int SYSTEM_UI_FLAG_HIDE_NAVIGATION = 2;
-//	
-//	private final static int SYSTEM_UI_FLAG_VISIBLE = 0;
 
-//	public void simulateTouch() {
-//		// Obtain MotionEvent object
-//		long downTime = SystemClock.uptimeMillis();
-//		long eventTime = SystemClock.uptimeMillis() + 10;
-//		float x = 0.0f;
-//		float y = 0.0f;
-//		// List of meta states found here: developer.android.com/reference/android/view/KeyEvent.html#getMetaState()
-//		int metaState = 0;
-//		MotionEvent motionEvent = MotionEvent.obtain(
-//		    downTime, 
-//		    downTime, 
-//		    MotionEvent.ACTION_DOWN, 
-//		    x, 
-//		    y, 
-//		    metaState
-//		);
-//		MotionEvent motionEvent2 = MotionEvent.obtain(
-//			    downTime, 
-//			    eventTime, 
-//			    MotionEvent.ACTION_UP, 
-//			    x, 
-//			    y, 
-//			    metaState
-//			);
-//		//motionEvent.setEdgeFlags(flags)
-//		// Dispatch touch event to view
-//		//new Handler().dispatchMessage(motionEvent);
-//		if (getContentView() != null) {
-//			getContentView().dispatchTouchEvent(motionEvent);
-//			getContentView().dispatchTouchEvent(motionEvent2);
-//		}
-//
-//	}
-
-    protected boolean wantHideNavbarInFullscreen() {
-        return false;
-    }
 
     public boolean setSystemUiVisibility() {
         if (DeviceInfo.getSDKLevel() >= DeviceInfo.HONEYCOMB) {
             int flags = 0;
             if (backlightControl.getKeyBacklight() == 0)
                 flags |= SYSTEM_UI_FLAG_LOW_PROFILE;
-//			if (isFullscreen() && wantHideNavbarInFullscreen() && isSmartphone())
-//				flags |= SYSTEM_UI_FLAG_HIDE_NAVIGATION;
             setSystemUiVisibility(flags);
-//			if (isFullscreen() && DeviceInfo.getSDKLevel() >= DeviceInfo.ICE_CREAM_SANDWICH)
-//				simulateTouch();
             return true;
         }
         return false;
@@ -645,20 +524,12 @@ public class BaseActivity extends AppCompatActivity implements Settings {
 
     private int lastSystemUiVisibility = -1;
 
-    //private boolean systemUiVisibilityListenerIsSet = false;
     @TargetApi(11)
     @SuppressLint("NewApi")
     private boolean setSystemUiVisibility(int value) {
         if (DeviceInfo.getSDKLevel() >= DeviceInfo.HONEYCOMB) {
             if (DeviceInfo.getSDKLevel() < 19) {
-//			if (!systemUiVisibilityListenerIsSet && contentView != null) {
-//				contentView.setOnSystemUiVisibilityChangeListener(new OnSystemUiVisibilityChangeListener() {
-//					@Override
-//					public void onSystemUiVisibilityChange(int visibility) {
-//						lastSystemUiVisibility = visibility;
-//					}
-//				});
-//			}
+
                 boolean a4 = DeviceInfo.getSDKLevel() >= DeviceInfo.ICE_CREAM_SANDWICH;
                 if (!a4)
                     value &= SYSTEM_UI_FLAG_LOW_PROFILE;
@@ -670,7 +541,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
                 //if (a4)
                 view = getWindow().getDecorView(); // getReaderView();
                 //else
-                //	view = mActivity.getContentView(); // getReaderView();
+                //	view = mContext.getContentView(); // getReaderView();
 
                 if (view == null)
                     return false;
@@ -696,10 +567,6 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     }
 
 
-
-
-
-
     public void showToast(int stringResourceId) {
         showToast(stringResourceId, Toast.LENGTH_LONG);
     }
@@ -717,7 +584,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     public void showToast(String msg, int duration) {
         log.v("showing toast: " + msg);
         if (DeviceInfo.USE_CUSTOM_TOAST) {
-            ToastView.showToast(getContentView(), msg, Toast.LENGTH_LONG, settings().getInt(ReaderView.PROP_FONT_SIZE, 20));
+            ToastView.showToast(getContentView(), msg, Toast.LENGTH_LONG, ((ReaderApplication) getApplication()).settings().getInt(ReaderView.PROP_FONT_SIZE, 20));
         } else {
             // classic Toast
             Toast toast = Toast.makeText(this, msg, duration);
@@ -750,9 +617,6 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     public void setNightMode(boolean nightMode) {
         mNightMode = nightMode;
     }
-
-
-  
 
 
     public void showHomeScreen() {

@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class CRDBServiceAccessor {
 	private final static String TAG = "cr3db";
-	private Activity mActivity;
+	private Context mActivity;
     private CRDBService.LocalBinder mService;
     private boolean mServiceBound;
     private MountPathCorrector pathCorrector;

@@ -1,6 +1,5 @@
 package org.coolreader.crengine;
 
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -195,7 +194,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
     private void updateOnlineCatalogs(ArrayList<FileInfo> catalogs) {
         String lang = mActivity.getCurrentLanguage();
         boolean defEnableLitres = lang.toLowerCase().startsWith("ru") && !DeviceInfo.POCKETBOOK;
-        boolean enableLitres = mActivity.settings().getBool(Settings.PROP_APP_PLUGIN_ENABLED + "." + OnlineStorePluginManager.PLUGIN_PKG_LITRES, defEnableLitres);
+        boolean enableLitres = mActivity.mSettingsManager.mSettings.getBool(Settings.PROP_APP_PLUGIN_ENABLED + "." + OnlineStorePluginManager.PLUGIN_PKG_LITRES, defEnableLitres);
         if (enableLitres)
             catalogs.add(0, Scanner.createOnlineLibraryPluginItem(OnlineStorePluginManager.PLUGIN_PKG_LITRES, "LitRes"));
         if (Services.getScanner() == null)
@@ -216,7 +215,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
                 if (item.isOPDSRoot()) {
                     icon.setImageResource(R.drawable.cr3_browser_folder_opds_add);
                     label.setText("Add");
-                  /*  view.setOnClickListener(v -> mActivity.editOPDSCatalog(null));*/
+                  /*  view.setOnClickListener(v -> mContext.editOPDSCatalog(null));*/
                 } else if (item.isOnlineCatalogPluginDir()) {
                     icon.setImageResource(R.drawable.plugins_logo_litres);
                     label.setText(item.filename);
@@ -236,7 +235,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
                     }
                     view.setOnClickListener(v -> FileBrowserActivity.Companion.showDirectory(mActivity,item));
                    /* view.setOnLongClickListener(v -> {
-                        mActivity.editOPDSCatalog(item);
+                        mContext.editOPDSCatalog(item);
                         return true;
                     });*/
                 }
@@ -373,7 +372,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
         });
         mView.findViewById(R.id.current_book).setOnLongClickListener(v -> {
          /*   if (currentBook != null)
-                mActivity.editBookInfo(Services.getScanner().createRecentRoot(), currentBook.getFileInfo());*/
+                mContext.editBookInfo(Services.getScanner().createRecentRoot(), currentBook.getFileInfo());*/
             return true;
         });
 
@@ -446,10 +445,10 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
                 mActivity.showRecentBooks();
                 return true;
             } else if (item == ReaderAction.CURRENT_BOOK) {
-//				mActivity.showCurrentBook();
+//				mContext.showCurrentBook();
                 return true;
             } else if (item == ReaderAction.USER_MANUAL) {
-//				mActivity.showManual();
+//				mContext.showManual();
                 return true;
             } else if (item == ReaderAction.OPTIONS) {
                 mActivity.showBrowserOptionsDialog();

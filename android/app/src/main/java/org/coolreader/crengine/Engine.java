@@ -948,7 +948,7 @@ public class Engine {
 
 	private static boolean addMountRoot(Map<String, String> list, String pathname, int resourceId)
 	{
-		return addMountRoot(list, pathname, pathname); //mActivity.getResources().getString(resourceId));
+		return addMountRoot(list, pathname, pathname); //mContext.getResources().getString(resourceId));
 	}
 	
 	public static boolean isStorageDir(String path) {

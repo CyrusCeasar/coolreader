@@ -216,10 +216,10 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 			showRootDirectory();
 			return true;
 		case R.id.book_back_to_reading:
-		/*	if (mActivity.isBookOpened())
-				mActivity.showReader();
+		/*	if (mContext.isBookOpened())
+				mContext.showReader();
 			else
-				mActivity.showToast("No book opened");*/
+				mContext.showToast("No book opened");*/
 			return true;
 		case R.id.book_delete:
 			log.d("book_delete menu item selected");
@@ -435,7 +435,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 		if (currDirectory != null && currDirectory.allowSorting()) {
 			currDirectory.sort(mSortOrder);
 			showDirectory(currDirectory, selectedItem);
-//			mActivity.saveSetting(ReaderView.PROP_APP_BOOK_SORT_ORDER, mSortOrder.name());
+//			mContext.saveSetting(ReaderView.PROP_APP_BOOK_SORT_ORDER, mSortOrder.name());
 		}
 	}
 	public void setSortOrder(String orderName) {
@@ -542,7 +542,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
 					@Override
 					public File onDownloadStart(String type, String url) {
 						//mEngine.showProgress(0, "Downloading " + url);
-						//mActivity.showToast("Starting download of " + type + " from " + url);
+						//mContext.showToast("Starting download of " + type + " from " + url);
 						log.d("onDownloadStart: called for " + type + " " + url );
 						downloadDir = Services.getScanner().getDownloadDirectory();
 						log.d("onDownloadStart: after getDownloadDirectory()" );
@@ -571,7 +571,7 @@ public class FileBrowser extends LinearLayout implements FileInfoChangeListener 
                             selector.notifyScanner(file.getAbsolutePath());
                         }
 						mEngine.hideProgress();
-						//mActivity.showToast("Download is finished");
+						//mContext.showToast("Download is finished");
 						FileInfo fi = new FileInfo(file);
 						FileInfo dir = mScanner.findParent(fi, downloadDir);
 						if ( dir==null )

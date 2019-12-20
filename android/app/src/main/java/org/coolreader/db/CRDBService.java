@@ -57,9 +57,7 @@ public class CRDBService extends Service {
     	log.i("DB directory: " + cr3dir);
     	return cr3dir;
     }
-    
-	final String SQLITE_DB_NAME = "cr3db.sqlite";
-	final String SQLITE_COVER_DB_NAME = "cr3db_cover.sqlite";
+
     private class OpenDatabaseTask extends Task {
     	public OpenDatabaseTask() {
     		super("OpenDatabaseTask");

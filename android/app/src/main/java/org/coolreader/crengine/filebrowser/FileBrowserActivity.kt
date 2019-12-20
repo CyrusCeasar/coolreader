@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import cn.cc.ereader.MainActivity
 import org.coolreader.R
 import org.coolreader.crengine.*
 import org.coolreader.crengine.reader.ReaderView
@@ -34,11 +33,11 @@ class FileBrowserActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         waitForCRDBService {
             mBrowser = FileBrowser(this, Services.getEngine(), Services.getScanner(), Services.getHistory())
-            mBrowser!!.setCoverPagesEnabled(this.settings().getBool(ReaderView.PROP_APP_SHOW_COVERPAGES, true))
-            mBrowser!!.setCoverPageFontFace(this.settings().getProperty(ReaderView.PROP_FONT_FACE, DeviceInfo.DEF_FONT_FACE))
-            mBrowser!!.setCoverPageSizeOption(this.settings().getInt(ReaderView.PROP_APP_COVERPAGE_SIZE, 1))
-            mBrowser!!.setSortOrder(this.settings().getProperty(ReaderView.PROP_APP_BOOK_SORT_ORDER))
-            mBrowser!!.isSimpleViewMode = this.settings().getBool(ReaderView.PROP_APP_FILE_BROWSER_SIMPLE_MODE, false)
+            mBrowser!!.setCoverPagesEnabled(mSettingsManager.mSettings.getBool(ReaderView.PROP_APP_SHOW_COVERPAGES, true))
+            mBrowser!!.setCoverPageFontFace(mSettingsManager.mSettings.getProperty(ReaderView.PROP_FONT_FACE, DeviceInfo.DEF_FONT_FACE))
+            mBrowser!!.setCoverPageSizeOption(mSettingsManager.mSettings.getInt(ReaderView.PROP_APP_COVERPAGE_SIZE, 1))
+            mBrowser!!.setSortOrder(mSettingsManager.mSettings.getProperty(ReaderView.PROP_APP_BOOK_SORT_ORDER))
+            mBrowser!!.isSimpleViewMode = mSettingsManager.mSettings.getBool(ReaderView.PROP_APP_FILE_BROWSER_SIMPLE_MODE, false)
             mBrowser!!.init()
 
 
@@ -222,12 +221,10 @@ class FileBrowserActivity : BaseActivity() {
 
 
     fun showDirectory(path: FileInfo) {
-        MainActivity.log.d("Activities.showDirectory($path) is called")
         showBrowser(path)
     }
 
     fun showOnlineCatalogs() {
-        MainActivity.log.d("Activities.showOnlineCatalogs() is called")
         runInBrowser(Runnable { mBrowser!!.showOPDSRootDirectory() })
     }
 

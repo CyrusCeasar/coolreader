@@ -56,9 +56,9 @@ class ReaderActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         // apply settings
-        onSettingsChanged(settings(), null)
+        onSettingsChanged(mSettingsManager.mSettings, null)
 
-        readerView = ReaderView(this, Engine.getInstance(this), this.settings())
+        readerView = ReaderView(this, Engine.getInstance(this),mSettingsManager.mSettings)
         mReaderFrame = ReaderViewLayout(this, readerView!!)
         setContentView(mReaderFrame)
         mReaderFrame!!.toolBar.setOnActionHandler { item ->
@@ -243,7 +243,6 @@ class ReaderActivity : BaseActivity() {
             i.data = Uri.parse(url)
             startActivity(i)
         } catch (e: Exception) {
-            MainActivity.log.e("Exception $e while trying to open URL $url")
             showToast("Cannot open URL $url")
         }
 
@@ -275,7 +274,6 @@ class ReaderActivity : BaseActivity() {
                     readerView!!.surface.isFocusableInTouchMode = true
                     readerView!!.surface.requestFocus()
                 } else {
-                    MainActivity.log.w("runInReader: mReaderView or mReaderView.getSurface() is null")
                 }
             }
         }
@@ -287,7 +285,6 @@ class ReaderActivity : BaseActivity() {
     }
 
     fun loadDocument(item: FileInfo, callback: Runnable? = null) {
-        MainActivity.log.d("Activities.loadDocument(" + item.pathname + ")")
         loadDocument(item.pathName, callback)
     }
 

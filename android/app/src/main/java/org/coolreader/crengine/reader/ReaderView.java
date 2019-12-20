@@ -1140,7 +1140,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     private void toggleDayNightMode() {
         Properties settings = getSettings();
         OptionsDialog.toggleDayNightMode(settings);
-        //setSettings(settings, mActivity.settings());
+        //setSettings(settings, mContext.settings());
         mActivity.setSettings(settings, 60000, true);
         invalidImages = true;
     }
@@ -1184,7 +1184,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         if (mBookInfo == null)
             return;
         final StringBuilder buf = new StringBuilder();
-//		if (mActivity.isFullscreen()) {
+//		if (mContext.isFullscreen()) {
         buf.append(Utils.formatTime(mActivity, System.currentTimeMillis()) + " ");
         if (mBatteryState >= 0)
             buf.append(" [" + mBatteryState + "%]\n");
@@ -1806,10 +1806,10 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                             if (cmd == ReaderCommand.DCMD_LINK_BACK) {
                                 // TODO: exit from activity in some cases?
                                 getActivity().finish();
-/*								if (mActivity.isPreviousFrameHome())
-									mActivity.showRootWindow();
+/*								if (mContext.isPreviousFrameHome())
+									mContext.showRootWindow();
 								else
-									mActivity.showBrowser(!mActivity.isBrowserCreated() ? getOpenedFileInfo() : null);*/
+									mContext.showBrowser(!mContext.isBrowserCreated() ? getOpenedFileInfo() : null);*/
                             }
                         }
                     }
@@ -1823,7 +1823,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         log.i("On command " + cmd + (param != 0 ? " (" + param + ")" : " "));
         switch (cmd) {
             case DCMD_FILE_BROWSER_ROOT:
-//			mActivity.showRootWindow();
+//			mContext.showRootWindow();
                 getActivity().finish();
                 break;
             case DCMD_ABOUT:
@@ -1942,7 +1942,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                 doEngineCommand(cmd, param);
                 break;
             case DCMD_RECENT_BOOKS_LIST:
-//			mActivity.showRecentBooks();
+//			mContext.showRecentBooks();
                 break;
             case DCMD_SEARCH:
                 showSearchDialog(null);
@@ -1963,13 +1963,13 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                 showTOC();
                 break;
             case DCMD_FILE_BROWSER:
-//			mActivity.showBrowser(!mActivity.isBrowserCreated() ? getOpenedFileInfo() : null);
+//			mContext.showBrowser(!mContext.isBrowserCreated() ? getOpenedFileInfo() : null);
                 break;
             case DCMD_CURRENT_BOOK_DIRECTORY:
-//			mActivity.showBrowser(getOpenedFileInfo());
+//			mContext.showBrowser(getOpenedFileInfo());
                 break;
             case DCMD_OPTIONS_DIALOG:
-//			mActivity.showOptionsDialog(OptionsDialog.Mode.READER);
+//			mContext.showOptionsDialog(OptionsDialog.Mode.READER);
                 break;
             case DCMD_READER_MENU:
                 mActivity.showReaderMenu();
@@ -2282,7 +2282,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                 // ignore
             }
         } else {
-            //mActivity.applyAppSetting(key, value);
+            //mContext.applyAppSetting(key, value);
         }
         //
     }
@@ -2556,7 +2556,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             }
             if (fi.isDirectory) {
                 log.v("loadDocument() : is a directory, opening browser");
-//				mActivity.showBrowser(fi);
+//				mContext.showBrowser(fi);
                 return true;
             }
         } else {
@@ -2816,11 +2816,11 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
     private void resize() {
         final int thisId = ++lastResizeTaskId;
-//	    if ( w<h && mActivity.isLandscape() ) {
+//	    if ( w<h && mContext.isLandscape() ) {
 //	    	log.i("ignoring size change to portrait since landscape is set");
 //	    	return;
 //	    }
-//		if ( mActivity.isPaused() ) {
+//		if ( mContext.isPaused() ) {
 //			log.i("ignoring size change since activity is paused");
 //			return;
 //		}
@@ -4177,8 +4177,8 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                 if (coverPageBytes != null && mBookInfo != null && mBookInfo.getFileInfo() != null) {
                     if (mBookInfo.getFileInfo().format.needCoverPageCaching()) {
                         // TODO: fix it
-//		        		if (mActivity.getBrowser() != null)
-//		        			mActivity.getBrowser().setCoverpageData(new FileInfo(mBookInfo.getFileInfo()), coverPageBytes);
+//		        		if (mContext.getBrowser() != null)
+//		        			mContext.getBrowser().setCoverpageData(new FileInfo(mBookInfo.getFileInfo()), coverPageBytes);
                     }
                     if (DeviceInfo.EINK_NOOK)
                         updateNookTouchCoverpage(mBookInfo.getFileInfo().getPathName(), coverPageBytes);
@@ -4202,7 +4202,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                         mActivity.showReader();
                     }
                 });
-//		        mActivity.setLastBook(filename);
+//		        mContext.setLastBook(filename);
             }
         }
 
