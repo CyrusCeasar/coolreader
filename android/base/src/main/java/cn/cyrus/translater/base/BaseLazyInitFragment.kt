@@ -3,8 +3,6 @@ package cn.cyrus.translater.base
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.annotation.Nullable
-import androidx.fragment.app.Fragment
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -13,12 +11,13 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 
 
 /**
  * Created by ChenLei on 2018/8/20 0020.
  */
-abstract class BaseLazyInitFragment : androidx.fragment.app.Fragment() {
+abstract class BaseLazyInitFragment : Fragment() {
     protected var isPrepared = false
     protected var isVesible = false
 

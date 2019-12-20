@@ -26,7 +26,7 @@
             android:name="cn.cc.ereader.MainActivity"
             android:label="@string/title_activity_main"
             android:launchMode="singleInstance"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/welcomeTheme">
            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
