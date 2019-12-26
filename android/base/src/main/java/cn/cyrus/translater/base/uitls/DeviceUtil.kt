@@ -1,4 +1,4 @@
-package cn.cyrus.translater.base
+package cn.cyrus.translater.base.uitls
 
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE

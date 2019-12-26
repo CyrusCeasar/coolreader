@@ -31,15 +31,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 import cn.cc.ereader.MainActivity;
-import cn.cyrus.translater.base.DeviceUtilKt;
-import cn.cyrus.translater.base.LogUtil;
 import cn.cyrus.translater.base.ToastUtilKt;
+import cn.cyrus.translater.base.uitls.DeviceUtilKt;
 
 public class ReaderView implements android.view.SurfaceHolder.Callback, Settings, OnTouchListener, OnFocusChangeListener {
 
@@ -139,7 +137,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             else if (doubleTapSelectionEnabled || tapActionType == TAP_ACTION_TYPE_LONGPRESS)
                 action = ReaderAction.START_SELECTION;
         }
-        LogUtil.Companion.d(action.toString(), LogUtil.Companion.getTAG());
         return action;
     }
 

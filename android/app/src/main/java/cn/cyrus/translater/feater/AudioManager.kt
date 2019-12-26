@@ -2,7 +2,7 @@ package cn.cyrus.translater.feater
 
 import android.media.AudioManager
 import android.media.MediaPlayer
-import cn.cyrus.translater.base.LogUtil
+import cn.cyrus.translater.base.uitls.loge
 import com.youdao.sdk.common.YouDaoLog
 
 /**
@@ -14,7 +14,7 @@ class AudioManager {
     fun play(path:String){
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mMediaPlayer.setOnErrorListener { _, what, extra ->
-            LogUtil.e("$what   $extra")
+            loge("$what   $extra")
             true
         }
         mMediaPlayer.setOnPreparedListener {

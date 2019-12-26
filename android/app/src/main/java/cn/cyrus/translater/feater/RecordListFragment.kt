@@ -14,11 +14,11 @@ import org.coolreader.R
  * A placeholder fragment containing a simple view.
  */
 class RecordListFragment : DefaultLoadMoreFragment<TranslateRecord>() {
-    override fun load(onUpdate: (List<TranslateRecord>) -> Unit) {
+    override fun load(onUpdate: (List<TranslateRecord>?) -> Unit) {
         mPageManager.reset()
         syncWrok(serv.recordList(arguments!!.getInt(ARG_SECTION_TYPE), mPageManager.pageIndicator!!), Consumer {
             if (it.isResultOk()) {
-                onUpdateListener.invoke(it.data!!)
+                onUpdateListener.invoke(it.data)
             } else {
                 updateError()
             }
@@ -26,10 +26,10 @@ class RecordListFragment : DefaultLoadMoreFragment<TranslateRecord>() {
     }
 
     private val serv: TranslateRecordService = RetrofitManager.instance.create(TranslateRecordService::class.java)
-    override fun loadMore(onLoadMore: (List<TranslateRecord>) -> Unit) {
+    override fun loadMore(onLoadMore: (List<TranslateRecord>?) -> Unit) {
         syncWrok(serv.recordList(1, mPageManager.pageIndicator!!), Consumer {
             if (it.isResultOk()) {
-                onLoadMore.invoke(it.data!!)
+                onLoadMore.invoke(it.data)
             } else {
                 loadMoreError()
             }
@@ -70,24 +70,9 @@ class RecordListFragment : DefaultLoadMoreFragment<TranslateRecord>() {
 
 
         override fun convert(helper: BaseViewHolder, item: TranslateRecord?) {
-            helper.setText(R.id.tv_words, item!!.words_text)
-            helper.setText(R.id.tv_display_content, item.display_content)
-            helper.setText(R.id.tv_query_num, item.quest_num.toString())
-         /*   helper.getView<LinearLayout>(R.id.right).setOnClickListener {
-
-                val service: TranslateRecordService = RetrofitManager.instance.create(TranslateRecordService::class.java)
-                syncWrok(service.delete(item.words_text!!), Consumer {
-                    if (it.isResultOk()) {
-                        // 列表层删除相关位置的数据
-                        mData.removeAt(helper.layoutPosition)
-                        // 更新视图
-                        notifyItemRemoved(helper.layoutPosition)
-                    } else {
-                        showToast(mContext, "delete Failed")
-                    }
-                })
-
-            }*/
+            helper.setText(R.id.tv_words, item!!.vocabulary__word)
+            helper.setText(R.id.tv_display_content, item.vocabulary__display_content)
+            helper.setText(R.id.tv_query_num, item.lookup_amount.toString())
         }
     }
 }

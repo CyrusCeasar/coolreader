@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.coolreader.R;
 import org.coolreader.crengine.reader.ReaderView;
 
-import cn.cyrus.translater.base.LogUtil;
 
 public class ReaderAction {
     final public String id;
@@ -235,7 +234,6 @@ public class ReaderAction {
 
     public static ReaderAction findForTap(int tapZoneNumber, Properties settings) {
         String id = settings.getProperty(getTapZoneProp(tapZoneNumber, NORMAL));
-        LogUtil.Companion.d(tapZoneNumber + id, LogUtil.Companion.getTAG());
         return findById(id);
     }
 
@@ -243,7 +241,6 @@ public class ReaderAction {
         String id = settings.getProperty(getTapZoneProp(tapZoneNumber, LONG));
 
         ReaderAction ra = findById(id);
-        LogUtil.Companion.d(ra.toString() + "    " + "long click", LogUtil.Companion.getTAG());
         return findById(id);
     }
 

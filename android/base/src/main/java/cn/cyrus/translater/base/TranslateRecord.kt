@@ -5,11 +5,11 @@ package cn.cyrus.translater.base
  */
 class TranslateRecord {
 
-    var last_quest_date:String?= null
-    var is_rembered:String?=null
-    var is_deleted:String?=null
-    var display_content:String?=null
-    var src_content:String?=null
-    var words_text:String?=null
-    var quest_num:Int?= 0
+    var last_lookup_time:String?= null
+    var remembered:String?=null
+    var deleted:String?=null
+    var vocabulary__display_content:String?=null
+    var vocabulary__src_content:String?=null
+    var vocabulary__word:String?=null
+    var lookup_amount:Int?= 0
 }

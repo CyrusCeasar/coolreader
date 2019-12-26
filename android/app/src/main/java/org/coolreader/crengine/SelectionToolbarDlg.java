@@ -21,7 +21,7 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-import cn.cyrus.translater.base.DeviceUtilKt;
+import cn.cyrus.translater.base.uitls.DeviceUtilKt;
 
 public class SelectionToolbarDlg {
 	PopupWindow mWindow;

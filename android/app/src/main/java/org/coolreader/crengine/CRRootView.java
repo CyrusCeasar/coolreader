@@ -25,7 +25,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import cn.cc.ereader.MainActivity;
-import cn.cyrus.translater.base.DeviceUtilKt;
+import cn.cyrus.translater.base.uitls.DeviceUtilKt;
 
 
 public class CRRootView extends ViewGroup implements CoverpageReadyListener {

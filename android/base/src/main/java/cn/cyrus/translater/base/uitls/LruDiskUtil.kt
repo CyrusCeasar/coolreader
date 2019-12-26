@@ -1,5 +1,6 @@
-package cn.cyrus.translater.base
+package cn.cyrus.translater.base.uitls
 
+import cn.cyrus.translater.base.BaseApplication
 import com.jakewharton.disklrucache.DiskLruCache
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -32,9 +33,9 @@ class LruDiskUtil {
         fun save(key: String, datas: ByteArray, callBack: (() -> Unit)? = null) {
             if (datas.isEmpty())
                 return
-            LogUtil.d(String(datas))
+            logd(String(datas))
             Observable.create<Any> {
-                val editor: DiskLruCache.Editor = LruDiskUtil.CACHE.edit(hashKeyForDisk(key))
+                val editor: DiskLruCache.Editor = CACHE.edit(hashKeyForDisk(key))
                 val ops: OutputStream = editor.newOutputStream(0)
                 ops.write(datas,0,datas.size)
                 editor.commit()
@@ -54,7 +55,7 @@ class LruDiskUtil {
                         it.onNext(ByteArray(0))
                     }else {
                         val datas = inp.readBytes(inp.available())
-                        LogUtil.d(String(datas,0,datas.size))
+                        logd(String(datas, 0, datas.size))
                         it.onNext(datas)
                     }
                     inp.close()

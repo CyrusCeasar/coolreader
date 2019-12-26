@@ -1,5 +1,6 @@
 package cn.cyrus.translater.base
 
+import cn.cyrus.translater.base.uitls.loge
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -14,7 +15,7 @@ import io.reactivex.schedulers.Schedulers
 fun <T> syncWrok(task: Observable<Result<T>>, consumer: Consumer<Result<T>>, onError: Consumer<Throwable?> =  Consumer<Throwable?> {
         it?.let {
             it.message?.let { it1 ->
-                LogUtil.e(it1)
+                loge(it1)
             }
     }
 

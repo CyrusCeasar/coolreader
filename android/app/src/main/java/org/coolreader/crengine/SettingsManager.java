@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import cn.cyrus.translater.base.LogUtil;
 
 
 public class SettingsManager implements Settings {
@@ -191,7 +190,6 @@ public class SettingsManager implements Settings {
         for (DefTapAction ka : DEF_TAP_ACTIONS) {
             String paramName = ka.longPress ? ReaderView.PROP_APP_TAP_ZONE_ACTIONS_TAP + ".long." + ka.zone : ReaderView.PROP_APP_TAP_ZONE_ACTIONS_TAP + "." + ka.zone;
             String value = props.getProperty(paramName);
-            Log.d(paramName + "   " + value, LogUtil.Companion.getTAG());
             if (ReaderAction.READER_MENU.id.equals(value))
                 menuTapActionFound = true;
         }
@@ -199,7 +197,6 @@ public class SettingsManager implements Settings {
         // default tap zone actions
         for (DefTapAction ka : DEF_TAP_ACTIONS2) {
             String paramName = ka.longPress ? ReaderView.PROP_APP_TAP_ZONE_ACTIONS_TAP + ".long." + ka.zone : ReaderView.PROP_APP_TAP_ZONE_ACTIONS_TAP + "." + ka.zone;
-            Log.d(paramName + "   " + ka.action, LogUtil.Companion.getTAG());
 	       /* 	if (ka.zone == 5 && !activity.hasHardwareMenuKey() && !menuTapActionFound && !menuKeyActionFound) {
 	        		// force assignment of central tap zone
 	        		props.setProperty(paramName, ka.action.id);

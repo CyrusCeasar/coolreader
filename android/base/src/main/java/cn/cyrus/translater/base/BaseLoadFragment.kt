@@ -23,16 +23,16 @@ abstract class BaseLoadFragment<T,F> : BaseLazyInitFragment() {
     lateinit var mBaseQuickAdapter: BaseQuickAdapter<T, BaseViewHolder>
     lateinit var mPageManager:PageManager<F>
 
-    val onUpdateListener: (List<T>) -> Unit = {
+    val onUpdateListener: (List<T>?) -> Unit = {
         load(it)
     }
 
-    val onLoadMoreListener: (List<T>) -> Unit = {
+    val onLoadMoreListener: (List<T>?) -> Unit = {
         loadMore(it)
     }
 
-    fun loadMore(datas: List<T>) {
-        if (datas.isEmpty()) {
+    fun loadMore(datas: List<T>?) {
+        if (datas ==null || datas.isEmpty()) {
             mBaseQuickAdapter.loadMoreEnd()
         } else {
             mPageManager.toNextPage()
@@ -50,9 +50,11 @@ abstract class BaseLoadFragment<T,F> : BaseLazyInitFragment() {
     }
 
 
-    fun load(datas: List<T>) {
+    fun load(datas: List<T>?) {
         mDatas.clear()
-        mDatas.addAll(datas.asIterable())
+        datas?.let {
+            mDatas.addAll(datas.asIterable())
+        }
         mPageManager.toNextPage()
         mSwipeRecyclerView.isRefreshing = false
         mBaseQuickAdapter.notifyDataSetChanged()
@@ -84,8 +86,8 @@ abstract class BaseLoadFragment<T,F> : BaseLazyInitFragment() {
     }
 
 
-    abstract fun load(onUpdate: (List<T>) -> Unit)
-    abstract fun loadMore(onLoadMore: (List<T>) -> Unit)
+    abstract fun load(onUpdate: (List<T>?) -> Unit)
+    abstract fun loadMore(onLoadMore: (List<T>?) -> Unit)
     abstract fun getAdapter(): BaseQuickAdapter<T, BaseViewHolder>
     abstract fun getPageManager(): PageManager<F>
     fun getEmptyView():View{
