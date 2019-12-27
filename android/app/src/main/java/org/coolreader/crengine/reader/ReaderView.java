@@ -11,9 +11,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -23,7 +20,47 @@ import android.view.View.OnTouchListener;
 import android.widget.Toast;
 
 import org.coolreader.R;
-import org.coolreader.crengine.*;
+import org.coolreader.crengine.AboutDialog;
+import org.coolreader.crengine.BackgroundTextureInfo;
+import org.coolreader.crengine.BackgroundThread;
+import org.coolreader.crengine.BookInfo;
+import org.coolreader.crengine.BookInfoDialog;
+import org.coolreader.crengine.Bookmark;
+import org.coolreader.crengine.BookmarkEditDialog;
+import org.coolreader.crengine.DelayedExecutor;
+import org.coolreader.crengine.DeviceInfo;
+import org.coolreader.crengine.DocView;
+import org.coolreader.crengine.DocumentFormat;
+import org.coolreader.crengine.EinkScreen;
+import org.coolreader.crengine.Engine;
+import org.coolreader.crengine.FileInfo;
+import org.coolreader.crengine.FindNextDlg;
+import org.coolreader.crengine.HelpFileGenerator;
+import org.coolreader.crengine.ImageInfo;
+import org.coolreader.crengine.InputDialog;
+import org.coolreader.crengine.L;
+import org.coolreader.crengine.Logger;
+import org.coolreader.crengine.OptionsDialog;
+import org.coolreader.crengine.PositionProperties;
+import org.coolreader.crengine.Properties;
+import org.coolreader.crengine.ReaderAction;
+import org.coolreader.crengine.ReaderActivity;
+import org.coolreader.crengine.ReaderCallback;
+import org.coolreader.crengine.ReaderCommand;
+import org.coolreader.crengine.Scanner;
+import org.coolreader.crengine.SearchDlg;
+import org.coolreader.crengine.Selection;
+import org.coolreader.crengine.SelectionToolbarDlg;
+import org.coolreader.crengine.Services;
+import org.coolreader.crengine.Settings;
+import org.coolreader.crengine.SwitchProfileDialog;
+import org.coolreader.crengine.TOCDlg;
+import org.coolreader.crengine.TOCItem;
+import org.coolreader.crengine.TTS;
+import org.coolreader.crengine.TTSToolbarDlg;
+import org.coolreader.crengine.Utils;
+import org.coolreader.crengine.VMRuntimeHack;
+import org.coolreader.crengine.ViewMode;
 import org.koekak.android.ebookdownloader.SonyBookSelector;
 
 import java.io.File;
@@ -51,7 +88,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         return surface;
     }
 
-    private DocView doc;
+    DocView doc;
 
 
     public static final int PAGE_ANIMATION_NONE = 0;
@@ -140,11 +177,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         return action;
     }
 
-    public FileInfo getOpenedFileInfo() {
-        if (isBookLoaded() && mBookInfo != null)
-            return mBookInfo.getFileInfo();
-        return null;
-    }
 
     private final int LONG_KEYPRESS_TIME = 900;
     private final int DOUBLE_CLICK_INTERVAL = 400;
@@ -199,14 +231,9 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
 
     private void stopTracking() {
-        trackedKeyEvent = null;
         if (currentTapHandler != null)
             currentTapHandler.cancel();
     }
-
-
-    private KeyEvent trackedKeyEvent = null;
-
 
     private int nextUpdateId = 0;
 
@@ -333,219 +360,11 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         mActivity.showToast(selectionModeActive ? R.string.action_toggle_selection_mode_on : R.string.action_toggle_selection_mode_off);
     }
 
-    private ImageViewer currentImageViewer;
+    ImageViewer currentImageViewer;
 
-    private class ImageViewer extends SimpleOnGestureListener {
-        private ImageInfo currentImage;
-        final GestureDetector detector;
-        int oldOrientation;
-
-        public ImageViewer(ImageInfo image) {
-            lockOrientation();
-            detector = new GestureDetector(this);
-            if (image.bufHeight / image.height >= 2 && image.bufWidth / image.width >= 2) {
-                image.scaledHeight *= 2;
-                image.scaledWidth *= 2;
-            }
-            centerIfLessThanScreen(image);
-            currentImage = image;
-        }
-
-        private void lockOrientation() {
-            oldOrientation = mActivity.getScreenOrientation();
-            if (oldOrientation == 4)
-                mActivity.setScreenOrientation(mActivity.getOrientationFromSensor());
-        }
-
-        private void unlockOrientation() {
-            if (oldOrientation == 4)
-                mActivity.setScreenOrientation(oldOrientation);
-        }
-
-        private void centerIfLessThanScreen(ImageInfo image) {
-            if (image.scaledHeight < image.bufHeight)
-                image.y = (image.bufHeight - image.scaledHeight) / 2;
-            if (image.scaledWidth < image.bufWidth)
-                image.x = (image.bufWidth - image.scaledWidth) / 2;
-        }
-
-        private void fixScreenBounds(ImageInfo image) {
-            if (image.scaledHeight > image.bufHeight) {
-                if (image.y < image.bufHeight - image.scaledHeight)
-                    image.y = image.bufHeight - image.scaledHeight;
-                if (image.y > 0)
-                    image.y = 0;
-            }
-            if (image.scaledWidth > image.bufWidth) {
-                if (image.x < image.bufWidth - image.scaledWidth)
-                    image.x = image.bufWidth - image.scaledWidth;
-                if (image.x > 0)
-                    image.x = 0;
-            }
-        }
-
-        private void updateImage(ImageInfo image) {
-            centerIfLessThanScreen(image);
-            fixScreenBounds(image);
-            if (!currentImage.equals(image)) {
-                currentImage = image;
-                drawPage();
-            }
-        }
-
-        public void zoomIn() {
-            ImageInfo image = new ImageInfo(currentImage);
-            if (image.scaledHeight >= image.height) {
-                int scale = image.scaledHeight / image.height;
-                if (scale < 4)
-                    scale++;
-                image.scaledHeight = image.height * scale;
-                image.scaledWidth = image.width * scale;
-            } else {
-                int scale = image.height / image.scaledHeight;
-                if (scale > 1)
-                    scale--;
-                image.scaledHeight = image.height / scale;
-                image.scaledWidth = image.width / scale;
-            }
-            updateImage(image);
-        }
-
-        public void zoomOut() {
-            ImageInfo image = new ImageInfo(currentImage);
-            if (image.scaledHeight > image.height) {
-                int scale = image.scaledHeight / image.height;
-                if (scale > 1)
-                    scale--;
-                image.scaledHeight = image.height * scale;
-                image.scaledWidth = image.width * scale;
-            } else {
-                int scale = image.height / image.scaledHeight;
-                if (image.scaledHeight > image.bufHeight || image.scaledWidth > image.bufWidth)
-                    scale++;
-                image.scaledHeight = image.height / scale;
-                image.scaledWidth = image.width / scale;
-            }
-            updateImage(image);
-        }
-
-        public int getStep() {
-            ImageInfo image = currentImage;
-            int max = image.bufHeight;
-            if (max < image.bufWidth)
-                max = image.bufWidth;
-            return max / 10;
-        }
-
-        public void moveBy(int dx, int dy) {
-            ImageInfo image = new ImageInfo(currentImage);
-            image.x += dx;
-            image.y += dy;
-            updateImage(image);
-        }
-
-
-        private boolean onTouchEvent(MotionEvent event) {
-            return detector.onTouchEvent(event);
-        }
-
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                               float velocityY) {
-            log.v("onFling()");
-            return true;
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2,
-                                float distanceX, float distanceY) {
-            log.v("onScroll() " + distanceX + ", " + distanceY);
-            int dx = (int) distanceX;
-            int dy = (int) distanceY;
-            moveBy(-dx, -dy);
-            return true;
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            log.v("onSingleTapConfirmed()");
-            ImageInfo image = new ImageInfo(currentImage);
-
-            int x = (int) e.getX();
-            int y = (int) e.getY();
-
-            int zone = 0;
-            int zw = mActivity.getDensityDpi() / 2;
-            int w = image.bufWidth;
-            int h = image.bufHeight;
-            if (image.rotation == 0) {
-                if (x < zw && y > h - zw)
-                    zone = 1;
-                if (x > w - zw && y > h - zw)
-                    zone = 2;
-            } else {
-                if (x < zw && y < zw)
-                    zone = 1;
-                if (x < zw && y > h - zw)
-                    zone = 2;
-            }
-            if (zone != 0) {
-                if (zone == 1)
-                    zoomIn();
-                else
-                    zoomOut();
-                return true;
-            }
-
-            close();
-            return super.onSingleTapConfirmed(e);
-        }
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
-        }
-
-        public void close() {
-            if (currentImageViewer == null)
-                return;
-            currentImageViewer = null;
-            unlockOrientation();
-            BackgroundThread.instance().postBackground(new Runnable() {
-                @Override
-                public void run() {
-                    doc.closeImage();
-                }
-            });
-            drawPage();
-        }
-
-        public BitmapInfo prepareImage() {
-            // called from background thread
-            ImageInfo img = currentImage;
-            img.bufWidth = internalDX;
-            img.bufHeight = internalDY;
-            if (mCurrentPageInfo != null) {
-                if (img.equals(mCurrentPageInfo.imageInfo))
-                    return mCurrentPageInfo;
-                mCurrentPageInfo.recycle();
-                mCurrentPageInfo = null;
-            }
-            PositionProperties currpos = doc.getPositionProps(null);
-            BitmapInfo bi = new BitmapInfo(factory);
-            bi.imageInfo = new ImageInfo(img);
-            bi.bitmap = factory.get(internalDX, internalDY);
-            bi.position = currpos;
-            doc.drawImage(bi.bitmap, bi.imageInfo);
-            mCurrentPageInfo = bi;
-            return mCurrentPageInfo;
-        }
-
-    }
 
     private void startImageViewer(ImageInfo image) {
-        currentImageViewer = new ImageViewer(image);
+        currentImageViewer = new ImageViewer(image, mActivity, this);
         drawPage();
     }
 
@@ -3140,8 +2959,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         });
     }
 
-    private volatile int updateSerialNumber = 0;
-
     private class AnimationUpdate {
         private int x;
         private int y;
@@ -4011,7 +3828,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         avgDrawAnimationDuration = sum / count;
     }
 
-    private void drawPage() {
+    void drawPage() {
         drawPage(null, false);
     }
 
@@ -4027,8 +3844,8 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         mEngine.post(new DrawPageTask(doneHandler, isPartially));
     }
 
-    private int internalDX = 0;
-    private int internalDY = 0;
+    int internalDX = 0;
+    int internalDY = 0;
 
     private byte[] coverPageBytes = null;
 
