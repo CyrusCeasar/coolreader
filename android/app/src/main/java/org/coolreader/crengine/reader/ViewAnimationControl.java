@@ -3,15 +3,15 @@ package org.coolreader.crengine.reader;
 import android.graphics.Canvas;
 
 public interface ViewAnimationControl {
-        public void update(int x, int y);
+        void update(int x, int y);
 
-        public void stop(int x, int y);
+        void stop(int x, int y);
 
-        public void animate();
+        void animate();
 
-        public void move(int duration, boolean accelerated);
+        void move(int duration, boolean accelerated);
 
-        public boolean isStarted();
+        boolean isStarted();
 
-        abstract void draw(Canvas canvas);
+        void draw(Canvas canvas);
     }

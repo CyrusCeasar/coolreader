@@ -132,7 +132,7 @@ public enum DocumentFormat {
 		return null;
 	}
 	
-	private DocumentFormat( String cssFileName, int cssResourceId, int iconResourceId, boolean canParseProperties, boolean canParseCoverpages, int priority, String extensions[], String mimeFormats[] )
+	DocumentFormat(String cssFileName, int cssResourceId, int iconResourceId, boolean canParseProperties, boolean canParseCoverpages, int priority, String[] extensions, String[] mimeFormats)
 	{
 		this.cssFileName = cssFileName;
 		this.cssResourceId = cssResourceId;

@@ -66,8 +66,8 @@ public class BookInfoDialog extends BaseDialog {
 				name = title;
 		}
 		TableRow tableRow = (TableRow)mInflater.inflate(isSection ? R.layout.book_info_section : R.layout.book_info_item, null);
-		TextView nameView = (TextView)tableRow.findViewById(R.id.name);
-		TextView valueView = (TextView)tableRow.findViewById(R.id.value);
+		TextView nameView = tableRow.findViewById(R.id.name);
+		TextView valueView = tableRow.findViewById(R.id.value);
 		nameView.setText(name);
 		valueView.setText(value);
 		table.addView(tableRow);
@@ -81,7 +81,7 @@ public class BookInfoDialog extends BaseDialog {
 		fillMap();
 		mInflater = LayoutInflater.from(getContext());
 		View view = mInflater.inflate(R.layout.book_info_dialog, null);
-		TableLayout table = (TableLayout)view.findViewById(R.id.table);
+		TableLayout table = view.findViewById(R.id.table);
 		for ( String item : items ) {
 			addItem(table, item);
 		}

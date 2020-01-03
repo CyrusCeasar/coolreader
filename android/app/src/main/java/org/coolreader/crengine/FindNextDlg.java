@@ -109,11 +109,8 @@ public class FindNextDlg {
 							return true;
 						}
 					}
-				if ( keyCode == KeyEvent.KEYCODE_BACK) {
-					return true;
-				}
-				return false;
-			}
+                return keyCode == KeyEvent.KEYCODE_BACK;
+            }
 			
 		});
 

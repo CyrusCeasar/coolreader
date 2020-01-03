@@ -45,7 +45,7 @@ public class CRDBService extends Service {
 
     private File getDatabaseDir() {
     	//File storage = Environment.getExternalStorageDirectory();
-    	File storage = DeviceInfo.EINK_NOOK ? new File("/media/") : Environment.getExternalStorageDirectory();
+    	File storage = Environment.getExternalStorageDirectory();
     	File cr3dir = new File(storage, ".cr3");
     	if (cr3dir.isDirectory())
     		cr3dir.mkdirs();

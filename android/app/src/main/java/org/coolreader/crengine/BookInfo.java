@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -220,7 +221,7 @@ public class BookInfo {
 			String ps = String.valueOf(percent%100);
 			if ( ps.length()<2 )
 				ps = "0" + ps;
-			ps = String.valueOf(percent/100) + "." + ps  + "%";
+			ps = percent / 100 + "." + ps  + "%";
 			buf.append("## " + ps + " - " + (bm.getType()!=Bookmark.TYPE_COMMENT ? "comment" : "correction")  + "\n");
 			if ( bm.getTitleText()!=null )
 				buf.append("## " + bm.getTitleText() + "\n");
@@ -237,7 +238,7 @@ public class BookInfo {
 		Log.i("cr3", "Exporting bookmarks to file " + fileName);
 		try { 
 			FileOutputStream stream = new FileOutputStream(new File(fileName));
-			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8"); 
+			OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);
 			writer.write(0xfeff);
 			writer.write("# Cool Reader 3 - exported bookmarks\r\n");
 			File pathname = new File(fileInfo.getPathName());
@@ -254,7 +255,7 @@ public class BookInfo {
 				String ps = String.valueOf(percent%100);
 				if ( ps.length()<2 )
 					ps = "0" + ps;
-				ps = String.valueOf(percent/100) + "." + ps  + "%";
+				ps = percent / 100 + "." + ps  + "%";
 				writer.write("## " + ps + " - " + (bm.getType()==Bookmark.TYPE_COMMENT ? "comment" : "correction")  + "\r\n");
 				if ( bm.getTitleText()!=null )
 					writer.write("## " + bm.getTitleText() + "\r\n");

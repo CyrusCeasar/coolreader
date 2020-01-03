@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import org.coolreader.R
 import org.coolreader.crengine.*
 import org.coolreader.crengine.filebrowser.FileBrowserActivity
-import org.koekak.android.ebookdownloader.SonyBookSelector
 
 class MainActivity : BaseActivity() {
     val log = L.create("cr")!!
@@ -84,7 +83,6 @@ class MainActivity : BaseActivity() {
         mEngine = Engine.getInstance(this)
 
         volumeControlStream = AudioManager.STREAM_MUSIC
-        N2EpdController.n2MainActivity = this
 
         contentView = layoutInflater.inflate(R.layout.activity_translater,null)
         setContentView(contentView)
@@ -148,25 +146,7 @@ class MainActivity : BaseActivity() {
     }
 
 
-    override fun onResume() {
-        log.i("CoolReaderActivity.onResume()")
-        super.onResume()
 
-        if (DeviceInfo.EINK_SCREEN) {
-            if (DeviceInfo.EINK_SONY) {
-                val pref = getSharedPreferences(PREF_FILE, 0)
-                val res = pref.getString(PREF_LAST_BOOK, null)
-                if (res != null && res.isNotEmpty()) {
-                    val selector = SonyBookSelector(this)
-                    val l = selector.getContentId(res)
-                    if (l != 0L) {
-                        selector.setReadingTime(l)
-                        selector.requestBookSelection(l)
-                    }
-                }
-            }
-        }
-    }
 
 
     override fun onStart() {
@@ -230,16 +210,11 @@ class MainActivity : BaseActivity() {
         if (lastNoticeId >= CURRENT_NOTIFICATOIN_VERSION)
             return
         if (DeviceInfo.getSDKLevel() >= DeviceInfo.HONEYCOMB)
-            if (lastNoticeId <= 1)
-                notification1()
+            /*if (lastNoticeId <= 1)
+                notification1()*/
         lastNotificationId = CURRENT_NOTIFICATOIN_VERSION
     }
 
-    fun notification1() {
-        if (hasHardwareMenuKey())
-            return  // don't show notice if hard key present
-        showNotice(R.string.note1_reader_menu, { setSetting(Settings.PROP_TOOLBAR_LOCATION, Settings.VIEWER_TOOLBAR_SHORT_SIDE.toString(), false) }, { setSetting(Settings.PROP_TOOLBAR_LOCATION, Settings.VIEWER_TOOLBAR_NONE.toString(), false) })
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -255,12 +230,10 @@ class MainActivity : BaseActivity() {
         return true
     }
 
-    fun showBrowser(dir: String) {
-        FileBrowserActivity.showDirectory(this, Services.getScanner().pathToFileInfo(dir))
-    }
+
 
     fun showRecentBooks() {
-        FileBrowserActivity.showDirectory(this, Services.getScanner().getRecentDir())
+        FileBrowserActivity.showDirectory(this, Services.getScanner().recentDir)
     }
 
 

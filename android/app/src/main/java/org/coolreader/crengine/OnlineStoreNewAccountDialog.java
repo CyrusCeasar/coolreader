@@ -62,14 +62,14 @@ public class OnlineStoreNewAccountDialog extends BaseDialog {
         mInflater = LayoutInflater.from(getContext());
         ViewGroup view = (ViewGroup)mInflater.inflate(R.layout.online_store_new_account_dialog, null);
         
-        ImageButton btnBack = (ImageButton)view.findViewById(R.id.base_dlg_btn_back);
+        ImageButton btnBack = view.findViewById(R.id.base_dlg_btn_back);
         btnBack.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onNegativeButtonClick();
 			}
 		});
-        btnRegister = (Button)view.findViewById(R.id.btn_new_account);
+        btnRegister = view.findViewById(R.id.btn_new_account);
         btnRegister.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -77,22 +77,22 @@ public class OnlineStoreNewAccountDialog extends BaseDialog {
 			}
 		});
         
-        lblTitle = (TextView)view.findViewById(R.id.dlg_title);
-        lblDescription = (TextView)view.findViewById(R.id.lbl_description);
+        lblTitle = view.findViewById(R.id.dlg_title);
+        lblDescription = view.findViewById(R.id.lbl_description);
 
 		lblTitle.setText(mPlugin.getName());
 		lblDescription.setText(mPlugin.getDescription());
 		
-        edLogin = (EditText)view.findViewById(R.id.ed_login);
-        edPassword = (EditText)view.findViewById(R.id.ed_password);
-        edPassword2 = (EditText)view.findViewById(R.id.ed_password_repeat);
-        edFirstName = (EditText)view.findViewById(R.id.ed_first_name);
-        edLastName = (EditText)view.findViewById(R.id.ed_last_name);
-        edMiddleName = (EditText)view.findViewById(R.id.ed_middle_name);
-        edEmail = (EditText)view.findViewById(R.id.ed_email);
-        edCity = (EditText)view.findViewById(R.id.ed_city);
-        edPhone = (EditText)view.findViewById(R.id.ed_phone);
-        cbSubscribe = (CheckBox)view.findViewById(R.id.cb_subscribe); 
+        edLogin = view.findViewById(R.id.ed_login);
+        edPassword = view.findViewById(R.id.ed_password);
+        edPassword2 = view.findViewById(R.id.ed_password_repeat);
+        edFirstName = view.findViewById(R.id.ed_first_name);
+        edLastName = view.findViewById(R.id.ed_last_name);
+        edMiddleName = view.findViewById(R.id.ed_middle_name);
+        edEmail = view.findViewById(R.id.ed_email);
+        edCity = view.findViewById(R.id.ed_city);
+        edPhone = view.findViewById(R.id.ed_phone);
+        cbSubscribe = view.findViewById(R.id.cb_subscribe);
 
         
         edLogin.setText(mPlugin.getLogin());

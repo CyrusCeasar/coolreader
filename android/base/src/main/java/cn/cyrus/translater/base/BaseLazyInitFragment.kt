@@ -32,7 +32,7 @@ abstract class BaseLazyInitFragment : Fragment() {
                 init()
             }
         }
-        if ( mRootView!!.getParent()  != null) {
+        if ( mRootView!!.parent != null) {
             (mRootView as ViewGroup).removeAllViews()
         }
         return mRootView
@@ -102,16 +102,16 @@ abstract class BaseLazyInitFragment : Fragment() {
         }
 
         private fun initParams() {
-            setOrientation(LinearLayout.VERTICAL)
-            setGravity(Gravity.CENTER)
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
         }
 
         private fun initPromptContent() {
             val progressBar = ProgressBar(context)
             addView(progressBar)
             val textView = TextView(context)
-            textView.setText("初始化中....")
-            textView.setGravity(Gravity.CENTER)
+            textView.text = "初始化中...."
+            textView.gravity = Gravity.CENTER
             textView.setTextColor(Color.BLACK)
             addView(textView)
 
@@ -133,16 +133,16 @@ abstract class BaseLazyInitFragment : Fragment() {
             }
 
             private fun initParams() {
-                setOrientation(LinearLayout.VERTICAL)
-                setGravity(Gravity.CENTER)
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
             }
 
             private fun initPromptContent() {
                 val progressBar = ProgressBar(context)
                 addView(progressBar)
                 val textView = TextView(context)
-                textView.setText("loading....")
-                textView.setGravity(Gravity.CENTER)
+                textView.text = "loading...."
+                textView.gravity = Gravity.CENTER
                 textView.setTextColor(Color.BLACK)
                 addView(textView)
 

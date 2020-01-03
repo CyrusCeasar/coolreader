@@ -371,8 +371,8 @@ public class CoverpageManager {
 		}
 	}
 
-	private final static int COVERPAGE_UPDATE_DELAY = DeviceInfo.EINK_SCREEN ? 1000 : 100;
-	private final static int COVERPAGE_MAX_UPDATE_DELAY = DeviceInfo.EINK_SCREEN ? 3000 : 300;
+	private final static int COVERPAGE_UPDATE_DELAY =  100;
+	private final static int COVERPAGE_MAX_UPDATE_DELAY =  300;
 	private Runnable lastReadyNotifyTask;
 	private long firstReadyTimestamp;
 	private void notifyBitmapIsReady(final ImageItem file) {
@@ -599,10 +599,8 @@ public class CoverpageManager {
 			if (bookSize < 10)
 				return false;
 			int p = 100 * shadowSize / bookSize;
-			if (p >= 0 && p >= shadowSizePercent - 2 && p <= shadowSizePercent + 2)
-				return true;
-			return false;
-		}
+            return p >= 0 && p >= shadowSizePercent - 2 && p <= shadowSizePercent + 2;
+        }
 		@Override
 		public void draw(Canvas canvas) {
 			try {
@@ -683,7 +681,7 @@ public class CoverpageManager {
 							if (file.format.needCoverPageCaching())
 								db.saveBookCoverpage(file, imageData);
 						}
-						Services.getEngine().drawBookCover(buffer, imageData, fontFace, file.getTitleOrFileName(), file.authors, file.series, file.seriesNumber, DeviceInfo.EINK_SCREEN ? 4 : 16);
+						Services.getEngine().drawBookCover(buffer, imageData, fontFace, file.getTitleOrFileName(), file.authors, file.series, file.seriesNumber,  16);
 						BackgroundThread.instance().postGUI(new Runnable() {
 							@Override
 							public void run() {
@@ -718,7 +716,7 @@ public class CoverpageManager {
 	{
 		try {
 			Bitmap bmp = Bitmap.createBitmap(file.maxWidth, file.maxHeight, DeviceInfo.BUFFER_COLOR_FORMAT);
-			Services.getEngine().drawBookCover(bmp, data, fontFace, file.file.getTitleOrFileName(), file.file.authors, file.file.series, file.file.seriesNumber, DeviceInfo.EINK_SCREEN ? 4 : 16);
+			Services.getEngine().drawBookCover(bmp, data, fontFace, file.file.getTitleOrFileName(), file.file.authors, file.file.series, file.file.seriesNumber, 16);
 			return bmp;
 		} catch ( Exception e ) {
     		Log.e("cr3", "exception while decoding coverpage " + e.getMessage());

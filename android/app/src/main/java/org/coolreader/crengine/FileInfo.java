@@ -895,7 +895,7 @@ public class FileInfo implements Serializable {
 		files = null;
 	}
 	
-	public static enum SortOrder {
+	public enum SortOrder {
 		FILENAME(R.string.mi_book_sort_order_filename, new Comparator<FileInfo>() {
 			public int compare( FileInfo f1, FileInfo f2 )
 			{
@@ -947,12 +947,12 @@ public class FileInfo implements Serializable {
 		//================================================
 		private final Comparator<FileInfo> comparator;
 		public final int resourceId;
-		private SortOrder( int resourceId, Comparator<FileInfo> comparator )
+		SortOrder(int resourceId, Comparator<FileInfo> comparator)
 		{
 			this.resourceId = resourceId;
 			this.comparator = comparator;
 		}
-		private SortOrder( int resourceId, final SortOrder base )
+		SortOrder(int resourceId, final SortOrder base)
 		{
 			this.resourceId = resourceId;
 			this.comparator = new Comparator<FileInfo>() {
@@ -1143,12 +1143,9 @@ public class FileInfo implements Serializable {
 		if (size != other.size)
 			return false;
 		if (title == null) {
-			if (other.title != null)
-				return false;
-		} else if (!title.equals(other.title))
-			return false;
-		return true;
-	}
+            return other.title == null;
+		} else return title.equals(other.title);
+    }
 
 	@Override
 	public String toString()

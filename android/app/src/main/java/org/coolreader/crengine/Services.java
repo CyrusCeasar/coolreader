@@ -38,7 +38,7 @@ public class Services {
 			mEngine.setHyphenationDictionary(dict);
 
 			mScanner = new Scanner(activity, mEngine);
-			mScanner.initRoots(mEngine.getMountedRootsMap());
+			mScanner.initRoots(Engine.getMountedRootsMap());
 
 			mHistory = new History(mScanner);
 			mScanner.setDirScanEnabled(activity.settings().getBool(ReaderView.PROP_APP_BOOK_PROPERTY_SCAN_ENABLED, true));

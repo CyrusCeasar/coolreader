@@ -6,11 +6,11 @@ public interface OPDSConst {
 	 * Added by request of LitRes.
 	 * http://tr.reddit.com/r/Android/comments/17rtk0/moon_reader_was_blocked_from_play_market_by/
 	 */
-	final static int BLACK_LIST_MODE_NONE = 0;
-	final static int BLACK_LIST_MODE_WARN = 1;
-	final static int BLACK_LIST_MODE_FORCE = 2;
-	static int BLACK_LIST_MODE = BLACK_LIST_MODE_NONE;
-	final static String[] BLACK_LIST = {
+    int BLACK_LIST_MODE_NONE = 0;
+	int BLACK_LIST_MODE_WARN = 1;
+	int BLACK_LIST_MODE_FORCE = 2;
+	int BLACK_LIST_MODE = BLACK_LIST_MODE_NONE;
+	String[] BLACK_LIST = {
 		"http://109.163.230.117/opds",
 		"http://213.5.65.159/opds",
 		"http://flibusta.net/opds",

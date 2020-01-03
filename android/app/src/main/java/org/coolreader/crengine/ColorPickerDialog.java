@@ -39,7 +39,7 @@ import android.widget.TextView;
 public class ColorPickerDialog extends BaseDialog implements OnSeekBarChangeListener {
 
     public interface OnColorChangedListener {
-        public void colorChanged(int color);
+        void colorChanged(int color);
     }
 
 	private SeekBar mR;
@@ -73,13 +73,13 @@ public class ColorPickerDialog extends BaseDialog implements OnSeekBarChangeList
 		};
 		preview.setBackgroundDrawable(new LayerDrawable(layers));
 		
-		mR = (SeekBar) root.findViewById(R.id.r);
-		mG = (SeekBar) root.findViewById(R.id.g);
-		mB = (SeekBar) root.findViewById(R.id.b);
-		mHue = (SeekBar) root.findViewById(R.id.hue);
-		mSaturation = (SeekBar) root.findViewById(R.id.saturation);
-		mValue = (SeekBar) root.findViewById(R.id.value);
-		mLabel = (TextView) root.findViewById(R.id.value_label);
+		mR = root.findViewById(R.id.r);
+		mG = root.findViewById(R.id.g);
+		mB = root.findViewById(R.id.b);
+		mHue = root.findViewById(R.id.hue);
+		mSaturation = root.findViewById(R.id.saturation);
+		mValue = root.findViewById(R.id.value);
+		mLabel = root.findViewById(R.id.value_label);
 		
 		mColor = color;
 		int r = Color.red(mColor);

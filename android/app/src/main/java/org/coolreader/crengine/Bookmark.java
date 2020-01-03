@@ -89,10 +89,8 @@ public class Bookmark {
 				return false;
 		} else if (!titleText.equals(other.titleText))
 			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
+        return type == other.type;
+    }
 
 	public String getUniqueKey() {
 		switch (type) {
@@ -215,10 +213,8 @@ public class Bookmark {
 			return false;
 		if (type < TYPE_LAST_POSITION || type > TYPE_CORRECTION)
 			return false;
-		if ((endPos == null || endPos.length() == 0) && (type == TYPE_COMMENT || type == TYPE_CORRECTION))
-			return false;
-		return true;
-	}
+        return (endPos != null && endPos.length() != 0) || (type != TYPE_COMMENT && type != TYPE_CORRECTION);
+    }
 
 	public static final int TYPE_LAST_POSITION = 0;
 	public static final int TYPE_POSITION = 1;

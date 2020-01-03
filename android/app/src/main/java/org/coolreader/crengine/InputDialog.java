@@ -16,9 +16,9 @@ public class InputDialog extends BaseDialog {
 		boolean validate( String s ) throws Exception;
 		void onOk( String s ) throws Exception;
 		void onCancel();
-	};
-	
-	private InputHandler handler;
+	}
+
+    private InputHandler handler;
 	private EditText input;
 	int minValue;
 	int maxValue;
@@ -30,12 +30,12 @@ public class InputDialog extends BaseDialog {
 		this.maxValue = maxValue;
         LayoutInflater mInflater = LayoutInflater.from(getContext());
         ViewGroup layout = (ViewGroup)mInflater.inflate(R.layout.line_edit_dlg, null);
-        input = (EditText)layout.findViewById(R.id.input_field);
-        TextView promptView = (TextView)layout.findViewById(R.id.lbl_prompt);
+        input = layout.findViewById(R.id.input_field);
+        TextView promptView = layout.findViewById(R.id.lbl_prompt);
         if (promptView != null) {
         	promptView.setText(prompt);
         }
-        SeekBar seekBar = (SeekBar)layout.findViewById(R.id.goto_position_seek_bar);
+        SeekBar seekBar = layout.findViewById(R.id.goto_position_seek_bar);
         if (seekBar != null) {
         	seekBar.setMax(maxValue - minValue);
         	seekBar.setProgress(currentValue);

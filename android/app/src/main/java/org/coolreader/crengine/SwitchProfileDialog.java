@@ -110,10 +110,10 @@ public class SwitchProfileDialog extends BaseDialog {
 				LayoutInflater inflater = LayoutInflater.from(getContext());
 				view = inflater.inflate(R.layout.profile_item, null);
 			} else {
-				view = (View)convertView;
+				view = convertView;
 			}
-			RadioButton cb = (RadioButton)view.findViewById(R.id.option_value_check);
-			TextView title = (TextView)view.findViewById(R.id.option_value_text);
+			RadioButton cb = view.findViewById(R.id.option_value_check);
+			TextView title = view.findViewById(R.id.option_value_text);
 			cb.setChecked(isCurrentItem);
 			cb.setFocusable(false);
 			cb.setFocusableInTouchMode(false);

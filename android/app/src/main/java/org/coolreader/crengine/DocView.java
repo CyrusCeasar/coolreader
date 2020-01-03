@@ -308,13 +308,13 @@ public class DocView {
 	 */
 	public void getPageImage(Bitmap bitmap) {
 		synchronized(mutex) {
-			getPageImageInternal(bitmap, DeviceInfo.EINK_SCREEN ? 4 : 32);
+			getPageImageInternal(bitmap,  32);
 		}
 	}
 
 	private void getPageImageTexture(int[] buf, int width, int height) {
 		synchronized(mutex) {
-			getPageImageTextureInternal(buf, width, height, DeviceInfo.EINK_SCREEN ? 4 : 32);
+			getPageImageTextureInternal(buf, width, height,  32);
 		}
 	}
 
@@ -359,7 +359,7 @@ public class DocView {
 	 */
 	public boolean drawImage(Bitmap bitmap, ImageInfo imageInfo) {
 		synchronized(mutex) {
-			return drawImageInternal(bitmap, DeviceInfo.EINK_SCREEN ? 4 : 32, imageInfo);
+			return drawImageInternal(bitmap, 32, imageInfo);
 		}
 	}
 

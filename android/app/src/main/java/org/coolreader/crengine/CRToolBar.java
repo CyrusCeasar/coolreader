@@ -87,8 +87,8 @@ public class CRToolBar extends ViewGroup {
 
 	private LinearLayout inflateItem(ReaderAction action) {
 		final LinearLayout view = (LinearLayout)inflater.inflate(R.layout.popup_toolbar_item, null);
-		ImageView icon = (ImageView)view.findViewById(R.id.action_icon);
-		TextView label = (TextView)view.findViewById(R.id.action_label);
+		ImageView icon = view.findViewById(R.id.action_icon);
+		TextView label = view.findViewById(R.id.action_label);
 		icon.setImageResource(action != null ? action.iconId : R.drawable.cr3_button_more);
 		//icon.setMinimumHeight(buttonHeight);
 		icon.setMinimumWidth(buttonWidth);
@@ -541,10 +541,8 @@ public class CRToolBar extends ViewGroup {
 			@Override
 			public boolean onKey(View view, int keyCode, KeyEvent event) {
 				if (event.getAction() == KeyEvent.ACTION_DOWN) {
-					if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_BACK) {
-						//popup.dismiss();
-						return true;
-					}
+                    //popup.dismiss();
+                    return keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_BACK;
 				} else if (event.getAction() == KeyEvent.ACTION_UP) {
 					if (keyCode == KeyEvent.KEYCODE_MENU && foundLongMenuAction != null && event.getDownTime() >= 500) {
 						popup.dismiss();

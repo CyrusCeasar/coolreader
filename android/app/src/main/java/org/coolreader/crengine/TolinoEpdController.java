@@ -19,17 +19,5 @@ public class TolinoEpdController {
     return false;
   }
 
-  public static void setMode(View view, int mode) {
-    switch (mode) {
-      case EinkScreen.cmodeClear:
-	ScreenHelper.FullRefresh();
-	break;
-      case EinkScreen.cmodeOneshot:
-	partialRefresh(view, ScreenHelper.NATIVE_UPDATE_MODE_FULL, ScreenHelper.NATIVE_WAVEFORM_MODE_GC16);
-	break;
-      case EinkScreen.cmodeActive:
-	partialRefresh(view, ScreenHelper.NATIVE_UPDATE_MODE_FULL, ScreenHelper.NATIVE_WAVEFORM_MODE_A2);
-	break;
-    }  
-  }
+
 }

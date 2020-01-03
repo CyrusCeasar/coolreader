@@ -38,11 +38,11 @@ public class BookSearchDialog extends BaseDialog {
 		setTitle(mCoolReader.getString( R.string.dlg_book_search));
 		mInflater = LayoutInflater.from(getContext());
 		View view = mInflater.inflate(R.layout.book_search_dialog, null);
-		authorEdit = (EditText)view.findViewById(R.id.search_text_author);
-		titleEdit = (EditText)view.findViewById(R.id.search_text_title);
-		seriesEdit = (EditText)view.findViewById(R.id.search_text_series);
-		filenameEdit = (EditText)view.findViewById(R.id.search_text_filename);
-		statusText = (TextView)view.findViewById(R.id.search_status);
+		authorEdit = view.findViewById(R.id.search_text_author);
+		titleEdit = view.findViewById(R.id.search_text_title);
+		seriesEdit = view.findViewById(R.id.search_text_series);
+		filenameEdit = view.findViewById(R.id.search_text_filename);
+		statusText = view.findViewById(R.id.search_status);
 		TextWatcher watcher = new TextWatcher() {
 
 			@Override
@@ -95,7 +95,7 @@ public class BookSearchDialog extends BaseDialog {
 	}
 	
 	public interface SearchCallback {
-		public void done( FileInfo[] results );
+		void done(FileInfo[] results);
 	}
 
 //	private static String addWildcard( String s, boolean before, boolean after ) {

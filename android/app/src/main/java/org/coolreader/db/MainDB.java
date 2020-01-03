@@ -1288,8 +1288,8 @@ public class MainDB extends BaseDB {
 			add("format", fromFormat(newValue.format), fromFormat(oldValue.format));
 			add("filesize", (long)newValue.size, (long)oldValue.size);
 			add("arcsize", (long)newValue.arcsize, (long)oldValue.arcsize);
-			add("last_access_time", (long)newValue.lastAccessTime, (long)oldValue.lastAccessTime);
-			add("create_time", (long)newValue.createTime, (long)oldValue.createTime);
+			add("last_access_time", newValue.lastAccessTime, oldValue.lastAccessTime);
+			add("create_time", newValue.createTime, oldValue.createTime);
 			add("flags", (long)newValue.flags, (long)oldValue.flags);
 			add("language", newValue.language, oldValue.language);
 			if (fields.size() == 0)

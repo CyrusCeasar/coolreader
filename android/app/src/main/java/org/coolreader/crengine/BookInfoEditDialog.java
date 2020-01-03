@@ -239,21 +239,21 @@ public class BookInfoEditDialog extends BaseDialog {
         FileInfo file = mBookInfo.getFileInfo();
         ViewGroup view = (ViewGroup)mInflater.inflate(R.layout.book_info_edit_dialog, null);
         
-        ImageButton btnBack = (ImageButton)view.findViewById(R.id.base_dlg_btn_back);
+        ImageButton btnBack = view.findViewById(R.id.base_dlg_btn_back);
         btnBack.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onNegativeButtonClick();
 			}
 		});
-        ImageButton btnOpenBook = (ImageButton)view.findViewById(R.id.btn_open_book);
+        ImageButton btnOpenBook = view.findViewById(R.id.btn_open_book);
         btnOpenBook.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onPositiveButtonClick();
 			}
 		});
-        ImageButton btnDeleteBook = (ImageButton)view.findViewById(R.id.book_delete);
+        ImageButton btnDeleteBook = view.findViewById(R.id.book_delete);
         btnDeleteBook.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -262,16 +262,16 @@ public class BookInfoEditDialog extends BaseDialog {
 			}
 		});
         
-        edTitle = (EditText)view.findViewById(R.id.book_title);
-        edSeriesName = (EditText)view.findViewById(R.id.book_series_name);
-        edSeriesNumber = (EditText)view.findViewById(R.id.book_series_number);
-        rbBookRating = (RatingBar)view.findViewById(R.id.book_rating);
-        rgState = (RadioGroup)view.findViewById(R.id.book_state);
+        edTitle = view.findViewById(R.id.book_title);
+        edSeriesName = view.findViewById(R.id.book_series_name);
+        edSeriesNumber = view.findViewById(R.id.book_series_number);
+        rbBookRating = view.findViewById(R.id.book_rating);
+        rgState = view.findViewById(R.id.book_state);
         int state = file.getReadingState();
         int[] stateButtons = new int[] {R.id.book_state_new, R.id.book_state_toread, R.id.book_state_reading, R.id.book_state_finished};
         rgState.check(state >= 0 && state < stateButtons.length ? stateButtons[state] : R.id.book_state_new);
 
-        final ImageView image = (ImageView)view.findViewById(R.id.book_cover);
+        final ImageView image = view.findViewById(R.id.book_cover);
         image.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -294,7 +294,7 @@ public class BookInfoEditDialog extends BaseDialog {
 			}
 		}); 
 
-        final ImageView progress = (ImageView)view.findViewById(R.id.book_progress);
+        final ImageView progress = view.findViewById(R.id.book_progress);
         int percent = -1;
         Bookmark bmk = mBookInfo.getLastPosition();
         if (bmk != null)
@@ -317,12 +317,12 @@ public class BookInfoEditDialog extends BaseDialog {
         edSeriesName.setText(file.series);
         if (file.series != null && file.series.trim().length() > 0 && file.seriesNumber > 0)
         	edSeriesNumber.setText(String.valueOf(file.seriesNumber));
-        LinearLayout llBookAuthorsList = (LinearLayout)view.findViewById(R.id.book_authors_list);
+        LinearLayout llBookAuthorsList = view.findViewById(R.id.book_authors_list);
         authors = new AuthorList(llBookAuthorsList, file.authors);
         rbBookRating.setRating(file.getRate());
         
-    	ImageButton btnRemoveRecent = ((ImageButton)view.findViewById(R.id.book_recent_delete));
-    	ImageButton btnOpenFolder = ((ImageButton)view.findViewById(R.id.book_folder_open));
+    	ImageButton btnRemoveRecent = view.findViewById(R.id.book_recent_delete);
+    	ImageButton btnOpenFolder = view.findViewById(R.id.book_folder_open);
         if (mIsRecentBooksItem) {
         	btnRemoveRecent.setOnClickListener(new View.OnClickListener() {
 				@Override

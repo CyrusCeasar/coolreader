@@ -14,11 +14,12 @@ fun getDiskCacheDir(context: Context, uniqueName: String): File {
     val b1 = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
     var b2 = !isExternalStorageRemovable()
     val cachePath: String = if (b1 || b2) {
-        context.getExternalCacheDir()!!.getPath()
-    } else {context.getCacheDir().getPath()}
+        context.externalCacheDir!!.path
+    } else {context.cacheDir.path
+    }
     return File(cachePath + File.separator + uniqueName)
 }
 
 fun getDeviceId(context:Context):String{
-   return Secure.getString(context.getContentResolver(), Secure.ANDROID_ID)
+   return Secure.getString(context.contentResolver, Secure.ANDROID_ID)
 }

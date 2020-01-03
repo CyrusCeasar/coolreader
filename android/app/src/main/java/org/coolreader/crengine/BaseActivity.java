@@ -24,7 +24,6 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
-import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -138,32 +137,26 @@ public class BaseActivity extends AppCompatActivity implements Settings {
 
         log.i("diagonal=" + diagonalInches + "  isSmartphone=" + isSmartphone());
         //log.i("CoolReaderActivity.window=" + getWindow());
-        if (!DeviceInfo.EINK_SCREEN) {
-            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-            lp.alpha = 1.0f;
-            lp.dimAmount = 0.0f;
-            if (!DeviceInfo.EINK_SCREEN)
-                lp.format = DeviceInfo.PIXEL_FORMAT;
-            lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
-            lp.horizontalMargin = 0;
-            lp.verticalMargin = 0;
-            lp.windowAnimations = 0;
-            lp.layoutAnimationParameters = null;
-            lp.memoryType = WindowManager.LayoutParams.MEMORY_TYPE_NORMAL;
-            getWindow().setAttributes(lp);
-        }
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.alpha = 1.0f;
+        lp.dimAmount = 0.0f;
+        lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+        lp.horizontalMargin = 0;
+        lp.verticalMargin = 0;
+        lp.windowAnimations = 0;
+        lp.layoutAnimationParameters = null;
+        lp.memoryType = WindowManager.LayoutParams.MEMORY_TYPE_NORMAL;
+        getWindow().setAttributes(lp);
 
         // load settings
         Properties props = mSettingsManager.mSettings;
-        String theme = props.getProperty(ReaderView.PROP_APP_THEME, DeviceInfo.FORCE_LIGHT_THEME ? "WHITE" : "LIGHT");
         String lang = props.getProperty(ReaderView.PROP_APP_LOCALE, Lang.DEFAULT.code);
         setLanguage(lang);
-        setCurrentTheme(theme);
 
 
         backlightControl.setScreenBacklightDuration(props.getInt(ReaderView.PROP_APP_SCREEN_BACKLIGHT_LOCK, 3));
 
-        setFullscreen(props.getBool(ReaderView.PROP_APP_FULLSCREEN, (DeviceInfo.EINK_SCREEN ? true : false)));
+        setFullscreen(props.getBool(ReaderView.PROP_APP_FULLSCREEN,  false));
         int orientation = props.getInt(ReaderView.PROP_APP_SCREEN_ORIENTATION, 5); //(DeviceInfo.EINK_SCREEN?0:4)
         if (orientation < 0 || orientation > 5)
             orientation = 5;
@@ -204,14 +197,10 @@ public class BaseActivity extends AppCompatActivity implements Settings {
         mIsStarted = false;
         mPaused = true;
 //		setScreenUpdateMode(-1, mReaderView);
-        einkRefresh();
         releaseBacklightControl();
         super.onPause();
     }
 
-    public void einkRefresh() {
-        EinkScreen.Refresh();
-    }
 
 
     public static String PREF_FILE = "CR3LastBook";
@@ -259,7 +248,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     private float diagonalInches = 4;
 
 
-    private InterfaceTheme currentTheme = DeviceInfo.FORCE_LIGHT_THEME ? InterfaceTheme.WHITE : InterfaceTheme.LIGHT;
+    private InterfaceTheme currentTheme =  InterfaceTheme.LIGHT;
 
     public InterfaceTheme getCurrentTheme() {
         return currentTheme;
@@ -338,10 +327,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
             WindowManager.LayoutParams attrs = wnd.getAttributes();
             attrs.screenOrientation = screenOrientation;
             wnd.setAttributes(attrs);
-            if (DeviceInfo.EINK_SCREEN) {
-                //TODO:
-                //EinkScreen.ResetController(mReaderView);
-            }
+
 
         }
     }
@@ -371,9 +357,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     public boolean isLandscape() {
         if (screenOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
             return true;
-        if (DeviceInfo.getSDKLevel() >= 9 && isReverseLandscape())
-            return true;
-        return false;
+        return DeviceInfo.getSDKLevel() >= 9 && isReverseLandscape();
     }
 
     final static public int ActivityInfo_SCREEN_ORIENTATION_REVERSE_PORTRAIT = 9;
@@ -468,10 +452,6 @@ public class BaseActivity extends AppCompatActivity implements Settings {
             backlightControl.setScreenBacklightDuration(n);
         } else if (key.equals(PROP_NIGHT_MODE)) {
             setNightMode(flg);
-        } else if (key.equals(PROP_APP_SCREEN_UPDATE_MODE)) {
-            backlightControl.setScreenUpdateMode(stringToInt(value, 0), getContentView());
-        } else if (key.equals(PROP_APP_SCREEN_UPDATE_INTERVAL)) {
-            backlightControl.setScreenUpdateInterval(stringToInt(value, 10), getContentView());
         } else if (key.equals(PROP_APP_THEME)) {
             setCurrentTheme(value);
         } else if (key.equals(PROP_APP_SCREEN_ORIENTATION)) {
@@ -482,7 +462,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
                 // ignore
             }
             setScreenOrientation(orientation);
-        } else if (!DeviceInfo.EINK_SCREEN && PROP_APP_SCREEN_BACKLIGHT.equals(key)) {
+        } else if ( PROP_APP_SCREEN_BACKLIGHT.equals(key)) {
             try {
                 final int n = Integer.valueOf(value);
                 // delay before setting brightness
@@ -583,13 +563,10 @@ public class BaseActivity extends AppCompatActivity implements Settings {
 
     public void showToast(String msg, int duration) {
         log.v("showing toast: " + msg);
-        if (DeviceInfo.USE_CUSTOM_TOAST) {
-            ToastView.showToast(getContentView(), msg, Toast.LENGTH_LONG, ((ReaderApplication) getApplication()).settings().getInt(ReaderView.PROP_FONT_SIZE, 20));
-        } else {
+
             // classic Toast
             Toast toast = Toast.makeText(this, msg, duration);
             toast.show();
-        }
     }
 
 
@@ -668,21 +645,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     private static final Locale defaultLocale = Locale.getDefault();
 
 
-    static public int stringToInt(String value, int defValue) {
-        if (value == null)
-            return defValue;
-        try {
-            return Integer.valueOf(value);
-        } catch (NumberFormatException e) {
-            return defValue;
-        }
-    }
 
-
-    public void showNotice(int questionResourceId, final Runnable action, final Runnable cancelAction) {
-        NoticeDialog dlg = new NoticeDialog(this, action, cancelAction);
-        dlg.show();
-    }
 
     public void askConfirmation(int questionResourceId, final Runnable action) {
         askConfirmation(questionResourceId, action, null);
@@ -805,39 +768,7 @@ public class BaseActivity extends AppCompatActivity implements Settings {
     }
 
 
-    private Boolean hasHardwareMenuKey = null;
 
-    public boolean hasHardwareMenuKey() {
-        if (hasHardwareMenuKey == null) {
-            ViewConfiguration vc = ViewConfiguration.get(this);
-            if (DeviceInfo.getSDKLevel() >= 14) {
-                //boolean vc.hasPermanentMenuKey();
-                try {
-                    Method m = vc.getClass().getMethod("hasPermanentMenuKey", new Class<?>[]{});
-                    try {
-                        hasHardwareMenuKey = (Boolean) m.invoke(vc, new Object[]{});
-                    } catch (IllegalArgumentException e) {
-                        hasHardwareMenuKey = false;
-                    } catch (IllegalAccessException e) {
-                        hasHardwareMenuKey = false;
-                    } catch (InvocationTargetException e) {
-                        hasHardwareMenuKey = false;
-                    }
-                } catch (NoSuchMethodException e) {
-                    hasHardwareMenuKey = false;
-                }
-            }
-            if (hasHardwareMenuKey == null) {
-                if (DeviceInfo.EINK_SCREEN)
-                    hasHardwareMenuKey = false;
-                else if (DeviceInfo.getSDKLevel() < DeviceInfo.ICE_CREAM_SANDWICH)
-                    hasHardwareMenuKey = true;
-                else
-                    hasHardwareMenuKey = false;
-            }
-        }
-        return hasHardwareMenuKey;
-    }
-    // Dictionary support
+
 
 }

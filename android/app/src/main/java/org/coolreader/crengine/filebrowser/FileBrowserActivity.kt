@@ -12,7 +12,6 @@ import org.coolreader.crengine.reader.ReaderView
 
 class FileBrowserActivity : BaseActivity() {
 
-    val OPEN_DIR_PARAM = "DIR_TO_OPEN"
     private val BOOK_LOCATION_PREFIX = "@book:"
     private val DIRECTORY_LOCATION_PREFIX = "@dir:"
     var mBrowser: FileBrowser? = null
@@ -59,7 +58,7 @@ class FileBrowserActivity : BaseActivity() {
                     ReaderCommand.DCMD_FILE_BROWSER_ROOT -> mBrowser!!.showDirectory(Services.getScanner().libraryItems[0],null)
                     ReaderCommand.DCMD_FILE_BROWSER_UP -> mBrowser!!.showParentDirectory()
                     ReaderCommand.DCMD_OPDS_CATALOGS -> mBrowser!!.showOPDSRootDirectory()
-                    ReaderCommand.DCMD_RECENT_BOOKS_LIST -> mBrowser!!.showDirectory(Services.getScanner().getRecentDir(), null)
+                    ReaderCommand.DCMD_RECENT_BOOKS_LIST -> mBrowser!!.showDirectory(Services.getScanner().recentDir, null)
                     ReaderCommand.DCMD_SEARCH -> mBrowser!!.showFindBookDialog()
                     ReaderCommand.DCMD_OPTIONS_DIALOG -> showBrowserOptionsDialog()
                     ReaderCommand.DCMD_SCAN_DIRECTORY_RECURSIVE -> mBrowser!!.scanCurrentDirectoryRecursive()
@@ -97,14 +96,6 @@ class FileBrowserActivity : BaseActivity() {
         }
     }
 
-    fun askDeleteCatalog(item: FileInfo?) {
-        askConfirmation(R.string.win_title_confirm_catalog_delete) {
-            if (item != null && item.isOPDSDir) {
-                db!!.removeOPDSCatalog(item.id)
-                directoryUpdated(Services.getScanner().createRecentRoot())
-            }
-        }
-    }
 
 
     fun editBookInfo(currDirectory: FileInfo, item: FileInfo) {
@@ -133,26 +124,11 @@ class FileBrowserActivity : BaseActivity() {
         directoryUpdated(dir, null)
     }
 
-    fun editOPDSCatalog(opds: FileInfo?) {
-        var opds = opds
-        if (opds == null) {
-            opds = FileInfo()
-            opds.isDirectory = true
-            opds.pathname = FileInfo.OPDS_DIR_PREFIX + "http://"
-            opds.filename = "New Catalog"
-            opds.isListed = true
-            opds.isScanned = true
-            opds.parent = Services.getScanner().opdsRoot
-        }
-        val dlg = OPDSCatalogEditDialog(this, opds, Runnable { refreshOPDSRootDirectory(true) })
-        dlg.show()
-    }
 
     fun refreshOPDSRootDirectory(showInBrowser: Boolean) {
         if (mBrowser != null)
             mBrowser!!.refreshOPDSRootDirectory(showInBrowser)
-        /* if (mHomeFrame != null)
-             mHomeFrame!!.refreshOnlineCatalogs()*/
+
     }
 
     fun setBrowserTitle(title: String) {
@@ -224,8 +200,5 @@ class FileBrowserActivity : BaseActivity() {
         showBrowser(path)
     }
 
-    fun showOnlineCatalogs() {
-        runInBrowser(Runnable { mBrowser!!.showOPDSRootDirectory() })
-    }
 
 }

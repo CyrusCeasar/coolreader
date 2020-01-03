@@ -95,7 +95,7 @@ public class ProgressDialog extends AlertDialog {
                 }
             };
             View view = inflater.inflate(R.layout.alert_dialog_progress, null);
-            mProgress = (ProgressBar) view.findViewById(R.id.progress);
+            mProgress = view.findViewById(R.id.progress);
             //view.setBackgroundColor(Color.WHITE);
             setView(view);
 //    		if ( DeviceInfo.FORCE_LIGHT_THEME ) {
@@ -104,8 +104,8 @@ public class ProgressDialog extends AlertDialog {
 //    		}
        } else {
             View view = inflater.inflate(R.layout.progress_dialog, null);
-            mProgress = (ProgressBar) view.findViewById(R.id.progress);
-            mMessageView = (TextView) view.findViewById(R.id.message);
+            mProgress = view.findViewById(R.id.progress);
+            mMessageView = view.findViewById(R.id.message);
             setView(view);
         }
         if (mMax > 0) {

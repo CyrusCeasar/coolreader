@@ -253,7 +253,6 @@ public class ScreenBacklightControl implements Settings{
             }
         };
         BackgroundThread.instance().postGUI(task, 1);
-        //BackgroundThread.instance().postGUI(task, 10);
     }
     public void setKeyBacklightDisabled(boolean disabled) {
         keyBacklightOff = disabled;
@@ -295,30 +294,10 @@ public class ScreenBacklightControl implements Settings{
         }
     }
 
-    private int mScreenUpdateMode = 0;
-    public int getScreenUpdateMode() {
-        return mScreenUpdateMode;
-    }
-    public void setScreenUpdateMode( int screenUpdateMode, View view ) {
-        //if (mReaderView != null) {
-        mScreenUpdateMode = screenUpdateMode;
-        if (EinkScreen.UpdateMode != screenUpdateMode || EinkScreen.UpdateMode == 2) {
-            EinkScreen.ResetController(screenUpdateMode, view);
-        }
-        //}
-    }
+
+
 
     private int screenBacklightDuration = DEF_SCREEN_BACKLIGHT_TIMER_INTERVAL;
-    private int mScreenUpdateInterval = 0;
-    public int getScreenUpdateInterval() {
-        return mScreenUpdateInterval;
-    }
-    public void setScreenUpdateInterval( int screenUpdateInterval, View view ) {
-        mScreenUpdateInterval = screenUpdateInterval;
-        if (EinkScreen.UpdateModeInterval != screenUpdateInterval) {
-            EinkScreen.UpdateModeInterval = screenUpdateInterval;
-            EinkScreen.ResetController(mScreenUpdateMode, view);
-        }
-    }
+
 
 }

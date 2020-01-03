@@ -101,7 +101,7 @@ public enum ReaderCommand
 	;
 
  public 	final int nativeId;
-	private ReaderCommand( int nativeId )
+	ReaderCommand(int nativeId)
 	{
 		this.nativeId = nativeId;
 	}

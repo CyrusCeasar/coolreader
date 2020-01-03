@@ -114,12 +114,12 @@ public class TOCDlg extends BaseDialog {
 					//view = new TextView(getContext());
 					view = mInflater.inflate(isCurrentItem ? R.layout.toc_item_current : R.layout.toc_item, null);
 				} else {
-					view = (View)convertView;
+					view = convertView;
 				}
-				TextView pageTextView = (TextView)view.findViewById(R.id.toc_page);
-				TextView titleTextView = (TextView)view.findViewById(R.id.toc_title);
-				TextView marginTextView = (TextView)view.findViewById(R.id.toc_level_margin);
-				ImageView expandImageView = (ImageView)view.findViewById(R.id.toc_expand_icon);
+				TextView pageTextView = view.findViewById(R.id.toc_page);
+				TextView titleTextView = view.findViewById(R.id.toc_title);
+				TextView marginTextView = view.findViewById(R.id.toc_level_margin);
+				ImageView expandImageView = view.findViewById(R.id.toc_expand_icon);
 				StringBuilder buf = new StringBuilder(item.getLevel()*2);
 				for ( int i=1; i<item.getLevel(); i++ )
 					buf.append("  ");

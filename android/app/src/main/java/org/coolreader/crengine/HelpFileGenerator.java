@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import org.coolreader.R;
@@ -85,12 +86,8 @@ public class HelpFileGenerator {
 			return null;
 		String content = filterTemplate(template);
 		byte[] data;
-		try {
-			data = content.getBytes("UTF8");
-		} catch (UnsupportedEncodingException e1) {
-			return null;
-		}
-		File fn = getHelpFileName(dir);
+        data = content.getBytes(StandardCharsets.UTF_8);
+        File fn = getHelpFileName(dir);
 		try {
 			FileOutputStream os = new FileOutputStream(fn);
 			os.write(data);
@@ -117,7 +114,7 @@ public class HelpFileGenerator {
 		SETTING(1),
 		;
 		public final int paramCount;
-		private MacroType(int paramCount) {
+		MacroType(int paramCount) {
 			this.paramCount = paramCount;
 		}
 		static MacroType byName(String name) {
@@ -230,12 +227,12 @@ public class HelpFileGenerator {
 		}
 		return 0;
 	}
-	
-	private static final char ENCODE[] = {
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-        'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/',
+
+    private static final char[] ENCODE = {
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+            'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+            'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/',
     };	
 
 	private void encodeImage(StringBuilder buf, byte[] data) {

@@ -1,11 +1,20 @@
 package org.coolreader.crengine;
 
+import android.app.AlertDialog;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.util.Log;
+
+import org.coolreader.R;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,15 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.zip.ZipEntry;
-
-import org.coolreader.R;
-
-import android.Manifest;
-import android.app.AlertDialog;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.os.Environment;
-import android.util.Log;
 
 /**
  * CoolReaderActivity Engine class.
@@ -111,11 +111,11 @@ public class Engine {
     }
 
     public interface EngineTask {
-        public void work() throws Exception;
+        void work() throws Exception;
 
-        public void done();
+        void done();
 
-        public void fail(Exception e);
+        void fail(Exception e);
     }
 
     public final static boolean LOG_ENGINE_TASKS = false;
@@ -428,11 +428,11 @@ public class Engine {
             int available = is.available();
             if (available <= 0)
                 return null;
-            byte buf[] = new byte[available];
+            byte[] buf = new byte[available];
             if (is.read(buf) != available)
                 throw new IOException("Resource not read fully");
             is.close();
-            String utf8 = new String(buf, 0, available, "UTF8");
+            String utf8 = new String(buf, 0, available, StandardCharsets.UTF_8);
             return utf8;
         } catch (Exception e) {
             log.e("cannot load resource");
@@ -469,7 +469,7 @@ public class Engine {
             int available = is.available();
             if (available <= 0)
                 return null;
-            byte buf[] = new byte[available];
+            byte[] buf = new byte[available];
             if (is.read(buf) != available)
                 throw new IOException("Resource not read fully");
             is.close();
@@ -691,8 +691,6 @@ public class Engine {
             return true;
         }
     }
-
-    ;
 
     private HyphDict currentHyphDict = null;
     private String currentHyphLanguage = null;
@@ -929,7 +927,7 @@ public class Engine {
         String cacheDirName = null;
         // SD card
         cacheDirName = createCacheDir(
-                DeviceInfo.EINK_NOOK ? new File("/media/") : Environment.getExternalStorageDirectory(), CACHE_BASE_DIR_NAME);
+                Environment.getExternalStorageDirectory(), CACHE_BASE_DIR_NAME);
         // non-standard SD mount points
         log.i(cacheDirName
                 + " will be used for cache, maxCacheSize=" + CACHE_DIR_SIZE);
@@ -962,17 +960,13 @@ public class Engine {
             return false;
         String normalized = pathCorrector.normalizeIfPossible(path);
         String sdpath = pathCorrector.normalizeIfPossible(Environment.getExternalStorageDirectory().getAbsolutePath());
-        if (sdpath != null && sdpath.equals(normalized))
-            return true;
-        return false;
+        return sdpath != null && sdpath.equals(normalized);
     }
 
     public static boolean isExternalStorageDir(String path) {
         if (path == null)
             return false;
-        if (path.contains("/ext"))
-            return true;
-        return false;
+        return path.contains("/ext");
     }
 
     private static boolean addMountRoot(Map<String, String> list, String path, String name) {
@@ -1553,8 +1547,8 @@ public class Engine {
         return new ProgressControl(resourceId);
     }
 
-    private static final int PROGRESS_UPDATE_INTERVAL = DeviceInfo.EINK_SCREEN ? 4000 : 500;
-    private static final int PROGRESS_SHOW_INTERVAL = DeviceInfo.EINK_SCREEN ? 4000 : 1500;
+    private static final int PROGRESS_UPDATE_INTERVAL = 500;
+    private static final int PROGRESS_SHOW_INTERVAL = 1500;
 
     public class ProgressControl {
         private final int resourceId;

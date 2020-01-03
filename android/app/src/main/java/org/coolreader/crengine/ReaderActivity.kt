@@ -14,12 +14,6 @@ import org.coolreader.crengine.reader.ReaderView
 
 class ReaderActivity : BaseActivity() {
 
-    // ========================================================================================
-    // TTS
-    internal var tts: TTS? = null
-    internal var ttsInitialized: Boolean = false
-    internal var ttsError: Boolean = false
-
 
     var readerView: ReaderView? = null
         private set
@@ -119,12 +113,7 @@ class ReaderActivity : BaseActivity() {
 
     override fun onDestroy() {
 
-        if (tts != null) {
-            tts!!.shutdown()
-            tts = null
-            ttsInitialized = false
-            ttsError = false
-        }
+
         if (readerView != null)
             readerView!!.close()
         if (intentReceiver != null) {
@@ -186,7 +175,6 @@ class ReaderActivity : BaseActivity() {
         super.onStart()
         PhoneStateReceiver.setPhoneActivityHandler {
             if (readerView != null) {
-                readerView!!.stopTTS()
                 readerView!!.save()
             }
         }
@@ -199,36 +187,7 @@ class ReaderActivity : BaseActivity() {
             readerView!!.onAppResume()
     }
 
-    fun initTTS(listener: TTS.OnTTSCreatedListener): Boolean {
-        if (ttsError || !TTS.isFound()) {
-            if (!ttsError) {
-                ttsError = true
-                showToast("TTS is not available")
-            }
-            return false
-        }
-        if (ttsInitialized && tts != null) {
-            BackgroundThread.instance().executeGUI { listener.onCreated(tts) }
-            return true
-        }
-        if (ttsInitialized && tts != null) {
-            showToast("TTS initialization is already called")
-            return false
-        }
-        showToast("Initializing TTS")
-        tts = TTS(this, TTS.OnInitListener { status ->
-            //tts.shutdown();
-            L.i("TTS init status: $status")
-            if (status == TTS.SUCCESS) {
-                ttsInitialized = true
-                BackgroundThread.instance().executeGUI { listener.onCreated(tts) }
-            } else {
-                ttsError = true
-                BackgroundThread.instance().executeGUI { showToast("Cannot initialize TTS") }
-            }
-        })
-        return true
-    }
+
 
     fun showBookmarksDialog() {
         BackgroundThread.instance().executeGUI {

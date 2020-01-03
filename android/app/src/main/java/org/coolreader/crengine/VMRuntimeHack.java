@@ -49,10 +49,10 @@ public class VMRuntimeHack {
 		boolean success = false;
 		try {
 			Class<?> cl = Class.forName("dalvik.system.VMRuntime");
-			Method getRt = cl.getMethod("getRuntime", new Class[0]);
-			runtime = getRt.invoke(null, new Object[0]);
-			trackAllocation = cl.getMethod("trackExternalAllocation", new Class[] {long.class});
-			trackFree = cl.getMethod("trackExternalFree", new Class[] {long.class});
+			Method getRt = cl.getMethod("getRuntime");
+			runtime = getRt.invoke(null);
+			trackAllocation = cl.getMethod("trackExternalAllocation", long.class);
+			trackFree = cl.getMethod("trackExternalFree", long.class);
 			success = true;
 		} catch (ClassNotFoundException e) {
 		} catch (SecurityException e) {

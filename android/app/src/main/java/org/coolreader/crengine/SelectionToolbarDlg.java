@@ -118,8 +118,8 @@ public class SelectionToolbarDlg {
 				changeSelectionBound(start, diff/SELECTION_CONTROL_STEP);
 			}
 		}
-	};
-	
+	}
+
 	private void closeDialog(boolean clearSelection) {
 		if (clearSelection)
 			mReaderView.clearSelection();
@@ -188,8 +188,8 @@ public class SelectionToolbarDlg {
 				closeDialog(true);
 			}
 		});
-		new BoundControlListener((SeekBar)mPanel.findViewById(R.id.selection_left_bound_control), true);
-		new BoundControlListener((SeekBar)mPanel.findViewById(R.id.selection_right_bound_control), false);
+		new BoundControlListener(mPanel.findViewById(R.id.selection_left_bound_control), true);
+		new BoundControlListener(mPanel.findViewById(R.id.selection_right_bound_control), false);
 		mPanel.setFocusable(true);
 		mPanel.setOnKeyListener( new OnKeyListener() {
 
@@ -218,10 +218,7 @@ public class SelectionToolbarDlg {
 //							return true;
 						}
 					}
-				if ( keyCode == KeyEvent.KEYCODE_BACK) {
-					return true;
-				}
-				return false;
+				return keyCode == KeyEvent.KEYCODE_BACK;
 			}
 			
 		});

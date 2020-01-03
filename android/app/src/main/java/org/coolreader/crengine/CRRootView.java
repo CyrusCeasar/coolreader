@@ -36,8 +36,6 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
     private ViewGroup mView;
     private RecyclerView mRecentBooksScroll;
     private RecyclerView mFilesystemScroll;
-    private RecyclerView mLibraryScroll;
-    private RecyclerView mOnlineCatalogsScroll;
     private CoverpageManager mCoverpageManager;
     private int coverWidth = DeviceUtilKt.dp2px(80);
     private int coverHeight = DeviceUtilKt.dp2px(80);
@@ -180,68 +178,15 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
         });
     }
 
-    public void refreshOnlineCatalogs() {
-        mActivity.waitForCRDBService(() -> mActivity.getDB().loadOPDSCatalogs(catalogs -> updateOnlineCatalogs(catalogs)));
-    }
+
 
     public void refreshFileSystemFolders() {
         ArrayList<FileInfo> folders = Services.getFileSystemFolders().getFileSystemFolders();
         updateFilesystems(folders);
     }
 
-    ArrayList<FileInfo> lastCatalogs = new ArrayList<>();
 
-    private void updateOnlineCatalogs(ArrayList<FileInfo> catalogs) {
-        String lang = mActivity.getCurrentLanguage();
-        boolean defEnableLitres = lang.toLowerCase().startsWith("ru") && !DeviceInfo.POCKETBOOK;
-        boolean enableLitres = mActivity.mSettingsManager.mSettings.getBool(Settings.PROP_APP_PLUGIN_ENABLED + "." + OnlineStorePluginManager.PLUGIN_PKG_LITRES, defEnableLitres);
-        if (enableLitres)
-            catalogs.add(0, Scanner.createOnlineLibraryPluginItem(OnlineStorePluginManager.PLUGIN_PKG_LITRES, "LitRes"));
-        if (Services.getScanner() == null)
-            return;
-        FileInfo opdsRoot = Services.getScanner().getOPDSRoot();
-        if (opdsRoot.dirCount() == 0)
-            opdsRoot.addItems(catalogs);
-        catalogs.add(0, opdsRoot);
 
-        lastCatalogs = catalogs;
-        mOnlineCatalogsScroll.setAdapter(new BaseQuickAdapter<FileInfo, BaseViewHolder>(R.layout.root_item_online_catalog, catalogs) {
-
-            @Override
-            protected void convert(@NonNull BaseViewHolder helper, FileInfo item) {
-                final View view = helper.itemView;
-                ImageView icon = view.findViewById(R.id.item_icon);
-                TextView label = view.findViewById(R.id.item_name);
-                if (item.isOPDSRoot()) {
-                    icon.setImageResource(R.drawable.cr3_browser_folder_opds_add);
-                    label.setText("Add");
-                  /*  view.setOnClickListener(v -> mContext.editOPDSCatalog(null));*/
-                } else if (item.isOnlineCatalogPluginDir()) {
-                    icon.setImageResource(R.drawable.plugins_logo_litres);
-                    label.setText(item.filename);
-                    view.setOnLongClickListener(v -> {
-                        OnlineStoreWrapper plugin = OnlineStorePluginManager.getPlugin(mActivity, FileInfo.ONLINE_CATALOG_PLUGIN_PREFIX + LitresPlugin.PACKAGE_NAME);
-                        if (plugin != null) {
-                            OnlineStoreLoginDialog dlg = new OnlineStoreLoginDialog(mActivity, plugin, () -> mActivity.showBrowser(FileInfo.ONLINE_CATALOG_PLUGIN_PREFIX + LitresPlugin.PACKAGE_NAME));
-                            dlg.show();
-                        }
-                        return true;
-                    });
-                    view.setOnClickListener(v -> mActivity.showBrowser(FileInfo.ONLINE_CATALOG_PLUGIN_PREFIX + LitresPlugin.PACKAGE_NAME));
-                } else {
-                    if (label != null) {
-                        label.setText(item.getFileNameToDisplay());
-                        label.setMaxWidth(coverWidth * 3 / 2);
-                    }
-                    view.setOnClickListener(v -> FileBrowserActivity.Companion.showDirectory(mActivity,item));
-                   /* view.setOnLongClickListener(v -> {
-                        mContext.editOPDSCatalog(item);
-                        return true;
-                    });*/
-                }
-            }
-        });
-    }
 
     private void updateFilesystems(List<FileInfo> dirs) {
 
@@ -311,26 +256,7 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
         });
     }
 
-    private void updateLibraryItems(ArrayList<FileInfo> dirs) {
-        mLibraryScroll.setAdapter(new BaseQuickAdapter<FileInfo, BaseViewHolder>(R.layout.root_item_library, dirs) {
-            @Override
-            protected void convert(@NonNull BaseViewHolder helper, FileInfo item) {
-                final View view = helper.itemView;
-                ImageView image = view.findViewById(R.id.item_icon);
-                TextView label = view.findViewById(R.id.item_name);
-                if (item.isSearchShortcut())
-                    image.setImageResource(R.drawable.cr3_browser_find);
-                else if (item.isBooksByAuthorRoot() || item.isBooksByTitleRoot() || item.isBooksBySeriesRoot())
-                    image.setImageResource(R.drawable.cr3_browser_folder_authors);
-                if (label != null) {
-                    label.setText(item.filename);
-                    label.setMinWidth(coverWidth);
-                    label.setMaxWidth(coverWidth * 2);
-                }
-                view.setOnClickListener(v -> FileBrowserActivity.Companion.showDirectory(getContext(), item));
-            }
-        });
-    }
+
 
     private void updateDelimiterTheme(int viewId) {
         View view = mView.findViewById(viewId);
@@ -347,17 +273,13 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 
         updateDelimiterTheme(R.id.delimiter1);
         updateDelimiterTheme(R.id.delimiter2);
-        updateDelimiterTheme(R.id.delimiter3);
-        updateDelimiterTheme(R.id.delimiter4);
-        updateDelimiterTheme(R.id.delimiter5);
+
 
         mRecentBooksScroll = mView.findViewById(R.id.scroll_recent_books);
 
         mFilesystemScroll = mView.findViewById(R.id.scroll_filesystem);
 
-        mLibraryScroll = mView.findViewById(R.id.scroll_library);
 
-        mOnlineCatalogsScroll = mView.findViewById(R.id.scroll_online_catalogs);
 
         updateCurrentBook(Services.getHistory().getLastBook());
 
@@ -387,12 +309,6 @@ public class CRRootView extends ViewGroup implements CoverpageReadyListener {
 
         mActivity.waitForCRDBService(() -> Services.getFileSystemFolders().loadFavoriteFolders(mActivity.getDB()));
 
-        BackgroundThread.instance().postGUI(() -> refreshOnlineCatalogs());
-
-        BackgroundThread.instance().postGUI(() -> {
-            if (Services.getScanner() != null)
-                updateLibraryItems(Services.getScanner().getLibraryItems());
-        });
 
         removeAllViews();
         addView(mView);

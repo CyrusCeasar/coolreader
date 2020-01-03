@@ -43,13 +43,9 @@ public class MountPathCorrector {
         if (path.length() == pattern.length())
             return true;
         if (pattern.charAt(pattern.length() - 1) == '/') {
-            if (path.charAt(pattern.length() - 1) == '/')
-                return true;
-            return false;
+            return path.charAt(pattern.length() - 1) == '/';
         }
-        if (path.charAt(pattern.length()) == '/')
-            return true;
-        return false;
+        return path.charAt(pattern.length()) == '/';
     }
 
     private static class LinkInfo {

@@ -54,7 +54,8 @@ class LruDiskUtil {
                     if(inp.available() == 0){
                         it.onNext(ByteArray(0))
                     }else {
-                        val datas = inp.readBytes(inp.available())
+                        inp.available()
+                        val datas = inp.readBytes()
                         logd(String(datas, 0, datas.size))
                         it.onNext(datas)
                     }

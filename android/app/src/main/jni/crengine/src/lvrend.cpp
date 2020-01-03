@@ -1742,18 +1742,18 @@ void DrawDocument( LVDrawBuf & drawbuf, ldomNode * enode, int x0, int y0, int dx
                 drawbuf.FillRect( doc_x+x0+fmt.getWidth()-1, doc_y+y0, doc_x+x0+fmt.getWidth(), doc_y+y0+fmt.getHeight(), color );
                 drawbuf.FillRect( doc_x+x0, doc_y+y0+fmt.getHeight()-1, doc_x+x0+fmt.getWidth(), doc_y+y0+fmt.getHeight(), color );
 #endif
-                lUInt32 tableBorderColor = 0x555555;
-                lUInt32 tableBorderColorDark = 0xAAAAAA;
-                bool needBorder = enode->getStyle()->display==css_d_table_cell;
-                if ( needBorder ) {
-                    drawbuf.FillRect( doc_x+x0, doc_y+y0,
-                                      doc_x+x0+fmt.getWidth(), doc_y+y0+1, tableBorderColor );
-                    drawbuf.FillRect( doc_x+x0, doc_y+y0,
-                                      doc_x+x0+1, doc_y+y0+fmt.getHeight(), tableBorderColor );
-                    drawbuf.FillRect( doc_x+x0+fmt.getWidth()-1, doc_y+y0,
-                                      doc_x+x0+fmt.getWidth(),   doc_y+y0+fmt.getHeight(), tableBorderColorDark );
-                    drawbuf.FillRect( doc_x+x0, doc_y+y0+fmt.getHeight()-1,
-                                      doc_x+x0+fmt.getWidth(), doc_y+y0+fmt.getHeight(), tableBorderColorDark );
+                                      lUInt32 tableBorderColor = 0x555555;
+                    lUInt32 tableBorderColorDark = 0xAAAAAA;
+                    bool needBorder = enode->getStyle()->display==css_d_table_cell;
+                    if ( needBorder ) {
+                        drawbuf.FillRect( doc_x+x0, doc_y+y0,
+                                          doc_x+x0+fmt.getWidth(), doc_y+y0+1, tableBorderColor );
+                        drawbuf.FillRect( doc_x+x0, doc_y+y0,
+                                          doc_x+x0+1, doc_y+y0+fmt.getHeight(), tableBorderColor );
+                        drawbuf.FillRect( doc_x+x0+fmt.getWidth()-1, doc_y+y0,
+                                          doc_x+x0+fmt.getWidth(),   doc_y+y0+fmt.getHeight(), tableBorderColorDark );
+                        drawbuf.FillRect( doc_x+x0, doc_y+y0+fmt.getHeight()-1,
+                                          doc_x+x0+fmt.getWidth(), doc_y+y0+fmt.getHeight(), tableBorderColorDark );
                     //drawbuf.FillRect( doc_x+x0, doc_y+y0, doc_x+x0+fmt->getWidth(), doc_y+y0+1, tableBorderColorDark );
                     //drawbuf.FillRect( doc_x+x0, doc_y+y0, doc_x+x0+1, doc_y+y0+fmt->getHeight(), tableBorderColorDark );
                     //drawbuf.FillRect( doc_x+x0+fmt->getWidth()-1, doc_y+y0, doc_x+x0+fmt->getWidth(), doc_y+y0+fmt->getHeight(), tableBorderColor );

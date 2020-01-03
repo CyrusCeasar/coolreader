@@ -54,11 +54,8 @@ public abstract class BaseDB {
 			if (!res)
 				close();
 		}
-		if (mDB != null) {
-			return true;
-		}
-		return false;
-	}
+        return mDB != null;
+    }
 
 	public boolean close() {
 		if (mDB != null) {

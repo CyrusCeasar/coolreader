@@ -47,11 +47,11 @@ public class SearchDlg  extends BaseDialog {
 		setPositiveButtonImage(R.drawable.cr3_button_find, R.string.action_search);
         mInflater = LayoutInflater.from(getContext());
         mDialogView = mInflater.inflate(R.layout.search_dialog, null);
-    	mEditView = (EditText)mDialogView.findViewById(R.id.search_text);
+    	mEditView = mDialogView.findViewById(R.id.search_text);
     	if (initialText != null)
     		mEditView.setText(initialText);
-    	mCaseSensitive = (CheckBox)mDialogView.findViewById(R.id.search_case_sensitive);
-    	mReverse = (CheckBox)mDialogView.findViewById(R.id.search_reverse);
+    	mCaseSensitive = mDialogView.findViewById(R.id.search_case_sensitive);
+    	mReverse = mDialogView.findViewById(R.id.search_reverse);
 		// setup buttons
 	}
 

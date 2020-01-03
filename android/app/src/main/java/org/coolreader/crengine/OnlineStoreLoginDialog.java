@@ -53,14 +53,14 @@ public class OnlineStoreLoginDialog extends BaseDialog {
         mInflater = LayoutInflater.from(getContext());
         ViewGroup view = (ViewGroup)mInflater.inflate(R.layout.online_store_login_dialog, null);
         
-        ImageButton btnBack = (ImageButton)view.findViewById(R.id.base_dlg_btn_back);
+        ImageButton btnBack = view.findViewById(R.id.base_dlg_btn_back);
         btnBack.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onNegativeButtonClick();
 			}
 		});
-        btnLogin = (Button)view.findViewById(R.id.btn_login);
+        btnLogin = view.findViewById(R.id.btn_login);
         btnLogin.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -68,7 +68,7 @@ public class OnlineStoreLoginDialog extends BaseDialog {
 			}
 		});
         
-        btnRegister = (Button)view.findViewById(R.id.btn_new_account);
+        btnRegister = view.findViewById(R.id.btn_new_account);
         if (mPlugin.getNewAccountParameters() == null) {
         	btnRegister.setVisibility(View.GONE);
         } else {
@@ -82,17 +82,17 @@ public class OnlineStoreLoginDialog extends BaseDialog {
     		});
         }
         
-        lblTitle = (TextView)view.findViewById(R.id.dlg_title);
-        lblDescription = (TextView)view.findViewById(R.id.lbl_description);
-        lblURL = (TextView)view.findViewById(R.id.lbl_url);
+        lblTitle = view.findViewById(R.id.dlg_title);
+        lblDescription = view.findViewById(R.id.lbl_description);
+        lblURL = view.findViewById(R.id.lbl_url);
         
 
 		lblTitle.setText(mPlugin.getName());
 		lblDescription.setText(mPlugin.getDescription());
 		lblURL.setText(mPlugin.getUrl());
 		
-        edLogin = (EditText)view.findViewById(R.id.ed_login);
-        edPassword = (EditText)view.findViewById(R.id.ed_password);
+        edLogin = view.findViewById(R.id.ed_login);
+        edPassword = view.findViewById(R.id.ed_password);
         edLogin.setText(mPlugin.getLogin());
         edPassword.setText(mPlugin.getPassword());
 		

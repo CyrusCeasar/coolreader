@@ -107,10 +107,7 @@ public class ReaderSurface extends SurfaceView implements BookView {
             } else if (mReaderView.mInitialized && mReaderView.mCurrentPageInfo != null && mReaderView.mCurrentPageInfo.bitmap != null) {
                 log.d("onDraw() -- drawing page image");
 
-                if (mReaderView.currentAutoScrollAnimation != null) {
-                    mReaderView.currentAutoScrollAnimation.draw(canvas);
-                    return;
-                }
+
 
                 if (mReaderView.currentAnimation != null) {
                     mReaderView.currentAnimation.draw(canvas);

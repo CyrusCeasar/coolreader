@@ -57,9 +57,7 @@ public class BackgroundTextureInfo {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (resourceId != other.resourceId)
-			return false;
-		return true;
+		return resourceId == other.resourceId;
 	}
 	@Override
 	public String toString() {

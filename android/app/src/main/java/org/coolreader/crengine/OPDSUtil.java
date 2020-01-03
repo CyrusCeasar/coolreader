@@ -52,29 +52,29 @@ public class OPDSUtil {
 		 * @param doc is document
 		 * @param entries is list of entries to add
 		 */
-		public boolean onEntries( DocInfo doc, Collection<EntryInfo> entries );
+        boolean onEntries(DocInfo doc, Collection<EntryInfo> entries);
 		/**
 		 * All entries are downloaded.
 		 * @param doc is document
 		 * @param entries is list of entries to add
 		 */
-		public boolean onFinish( DocInfo doc, Collection<EntryInfo> entries );
+        boolean onFinish(DocInfo doc, Collection<EntryInfo> entries);
 		/**
 		 * Before download: request filename to save as.
 		 */
-		public File onDownloadStart( String type, String url );
+        File onDownloadStart(String type, String url);
 		/**
 		 * Download progress
 		 */
-		public void onDownloadProgress( String type, String url, int percent );
+        void onDownloadProgress(String type, String url, int percent);
 		/**
 		 * Book is downloaded.
 		 */
-		public void onDownloadEnd( String type, String url, File file );
+        void onDownloadEnd(String type, String url, File file);
 		/**
 		 * Error occured
 		 */
-		public void onError( String message );
+        void onError(String message);
 	}
 	
 	public static class DocInfo {

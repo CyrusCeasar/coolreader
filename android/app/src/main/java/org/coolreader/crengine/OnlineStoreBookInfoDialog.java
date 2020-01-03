@@ -93,39 +93,39 @@ public class OnlineStoreBookInfoDialog extends BaseDialog {
         ViewGroup view = (ViewGroup)mInflater.inflate(R.layout.online_store_book_info_dialog, null);
         mContentView = view;
         
-        ImageButton btnBack = (ImageButton)view.findViewById(R.id.base_dlg_btn_back);
+        ImageButton btnBack = view.findViewById(R.id.base_dlg_btn_back);
         btnBack.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onNegativeButtonClick();
 			}
 		});
-        btnBuyOrDownload = (Button)view.findViewById(R.id.btn_buy);
+        btnBuyOrDownload = view.findViewById(R.id.btn_buy);
         btnBuyOrDownload.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onBuyButtonClick();
 			}
 		});
-        btnPreview = (Button)view.findViewById(R.id.btn_preview);
+        btnPreview = view.findViewById(R.id.btn_preview);
         btnPreview.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onPreviewButtonClick();
 			}
 		});
-        lblTitle = (TextView)view.findViewById(R.id.lbl_book_title);
-        lblSeries = (TextView)view.findViewById(R.id.lbl_book_series);
-        lblAuthors = (TextView)view.findViewById(R.id.lbl_book_author);
-        lblFileInfo = (TextView)view.findViewById(R.id.lbl_book_file_info);
-        lblLogin = (TextView)view.findViewById(R.id.lbl_login);
-        lblStatus = (TextView)view.findViewById(R.id.lbl_status);
-        lblBalance = (TextView)view.findViewById(R.id.lbl_balance);
-        lblPrice = (TextView)view.findViewById(R.id.lbl_price);
-        lblNormalPrice = (TextView)view.findViewById(R.id.lbl_normal_price);
-        rbBookRating = (RatingBar)view.findViewById(R.id.book_rating);
+        lblTitle = view.findViewById(R.id.lbl_book_title);
+        lblSeries = view.findViewById(R.id.lbl_book_series);
+        lblAuthors = view.findViewById(R.id.lbl_book_author);
+        lblFileInfo = view.findViewById(R.id.lbl_book_file_info);
+        lblLogin = view.findViewById(R.id.lbl_login);
+        lblStatus = view.findViewById(R.id.lbl_status);
+        lblBalance = view.findViewById(R.id.lbl_balance);
+        lblPrice = view.findViewById(R.id.lbl_price);
+        lblNormalPrice = view.findViewById(R.id.lbl_normal_price);
+        rbBookRating = view.findViewById(R.id.book_rating);
 
-        final ImageView image = (ImageView)view.findViewById(R.id.book_cover);
+        final ImageView image = view.findViewById(R.id.book_cover);
         int w = mWindowSize * 4 / 10;
         int h = w * 4 / 3;
         image.setMinimumHeight(h);
@@ -161,7 +161,7 @@ public class OnlineStoreBookInfoDialog extends BaseDialog {
         lblLogin.setText(mBookInfo.isLoggedIn ? mBookInfo.login : getString(R.string.online_store_please_login));
         lblBalance.setText(mBookInfo.isLoggedIn ? getString(R.string.online_store_balance) + " " + mBookInfo.accountBalance : "");
         lblStatus.setText(mBookInfo.isPurchased ? getString(R.string.online_store_status_purchased) : "");
-        lblPrice.setText(mBookInfo.book.price > 0 ? getString(R.string.online_store_price) + " " + String.valueOf(mBookInfo.book.price) : getString(R.string.online_store_status_free));
+        lblPrice.setText(mBookInfo.book.price > 0 ? getString(R.string.online_store_price) + " " + mBookInfo.book.price : getString(R.string.online_store_status_free));
         lblNormalPrice.setText(mBookInfo.book.price != mBookInfo.book.basePrice ? String.valueOf(mBookInfo.book.basePrice) : "");
         lblNormalPrice.setPaintFlags(lblNormalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         lblFileInfo.setText(Utils.formatSize(mBookInfo.book.zipSize));

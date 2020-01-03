@@ -123,8 +123,7 @@ public class Utils {
 		if (f.exists())
 			f.delete();
 		if (backup.exists()) {
-			if (backup.renameTo(f))
-				return true; 
+            return backup.renameTo(f);
 		}
 		return false;
 	}
@@ -306,11 +305,9 @@ public class Utils {
 	public static boolean empty(String str) {
 		if (str == null || str.length() == 0)
 			return true;
-		if (str.trim().length() == 0)
-			return true;
-		return false;
-		
-	}
+        return str.trim().length() == 0;
+
+    }
 	
 	public static Drawable solidColorDrawable(final int color) {
 		GradientDrawable d = new GradientDrawable();
@@ -354,7 +351,7 @@ public class Utils {
 	{
 		if ( percent<=0 )
 			return null;
-		return String.valueOf(percent/100) + "." + String.valueOf(percent/10%10) + "%";
+		return percent / 100 + "." + percent / 10 % 10 + "%";
 	}
 
 	public static String formatTime( Activity activity, long timeStamp )
@@ -415,11 +412,11 @@ public class Utils {
 		if ( size<10000 )
 			return String.valueOf(size);
 		else if ( size<1000000 )
-			return String.valueOf(size/1000) + "K";
+			return size / 1000 + "K";
 		else if ( size<10000000 )
-			return String.valueOf(size/1000000) + "." + String.valueOf(size%1000000/100000) + "M";
+			return size / 1000000 + "." + size % 1000000 / 100000 + "M";
 		else
-			return String.valueOf(size/1000000) + "M";
+			return size / 1000000 + "M";
 	}
 
 	public static String formatFileInfo(Activity activity, FileInfo item) {

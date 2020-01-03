@@ -39,12 +39,12 @@ public class BookmarkEditDialog extends BaseDialog {
 		setTitle(mCoolReader.getString( mIsNew ? R.string.dlg_bookmark_create : R.string.dlg_bookmark_edit));
 		mInflater = LayoutInflater.from(getContext());
 		View view = mInflater.inflate(R.layout.bookmark_edit_dialog, null);
-		final RadioButton btnComment = (RadioButton)view.findViewById(R.id.rb_comment);
-		final RadioButton btnCorrection = (RadioButton)view.findViewById(R.id.rb_correction);
-		final TextView posLabel = (TextView)view.findViewById(R.id.lbl_position); 
-		final TextView commentLabel = (TextView)view.findViewById(R.id.lbl_comment_text); 
-		final EditText posEdit = (EditText)view.findViewById(R.id.position_text); 
-		commentEdit = (EditText)view.findViewById(R.id.comment_edit);
+		final RadioButton btnComment = view.findViewById(R.id.rb_comment);
+		final RadioButton btnCorrection = view.findViewById(R.id.rb_correction);
+		final TextView posLabel = view.findViewById(R.id.lbl_position);
+		final TextView commentLabel = view.findViewById(R.id.lbl_comment_text);
+		final EditText posEdit = view.findViewById(R.id.position_text);
+		commentEdit = view.findViewById(R.id.comment_edit);
 		String postext = mBookmark.getPercent()/100 + "%";
 		if ( mBookmark.getTitleText()!=null )
 			postext = postext + "  " + mBookmark.getTitleText();

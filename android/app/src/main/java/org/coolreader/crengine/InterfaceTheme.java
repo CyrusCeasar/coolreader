@@ -11,7 +11,7 @@ public class InterfaceTheme {
 					R.drawable.ui_toolbar_background_browser_black,
 					R.drawable.ui_toolbar_background_browser_vertical_black,
 					0, 0xFF000000)
-			.setToolbarButtonAlpha(DeviceInfo.EINK_SCREEN ? 0xFF : 0x80);
+			.setToolbarButtonAlpha( 0x80);
 //			.setBackgrounds(
 //					R.drawable.ui_status_background_browser_black, 
 //					R.drawable.ui_toolbar_background_browser_black,
@@ -28,7 +28,7 @@ public class InterfaceTheme {
 					R.drawable.ui_toolbar_background_browser_white,
 					R.drawable.ui_toolbar_background_browser_vertical_white,
 					0, 0xFFFFFFFF)
-			.setToolbarButtonAlpha(DeviceInfo.EINK_SCREEN ? 0xFF : 0xE0);
+			.setToolbarButtonAlpha( 0xE0);
 //			.setBackgrounds(
 //					R.drawable.ui_status_background_browser_black, 
 //					R.drawable.ui_toolbar_background_browser_black,
@@ -45,7 +45,7 @@ public class InterfaceTheme {
 					R.drawable.ui_toolbar_background_browser_light,
 					R.drawable.ui_toolbar_background_browser_vertical_light,
 					R.drawable.background_tiled_light, 0)
-			.setToolbarButtonAlpha(DeviceInfo.EINK_SCREEN ? 0xFF : 0xC0);
+			.setToolbarButtonAlpha( 0xC0);
 //			.setBackgrounds(
 //					R.drawable.ui_status_background_browser_light, 
 //					R.drawable.ui_toolbar_background_browser_light,
@@ -62,7 +62,7 @@ public class InterfaceTheme {
 					R.drawable.ui_toolbar_background_browser_dark,
 					R.drawable.ui_toolbar_background_browser_vertical_dark,
 					R.drawable.background_tiled_dark, 0)
-			.setToolbarButtonAlpha(DeviceInfo.EINK_SCREEN ? 0xFF : 0x90);
+			.setToolbarButtonAlpha( 0x90);
 //			.setBackgrounds(
 //					R.drawable.ui_status_background_browser_dark, 
 //					R.drawable.ui_toolbar_background_browser_dark,

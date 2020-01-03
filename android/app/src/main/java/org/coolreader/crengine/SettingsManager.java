@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 
-
 public class SettingsManager implements Settings {
 
     public static final Logger log = L.create("cr");
@@ -205,17 +204,15 @@ public class SettingsManager implements Settings {
 //	        	}
         }
 
-        if (DeviceInfo.EINK_NOOK) {
-            props.applyDefault(ReaderView.PROP_PAGE_ANIMATION, ReaderView.PAGE_ANIMATION_NONE);
-        } else {
-            props.applyDefault(ReaderView.PROP_PAGE_ANIMATION, ReaderView.PAGE_ANIMATION_SLIDE2);
-        }
+
+        props.applyDefault(ReaderView.PROP_PAGE_ANIMATION, ReaderView.PAGE_ANIMATION_SLIDE2);
+
 
         props.applyDefault(ReaderView.PROP_APP_LOCALE, Settings.Lang.DEFAULT.code);
 
-        props.applyDefault(ReaderView.PROP_APP_THEME, DeviceInfo.FORCE_LIGHT_THEME ? "WHITE" : "LIGHT");
-        props.applyDefault(ReaderView.PROP_APP_THEME_DAY, DeviceInfo.FORCE_LIGHT_THEME ? "WHITE" : "LIGHT");
-        props.applyDefault(ReaderView.PROP_APP_THEME_NIGHT, DeviceInfo.FORCE_LIGHT_THEME ? "BLACK" : "DARK");
+        props.applyDefault(ReaderView.PROP_APP_THEME, "LIGHT");
+        props.applyDefault(ReaderView.PROP_APP_THEME_DAY, "LIGHT");
+        props.applyDefault(ReaderView.PROP_APP_THEME_NIGHT, "DARK");
         props.applyDefault(ReaderView.PROP_APP_SELECTION_PERSIST, "0");
         props.applyDefault(ReaderView.PROP_APP_SCREEN_BACKLIGHT_LOCK, "3");
         if ("1".equals(props.getProperty(ReaderView.PROP_APP_SCREEN_BACKLIGHT_LOCK)))
@@ -224,41 +221,17 @@ public class SettingsManager implements Settings {
         props.applyDefault(ReaderView.PROP_APP_BOOK_PROPERTY_SCAN_ENABLED, "1");
         props.applyDefault(ReaderView.PROP_APP_KEY_BACKLIGHT_OFF, DeviceInfo.SAMSUNG_BUTTONS_HIGHLIGHT_PATCH ? "0" : "1");
         props.applyDefault(ReaderView.PROP_LANDSCAPE_PAGES, DeviceInfo.ONE_COLUMN_IN_LANDSCAPE ? "0" : "1");
-        // autodetect best initial font size based on display resolution
-     /*   int screenHeight = displayMetrics.heightPixels;
-        int screenWidth = displayMetrics.widthPixels;
-        if (screenWidth > screenHeight)
-            screenWidth = screenHeight;*/
+
         int fontSize = 20;
         int statusFontSize = 16;
         String hmargin = "4";
         String vmargin = "2";
-  /*      if (screenWidth <= 320) {
-            fontSize = 20;
-            statusFontSize = 16;
-            hmargin = "4";
-            vmargin = "2";
-        } else if (screenWidth <= 400) {
-            fontSize = 24;
-            statusFontSize = 20;
-            hmargin = "10";
-            vmargin = "4";
-        } else if (screenWidth <= 600) {
-            fontSize = 28;
-            statusFontSize = 24;
-            hmargin = "20";
-            vmargin = "8";
-        } else if*//* (screenWidth <= 800) {*/
+
         fontSize = 32;
         statusFontSize = 28;
         hmargin = "25";
         vmargin = "15";
-       /* } else {
-            fontSize = 48;
-            statusFontSize = 32;
-            hmargin = "30";
-            vmargin = "20";
-        }*/
+
         if (DeviceInfo.DEF_FONT_SIZE != null)
             fontSize = DeviceInfo.DEF_FONT_SIZE;
 
@@ -271,7 +244,7 @@ public class SettingsManager implements Settings {
         fixFontSettings(props);
         props.applyDefault(ReaderView.PROP_FONT_SIZE, String.valueOf(fontSize));
         props.applyDefault(ReaderView.PROP_FONT_HINTING, "2");
-        props.applyDefault(ReaderView.PROP_STATUS_FONT_SIZE, DeviceInfo.EINK_NOOK ? "15" : String.valueOf(statusFontSize));
+        props.applyDefault(ReaderView.PROP_STATUS_FONT_SIZE, String.valueOf(statusFontSize));
         props.applyDefault(ReaderView.PROP_FONT_COLOR, "#000000");
         props.applyDefault(ReaderView.PROP_FONT_COLOR_DAY, "#000000");
         props.applyDefault(ReaderView.PROP_FONT_COLOR_NIGHT, "#D0B070");
@@ -284,7 +257,6 @@ public class SettingsManager implements Settings {
         props.setProperty(ReaderView.PROP_ROTATE_ANGLE, "0"); // crengine's rotation will not be user anymore
         props.setProperty(ReaderView.PROP_DISPLAY_INVERSE, "0");
         props.applyDefault(ReaderView.PROP_APP_FULLSCREEN, "0");
-        props.applyDefault(ReaderView.PROP_APP_VIEW_AUTOSCROLL_SPEED, "1500");
         props.applyDefault(ReaderView.PROP_APP_SCREEN_BACKLIGHT, "-1");
         props.applyDefault(ReaderView.PROP_SHOW_BATTERY, "1");
         props.applyDefault(ReaderView.PROP_SHOW_POS_PERCENT, "0");
@@ -294,7 +266,7 @@ public class SettingsManager implements Settings {
         props.applyDefault(ReaderView.PROP_APP_GESTURE_PAGE_FLIPPING, "1");
         props.applyDefault(ReaderView.PROP_APP_SHOW_COVERPAGES, "1");
         props.applyDefault(ReaderView.PROP_APP_COVERPAGE_SIZE, "1");
-        props.applyDefault(ReaderView.PROP_APP_SCREEN_ORIENTATION, DeviceInfo.EINK_SCREEN ? "0" : "4"); // "0"
+        props.applyDefault(ReaderView.PROP_APP_SCREEN_ORIENTATION, "4"); // "0"
         props.applyDefault(ReaderView.PROP_CONTROLS_ENABLE_VOLUME_KEYS, "1");
         props.applyDefault(ReaderView.PROP_APP_TAP_ZONE_HILIGHT, "0");
         props.applyDefault(ReaderView.PROP_APP_BOOK_SORT_ORDER, FileInfo.DEF_SORT_ORDER.name());
@@ -320,18 +292,15 @@ public class SettingsManager implements Settings {
         props.applyDefault(ReaderView.PROP_APP_SCREEN_UPDATE_INTERVAL, "10");
 
         props.applyDefault(ReaderView.PROP_NIGHT_MODE, "0");
-        if (DeviceInfo.FORCE_LIGHT_THEME) {
-            props.applyDefault(ReaderView.PROP_PAGE_BACKGROUND_IMAGE, Engine.NO_TEXTURE.id);
-        } else {
-            if (props.getBool(ReaderView.PROP_NIGHT_MODE, false))
-                props.applyDefault(ReaderView.PROP_PAGE_BACKGROUND_IMAGE, Engine.DEF_NIGHT_BACKGROUND_TEXTURE);
-            else
-                props.applyDefault(ReaderView.PROP_PAGE_BACKGROUND_IMAGE, Engine.DEF_DAY_BACKGROUND_TEXTURE);
-        }
+
+        if (props.getBool(ReaderView.PROP_NIGHT_MODE, false))
+            props.applyDefault(ReaderView.PROP_PAGE_BACKGROUND_IMAGE, Engine.DEF_NIGHT_BACKGROUND_TEXTURE);
+        else
+            props.applyDefault(ReaderView.PROP_PAGE_BACKGROUND_IMAGE, Engine.DEF_DAY_BACKGROUND_TEXTURE);
         props.applyDefault(ReaderView.PROP_PAGE_BACKGROUND_IMAGE_DAY, Engine.DEF_DAY_BACKGROUND_TEXTURE);
         props.applyDefault(ReaderView.PROP_PAGE_BACKGROUND_IMAGE_NIGHT, Engine.DEF_NIGHT_BACKGROUND_TEXTURE);
 
-        props.applyDefault(ReaderView.PROP_FONT_GAMMA, DeviceInfo.EINK_SCREEN ? "1.5" : "1.0");
+        props.applyDefault(ReaderView.PROP_FONT_GAMMA, "1.0");
 
         props.setProperty(ReaderView.PROP_MIN_FILE_SIZE_TO_CACHE, "100000");
         props.setProperty(ReaderView.PROP_FORCED_MIN_FILE_SIZE_TO_CACHE, "32768");
@@ -344,23 +313,16 @@ public class SettingsManager implements Settings {
         props.applyDefault(ReaderView.PROP_TOOLBAR_HIDE_IN_FULLSCREEN, "0");
 
 
-        if (!DeviceInfo.EINK_SCREEN) {
-            props.applyDefault(ReaderView.PROP_APP_HIGHLIGHT_BOOKMARKS, "1");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_SELECTION_COLOR, "#AAAAAA");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT, "#AAAA55");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION, "#C07070");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_SELECTION_COLOR_DAY, "#AAAAAA");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT_DAY, "#AAAA55");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION_DAY, "#C07070");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_SELECTION_COLOR_NIGHT, "#808080");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT_NIGHT, "#A09060");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION_NIGHT, "#906060");
-        } else {
-            props.applyDefault(ReaderView.PROP_APP_HIGHLIGHT_BOOKMARKS, "2");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_SELECTION_COLOR, "#808080");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT, "#000000");
-            props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION, "#000000");
-        }
+        props.applyDefault(ReaderView.PROP_APP_HIGHLIGHT_BOOKMARKS, "1");
+        props.applyDefault(ReaderView.PROP_HIGHLIGHT_SELECTION_COLOR, "#AAAAAA");
+        props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT, "#AAAA55");
+        props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION, "#C07070");
+        props.applyDefault(ReaderView.PROP_HIGHLIGHT_SELECTION_COLOR_DAY, "#AAAAAA");
+        props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT_DAY, "#AAAA55");
+        props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION_DAY, "#C07070");
+        props.applyDefault(ReaderView.PROP_HIGHLIGHT_SELECTION_COLOR_NIGHT, "#808080");
+        props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_COMMENT_NIGHT, "#A09060");
+        props.applyDefault(ReaderView.PROP_HIGHLIGHT_BOOKMARK_COLOR_CORRECTION_NIGHT, "#906060");
 
         return props;
     }

@@ -104,12 +104,12 @@ public class BookmarksDlg  extends BaseDialog {
 				}
 				view = mInflater.inflate(res, null);
 			} else {
-				view = (View)convertView;
+				view = convertView;
 			}
-			TextView labelView = (TextView)view.findViewById(R.id.bookmark_item_shortcut);
-			TextView posTextView = (TextView)view.findViewById(R.id.bookmark_item_pos_text);
-			TextView titleTextView = (TextView)view.findViewById(R.id.bookmark_item_title);
-			TextView commentTextView = (TextView)view.findViewById(R.id.bookmark_item_comment_text);
+			TextView labelView = view.findViewById(R.id.bookmark_item_shortcut);
+			TextView posTextView = view.findViewById(R.id.bookmark_item_pos_text);
+			TextView titleTextView = view.findViewById(R.id.bookmark_item_title);
+			TextView commentTextView = view.findViewById(R.id.bookmark_item_comment_text);
 			if ( type==ITEM_CORRECTION && posTextView!=null )
 				posTextView.setPaintFlags(posTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG );
 				
@@ -261,7 +261,7 @@ public class BookmarksDlg  extends BaseDialog {
 		mBookInfo = mReaderView.getBookInfo();
 		setPositiveButtonImage(R.drawable.cr3_button_add, R.string.mi_bookmark_add);
 		View frame = mInflater.inflate(R.layout.bookmark_list_dialog, null);
-		ViewGroup body = (ViewGroup)frame.findViewById(R.id.bookmark_list);
+		ViewGroup body = frame.findViewById(R.id.bookmark_list);
 		mList = new BookmarkList(activity, false);
 		body.addView(mList);
 		setView(frame);

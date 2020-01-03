@@ -81,8 +81,8 @@ public class StatusBar extends LinearLayout implements Settings {
 			
 			LayoutInflater inflater = LayoutInflater.from(activity);
 			content = (LinearLayout)inflater.inflate(R.layout.reader_status_bar, null);
-			lblTitle = (TextView)content.findViewById(R.id.title);
-			lblPosition = (TextView)content.findViewById(R.id.position);
+			lblTitle = content.findViewById(R.id.title);
+			lblPosition = content.findViewById(R.id.position);
 
 			lblTitle.setText("Cool Reader " + activity.getVersion());
 			lblTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);

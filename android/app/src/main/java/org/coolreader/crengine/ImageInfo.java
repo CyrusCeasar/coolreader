@@ -73,9 +73,7 @@ public class ImageInfo {
             return false;
         if (bufDpi != other.bufDpi)
             return false;
-        if (rotation != other.rotation)
-            return false;
-        return true;
+        return rotation == other.rotation;
     }
 
 

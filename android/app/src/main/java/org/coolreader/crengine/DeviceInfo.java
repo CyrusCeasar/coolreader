@@ -15,18 +15,6 @@ public class DeviceInfo {
 	public final static String BRAND;
 	public final static int MIN_SCREEN_BRIGHTNESS_PERCENT;
 	public final static boolean SAMSUNG_BUTTONS_HIGHLIGHT_PATCH;
-	public final static boolean EINK_SCREEN;
-	public final static boolean EINK_SCREEN_UPDATE_MODES_SUPPORTED;
-	public final static boolean NOOK_NAVIGATION_KEYS;
-	public final static boolean EINK_NOOK;
-	public final static boolean EINK_NOOK_120;
-	public final static boolean EINK_ONYX;
-	public final static boolean EINK_DNS;
-	public final static boolean EINK_TOLINO;
-	public final static boolean FORCE_LIGHT_THEME;
-	public final static boolean EINK_SONY;
-	public final static boolean SONY_NAVIGATION_KEYS;
-	public final static boolean USE_CUSTOM_TOAST;
 	public final static boolean AMOLED_SCREEN;
 	public final static boolean POCKETBOOK;
 	public final static boolean NOFLIBUSTA;
@@ -105,40 +93,22 @@ public class DeviceInfo {
 		        (MODEL.contentEquals("GT-S5830") || MODEL.contentEquals("GT-S5660")); // More models?
 		AMOLED_SCREEN = MANUFACTURER.toLowerCase().contentEquals("samsung") &&
         		(MODEL.toLowerCase().startsWith("gt-i")); // AMOLED screens: GT-IXXXX
-		EINK_NOOK = MANUFACTURER.toLowerCase().contentEquals("barnesandnoble") &&
-				(PRODUCT.contentEquals("NOOK") || MODEL.contentEquals("NOOK") || MODEL.contentEquals("BNRV350") || MODEL.contentEquals("BNRV300") || MODEL.contentEquals("BNRV500")) &&
-				DEVICE.toLowerCase().contentEquals("zoom2");
-		EINK_NOOK_120 = EINK_NOOK && (MODEL.contentEquals("BNRV350") || MODEL.contentEquals("BNRV300") || MODEL.contentEquals("BNRV500"));
-		EINK_SONY = MANUFACTURER.toLowerCase().contentEquals("sony") && MODEL.startsWith("PRS-T");
-		//MANUFACTURER=Onyx, MODEL=C63ML, DEVICE=C63ML, PRODUCT=C63ML
-		EINK_ONYX = MANUFACTURER.toLowerCase().contentEquals("onyx") && 
-				(MODEL.startsWith("C") && MODEL.endsWith("ML"))
-				|| MODEL.startsWith("I63MLP");
-		//MANUFACTURER -DNS, DEVICE -BK6004C, MODEL - DNS Airbook EGH602, PRODUCT - BK6004C
-		EINK_DNS = MANUFACTURER.toLowerCase().contentEquals("dns") && MODEL.startsWith("DNS Airbook EGH");
-
-		EINK_TOLINO = (BRAND.toLowerCase().contentEquals("tolino") && (MODEL.toLowerCase().contentEquals("imx50_rdp")) ) || 		// SHINE
-				(MODEL.toLowerCase().contentEquals("tolino") && DEVICE.toLowerCase().contentEquals("tolino_vision2")); //Tolino Vision HD4 doesn't show any Brand, only Model=tolino and  DEVICE=tolino_vision2)
 
 
-		EINK_SCREEN = EINK_SONY || EINK_NOOK || EINK_ONYX || EINK_DNS || EINK_TOLINO; // TODO: set to true for eink devices like Nook Touch
+
 
 		POCKETBOOK = MODEL.toLowerCase().startsWith("pocketbook") || MODEL.toLowerCase().startsWith("obreey");
 		
-		NOOK_NAVIGATION_KEYS = EINK_NOOK; // TODO: add autodetect
-		SONY_NAVIGATION_KEYS = EINK_SONY;
-		EINK_SCREEN_UPDATE_MODES_SUPPORTED = EINK_SCREEN && ( EINK_NOOK || EINK_TOLINO ); // TODO: add autodetect
-		FORCE_LIGHT_THEME = EINK_SCREEN || MODEL.equalsIgnoreCase("pocketbook vision");
-		USE_CUSTOM_TOAST = EINK_SCREEN;
+
 		NOFLIBUSTA = POCKETBOOK;
 		NAVIGATE_LEFTRIGHT = POCKETBOOK && DEVICE.startsWith("EP10");
 		REVERT_LANDSCAPE_VOLUME_KEYS = POCKETBOOK && DEVICE.startsWith("EP5A");
 		MIN_SCREEN_BRIGHTNESS_PERCENT = getMinBrightness(AMOLED_SCREEN ? 2 : (getSDKLevel() >= ICE_CREAM_SANDWICH ? 8 : 16));
 		//BUFFER_COLOR_FORMAT = getSDKLevel() >= HONEYCOMB ? android.graphics.Bitmap.Config.ARGB_8888 : android.graphics.Bitmap.Config.RGB_565;
 		//BUFFER_COLOR_FORMAT = android.graphics.Bitmap.Config.ARGB_8888;
-		BUFFER_COLOR_FORMAT = EINK_SCREEN || USE_OPENGL ? android.graphics.Bitmap.Config.ARGB_8888 : android.graphics.Bitmap.Config.RGB_565;
+		BUFFER_COLOR_FORMAT = USE_OPENGL ? android.graphics.Bitmap.Config.ARGB_8888 : android.graphics.Bitmap.Config.RGB_565;
 		PIXEL_FORMAT = (DeviceInfo.BUFFER_COLOR_FORMAT == android.graphics.Bitmap.Config.RGB_565) ? PixelFormat.RGB_565 : PixelFormat.RGBA_8888;
-		
+
 		DEF_FONT_FACE = getSDKLevel() >= ICE_CREAM_SANDWICH ? "Roboto" : "Droid Sans";
 		
 		USE_BITMAP_MEMORY_HACK = getSDKLevel() < ICE_CREAM_SANDWICH;
@@ -159,7 +129,6 @@ public class DeviceInfo {
 	
 	static {
 		Log.i("cr3", "DeviceInfo: MANUFACTURER=" + MANUFACTURER + ", MODEL=" + MODEL + ", DEVICE=" + DEVICE + ", PRODUCT=" + PRODUCT + ", BRAND=" + BRAND);
-		Log.i("cr3", "DeviceInfo: MIN_SCREEN_BRIGHTNESS_PERCENT=" + MIN_SCREEN_BRIGHTNESS_PERCENT + ", EINK_SCREEN=" + EINK_SCREEN + ", AMOLED_SCREEN=" + AMOLED_SCREEN + ", POCKETBOOK=" + POCKETBOOK);
 	}
 
 	// multiple patterns divided by |, * wildcard can be placed at beginning and/or end of pattern
@@ -214,32 +183,10 @@ public class DeviceInfo {
 			if (!match(DEVICE, patterns[2]))
 				return false;
 		if (patterns.length >= 4)
-			if (!match(BRAND, patterns[3]))
-				return false;
+			return match(BRAND, patterns[3]);
 		return true;
 	}
 
-//	// TEST
-//	private static boolean testMatchDevice(String manufacturer, String model, String device, String pattern) {
-//		String[] patterns = pattern.split(";");
-//		if (patterns.length >= 1)
-//			if (!match(manufacturer, patterns[0]))
-//				return false;
-//		if (patterns.length >= 2)
-//			if (!match(model, patterns[1]))
-//				return false;
-//		if (patterns.length >= 3)
-//			if (!match(device, patterns[2]))
-//				return false;
-//		Log.v("cr3", "matched : " + pattern + " == " + manufacturer + "," + model + "," + device);
-//		return true;
-//	}
-//	
-//	static {
-//		testMatchDevice("Archos", "A70S", "A70S", "Archos;A70S");
-//		testMatchDevice("MegaMan", "A70S", "A70S", "mega*;A70*");
-//		testMatchDevice("MegaMan", "A70", "A70S", "*man;A70*");
-//	}
 
 	private static int getMinBrightness(int defValue) {
 		try {
