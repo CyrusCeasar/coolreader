@@ -1,6 +1,5 @@
 package org.coolreader.crengine.reader;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -26,7 +25,6 @@ import org.coolreader.crengine.BookInfoDialog;
 import org.coolreader.crengine.Bookmark;
 import org.coolreader.crengine.BookmarkEditDialog;
 import org.coolreader.crengine.DelayedExecutor;
-import org.coolreader.crengine.DeviceInfo;
 import org.coolreader.crengine.DocView;
 import org.coolreader.crengine.DocumentFormat;
 import org.coolreader.crengine.Engine;
@@ -62,19 +60,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import cn.cc.ereader.MainActivity;
 import cn.cyrus.translater.base.ToastUtilKt;
 import cn.cyrus.translater.base.uitls.DeviceUtilKt;
+
 
 public class ReaderView implements android.view.SurfaceHolder.Callback, Settings, OnTouchListener, OnFocusChangeListener {
 
     public static final Logger log = L.create("rv", Log.VERBOSE);
     private static final Logger alog = L.create("ra", Log.WARN);
 
-    private final SurfaceView surface;
-    private final BookView bookView;
+    public final ReaderSurface surface;
+    public final BookMarkManager mBookMarkManager;
 
     public SurfaceView getSurface() {
         return surface;
@@ -93,12 +91,12 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     public static final int DOUBLE_TAP_RADIUS = 60;
 
 
-    private final ReaderActivity mActivity;
-    private final Engine mEngine;
+    public final ReaderActivity mActivity;
+    public final Engine mEngine;
 
-    private BookInfo mBookInfo;
+    public BookInfo mBookInfo;
 
-    private Properties mSettings = new Properties();
+    public Properties mSettings = new Properties();
 
     public Engine getEngine() {
         return mEngine;
@@ -122,54 +120,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     }
 
 
-    public int getTapZone(int x, int y, int dx, int dy) {
-        int x1 = dx / 3;
-        int x2 = dx * 2 / 3;
-        int y1 = dy / 3;
-        int y2 = dy * 2 / 3;
-        int zone = 0;
-        if (y < y1) {
-            if (x < x1)
-                zone = 1;
-            else if (x < x2)
-                zone = 2;
-            else
-                zone = 3;
-        } else if (y < y2) {
-            if (x < x1)
-                zone = 4;
-            else if (x < x2)
-                zone = 5;
-            else
-                zone = 6;
-        } else {
-            if (x < x1)
-                zone = 7;
-            else if (x < x2)
-                zone = 8;
-            else
-                zone = 9;
-        }
-        return zone;
-    }
 
-    public ReaderAction findTapZoneAction(int zone, int tapActionType) {
-        ReaderAction action = ReaderAction.NONE;
-        boolean isSecondaryAction = (secondaryTapActionType == tapActionType);
-        if (tapActionType == TAP_ACTION_TYPE_SHORT) {
-            action = ReaderAction.findForTap(zone, mSettings);
-        } else {
-            if (isSecondaryAction)
-                action = ReaderAction.findForLongTap(zone, mSettings);
-            else if (doubleTapSelectionEnabled || tapActionType == TAP_ACTION_TYPE_LONGPRESS)
-                action = ReaderAction.START_SELECTION;
-        }
-        return action;
-    }
-
-
-    private final int LONG_KEYPRESS_TIME = 900;
-    private final int DOUBLE_CLICK_INTERVAL = 400;
 
 
     private long statStartTime;
@@ -204,10 +155,10 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     public void onAppPause() {
         stopTracking();
 
-        prepareCurrentPositionBookmark();
-        saveCurrentPositionBookmark();
+        mBookMarkManager.prepareCurrentPositionBookmark();
+        mBookMarkManager.saveCurrentPositionBookmark();
         log.i("calling bookView.onPause()");
-        bookView.onPause();
+        surface.onPause();
     }
 
     private long lastAppResumeTs = 0;
@@ -215,7 +166,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     public void onAppResume() {
         lastAppResumeTs = System.currentTimeMillis();
         log.i("calling bookView.onResume()");
-        bookView.onResume();
+        surface.onResume();
     }
 
 
@@ -226,7 +177,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
     private int nextUpdateId = 0;
 
-    private void updateSelection(int startX, int startY, int endX, int endY, final boolean isUpdateEnd) {
+    public void updateSelection(int startX, int startY, int endX, int endY, final boolean isUpdateEnd) {
         final Selection sel = new Selection();
         final int myId = ++nextUpdateId;
         sel.startX = startX;
@@ -243,7 +194,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                     invalidImages = true;
                     BitmapInfo bi = preparePageImage(0);
                     if (bi != null) {
-                        bookView.draw(true);
+                        surface.draw(true);
                     }
                 }
             }
@@ -337,12 +288,13 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     }
 
 
-    private int isBacklightControlFlick = 1;
-    private boolean isTouchScreenEnabled = true;
-    private boolean doubleTapSelectionEnabled = true;
-    private boolean gesturePageFlippingEnabled = true;
-    private int secondaryTapActionType = TAP_ACTION_TYPE_LONGPRESS;
-    private boolean selectionModeActive = false;
+    public int isBacklightControlFlick = 1;
+    public boolean doubleTapSelectionEnabled = true;
+    public boolean gesturePageFlippingEnabled = true;
+    public int secondaryTapActionType = TAP_ACTION_TYPE_LONGPRESS;
+    public boolean isTouchScreenEnabled = true;
+
+    public boolean selectionModeActive = false;
 
     public void toggleSelectionMode() {
         selectionModeActive = !selectionModeActive;
@@ -352,7 +304,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     ImageViewer currentImageViewer;
 
 
-    private void startImageViewer(ImageInfo image) {
+    public void startImageViewer(ImageInfo image) {
         currentImageViewer = new ImageViewer(image, mActivity, this);
         drawPage();
     }
@@ -363,354 +315,9 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             currentImageViewer.close();
     }
 
-    private TapHandler currentTapHandler = null;
+    public TapHandler currentTapHandler = null;
 
-    public class TapHandler {
 
-        private final static int STATE_INITIAL = 0; // no events yet
-        private final static int STATE_DOWN_1 = 1; // down first time
-        private final static int STATE_SELECTION = 3; // selection is started
-        private final static int STATE_FLIPPING = 4; // flipping is in progress
-        private final static int STATE_WAIT_FOR_DOUBLE_CLICK = 5; // flipping is in progress
-        private final static int STATE_DONE = 6; // done: no more tracking
-        private final static int STATE_BRIGHTNESS = 7; // brightness change in progress
-
-        private final static int EXPIRATION_TIME_MS = 180000;
-
-        int state = STATE_INITIAL;
-
-        int start_x = 0;
-        int start_y = 0;
-        int width = 0;
-        int height = 0;
-        ReaderAction shortTapAction = ReaderAction.NONE;
-        ReaderAction longTapAction = ReaderAction.NONE;
-        ReaderAction doubleTapAction = ReaderAction.NONE;
-        long firstDown;
-
-        /// handle unexpected event for state: stop tracking
-        private boolean unexpectedEvent() {
-            cancel();
-            return true; // ignore
-        }
-
-        public void checkExpiration() {
-            if (state != STATE_INITIAL && Utils.timeInterval(firstDown) > EXPIRATION_TIME_MS)
-                cancel();
-        }
-
-        /// cancel current action and reset touch tracking state
-        private boolean cancel() {
-            if (state == STATE_INITIAL)
-                return true;
-            switch (state) {
-                case STATE_DOWN_1:
-                case STATE_SELECTION:
-                    clearSelection();
-                    break;
-                case STATE_FLIPPING:
-                    stopAnimation(-1, -1);
-                    break;
-                case STATE_WAIT_FOR_DOUBLE_CLICK:
-                case STATE_DONE:
-                case STATE_BRIGHTNESS:
-                    stopBrightnessControl(-1, -1);
-                    break;
-            }
-            state = STATE_DONE;
-            unhiliteTapZone();
-            currentTapHandler = new TapHandler();
-            return true;
-        }
-
-        /// perform action and reset touch tracking state
-        private boolean performAction(final ReaderAction action, boolean checkForLinks) {
-            log.d("performAction on touch: " + action);
-            state = STATE_DONE;
-
-            currentTapHandler = new TapHandler();
-
-            if (!checkForLinks) {
-                onAction(action);
-                return true;
-            }
-
-            // check link before executing action
-            mEngine.execute(new Task() {
-                String link;
-                ImageInfo image;
-                Bookmark bookmark;
-
-                public void work() {
-                    image = new ImageInfo();
-                    image.bufWidth = internalDX;
-                    image.bufHeight = internalDY;
-                    image.bufDpi = mActivity.getDensityDpi();
-                    if (doc.checkImage(start_x, start_y, image)) {
-                        return;
-                    }
-                    image = null;
-                    link = doc.checkLink(start_x, start_y, mActivity.getPalmTipPixels() / 2);
-                    if (link != null) {
-                        if (link.startsWith("#")) {
-                            log.d("go to " + link);
-                            doc.goLink(link);
-                            drawPage();
-                        }
-                        return;
-                    }
-                    bookmark = doc.checkBookmark(start_x, start_y);
-                    if (bookmark != null && bookmark.getType() == Bookmark.TYPE_POSITION)
-                        bookmark = null;
-                }
-
-                public void done() {
-                    if (bookmark != null)
-                        bookmark = mBookInfo.findBookmark(bookmark);
-                    if (link == null && image == null && bookmark == null) {
-                        onAction(action);
-                    } else if (image != null) {
-                        startImageViewer(image);
-                    } else if (bookmark != null) {
-                        BookmarkEditDialog dlg = new BookmarkEditDialog(mActivity, ReaderView.this, bookmark, false);
-                        dlg.show();
-                    } else if (!link.startsWith("#")) {
-                        log.d("external link " + link);
-                        if (link.startsWith("http://") || link.startsWith("https://")) {
-                            mActivity.openURL(link);
-                        } else {
-                            // absolute path to file
-                            FileInfo fi = new FileInfo(link);
-                            if (fi.exists()) {
-                                mActivity.loadDocument(fi);
-                                return;
-                            }
-                            File baseDir = null;
-                            if (mBookInfo != null && mBookInfo.getFileInfo() != null) {
-                                if (!mBookInfo.getFileInfo().isArchive) {
-                                    // relatively to base directory
-                                    File f = new File(mBookInfo.getFileInfo().getBasePath());
-                                    baseDir = f.getParentFile();
-                                    String url = link;
-                                    while (baseDir != null && url != null && url.startsWith("../")) {
-                                        baseDir = baseDir.getParentFile();
-                                        url = url.substring(3);
-                                    }
-                                    if (baseDir != null && url != null && url.length() > 0) {
-                                        fi = new FileInfo(baseDir.getAbsolutePath() + "/" + url);
-                                        if (fi.exists()) {
-                                            mActivity.loadDocument(fi);
-                                            return;
-                                        }
-                                    }
-                                } else {
-                                    // from archive
-                                    fi = new FileInfo(mBookInfo.getFileInfo().getArchiveName() + FileInfo.ARC_SEPARATOR + link);
-                                    if (fi.exists()) {
-                                        mActivity.loadDocument(fi);
-                                        return;
-                                    }
-                                }
-                            }
-                            mActivity.showToast("Cannot open link " + link);
-                        }
-                    }
-                }
-            });
-            return true;
-        }
-
-        private boolean startSelection() {
-            state = STATE_SELECTION;
-            // check link before executing action
-            mEngine.execute(new Task() {
-                ImageInfo image;
-                Bookmark bookmark;
-
-                public void work() {
-                    image = new ImageInfo();
-                    image.bufWidth = internalDX;
-                    image.bufHeight = internalDY;
-                    image.bufDpi = mActivity.getDensityDpi();
-                    if (!doc.checkImage(start_x, start_y, image))
-                        image = null;
-                    bookmark = doc.checkBookmark(start_x, start_y);
-                    if (bookmark != null && bookmark.getType() == Bookmark.TYPE_POSITION)
-                        bookmark = null;
-                }
-
-                public void done() {
-                    if (bookmark != null)
-                        bookmark = mBookInfo.findBookmark(bookmark);
-                    if (image != null) {
-                        cancel();
-                        startImageViewer(image);
-                    } else if (bookmark != null) {
-                        cancel();
-                        BookmarkEditDialog dlg = new BookmarkEditDialog(mActivity, ReaderView.this, bookmark, false);
-                        dlg.show();
-                    } else {
-                        updateSelection(start_x, start_y, start_x, start_y, false);
-                    }
-                }
-            });
-            return true;
-        }
-
-        private boolean trackDoubleTap() {
-            state = STATE_WAIT_FOR_DOUBLE_CLICK;
-            BackgroundThread.instance().postGUI(new Runnable() {
-                @Override
-                public void run() {
-                    if (currentTapHandler == TapHandler.this && state == STATE_WAIT_FOR_DOUBLE_CLICK)
-                        performAction(shortTapAction, false);
-                }
-            }, DOUBLE_CLICK_INTERVAL);
-            return true;
-        }
-
-        private boolean trackLongTap() {
-            BackgroundThread.instance().postGUI(new Runnable() {
-                @Override
-                public void run() {
-                    if (currentTapHandler == TapHandler.this && state == STATE_DOWN_1) {
-                        if (longTapAction == ReaderAction.START_SELECTION)
-                            startSelection();
-                        else
-                            performAction(longTapAction, true);
-                    }
-                }
-            }, LONG_KEYPRESS_TIME);
-            return true;
-        }
-
-        private boolean onTouchEvent(MotionEvent event) {
-            int x = (int) event.getX();
-            int y = (int) event.getY();
-            if ((DeviceInfo.getSDKLevel() >= 19) && mActivity.isFullscreen() && (event.getAction() == MotionEvent.ACTION_DOWN)) {
-                if ((y < 30) || (y > (getSurface().getHeight() - 30)))
-                    return unexpectedEvent();
-            }
-
-            if (state == STATE_INITIAL && event.getAction() != MotionEvent.ACTION_DOWN)
-                return unexpectedEvent(); // ignore unexpected event
-
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                long duration = Utils.timeInterval(firstDown);
-                switch (state) {
-                    case STATE_DOWN_1:
-                        if (hiliteTapZoneOnTap) {
-                            hiliteTapZone(true, x, y, width, height);
-                            scheduleUnhilite(LONG_KEYPRESS_TIME);
-                        }
-                        if (duration > LONG_KEYPRESS_TIME) {
-                            if (longTapAction == ReaderAction.START_SELECTION)
-                                return startSelection();
-                            return performAction(longTapAction, true);
-                        }
-                        if (doubleTapAction.isNone())
-                            return performAction(shortTapAction, false);
-                        // start possible double tap tracking
-                        return trackDoubleTap();
-                    case STATE_FLIPPING:
-                        stopAnimation(x, y);
-                        state = STATE_DONE;
-                        return cancel();
-                    case STATE_BRIGHTNESS:
-                        stopBrightnessControl(x, y);
-                        state = STATE_DONE;
-                        return cancel();
-                    case STATE_SELECTION:
-                        // If the second tap is within a radius of the first tap point, assume the user is trying to double tap on the same point
-                        if (start_x - x <= DOUBLE_TAP_RADIUS && x - start_x <= DOUBLE_TAP_RADIUS && y - start_y <= DOUBLE_TAP_RADIUS && start_y - y <= DOUBLE_TAP_RADIUS)
-                            updateSelection(start_x, start_y, start_x, start_y, true);
-                        else
-                            updateSelection(start_x, start_y, x, y, true);
-                        selectionModeActive = false;
-                        state = STATE_DONE;
-                        return cancel();
-                }
-            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                switch (state) {
-                    case STATE_INITIAL:
-                        start_x = x;
-                        start_y = y;
-                        width = surface.getWidth();
-                        height = surface.getHeight();
-                        int zone = getTapZone(x, y, width, height);
-                        shortTapAction = findTapZoneAction(zone, TAP_ACTION_TYPE_SHORT);
-                        longTapAction = findTapZoneAction(zone, TAP_ACTION_TYPE_LONGPRESS);
-                        doubleTapAction = findTapZoneAction(zone, TAP_ACTION_TYPE_DOUBLE);
-                        firstDown = Utils.timeStamp();
-                        if (selectionModeActive) {
-                            startSelection();
-                        } else {
-                            state = STATE_DOWN_1;
-                            trackLongTap();
-                        }
-                        return true;
-                    case STATE_DOWN_1:
-                    case STATE_BRIGHTNESS:
-                    case STATE_FLIPPING:
-                    case STATE_SELECTION:
-                        return unexpectedEvent();
-                    case STATE_WAIT_FOR_DOUBLE_CLICK:
-                        if (doubleTapAction == ReaderAction.START_SELECTION)
-                            return startSelection();
-                        return performAction(doubleTapAction, true);
-                }
-            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                int dx = x - start_x;
-                int dy = y - start_y;
-                int adx = dx > 0 ? dx : -dx;
-                int ady = dy > 0 ? dy : -dy;
-                int distance = adx + ady;
-                int dragThreshold = mActivity.getPalmTipPixels();
-                switch (state) {
-                    case STATE_DOWN_1:
-                        if (distance < dragThreshold)
-                            return true;
-                        if ( isBacklightControlFlick != BACKLIGHT_CONTROL_FLICK_NONE && ady > adx) {
-                            // backlight control enabled
-                            if (start_x < dragThreshold * 170 / 100 && isBacklightControlFlick == 1
-                                    || start_x > width - dragThreshold * 170 / 100 && isBacklightControlFlick == 2) {
-                                // brightness
-                                state = STATE_BRIGHTNESS;
-                                startBrightnessControl(start_x, start_y);
-                                return true;
-                            }
-                        }
-                        boolean isPageMode = mSettings.getInt(PROP_PAGE_VIEW_MODE, 1) == 1;
-                        int dir = isPageMode ? x - start_x : y - start_y;
-                        if (gesturePageFlippingEnabled) {
-                            if (pageFlipAnimationSpeedMs == 0 ) {
-                                // no animation
-                                return performAction(dir < 0 ? ReaderAction.PAGE_DOWN : ReaderAction.PAGE_UP, false);
-                            }
-                            startAnimation(start_x, start_y, width, height, x, y);
-                            updateAnimation(x, y);
-                            state = STATE_FLIPPING;
-                        }
-                        return true;
-                    case STATE_FLIPPING:
-                        updateAnimation(x, y);
-                        return true;
-                    case STATE_BRIGHTNESS:
-                        updateBrightnessControl(x, y);
-                        return true;
-                    case STATE_WAIT_FOR_DOUBLE_CLICK:
-                        return true;
-                    case STATE_SELECTION:
-                        updateSelection(start_x, start_y, x, y, false);
-                        break;
-                }
-
-            } else if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                return unexpectedEvent();
-            }
-            return true;
-        }
-    }
 
 
     private void showTOC() {
@@ -797,7 +404,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         });
     }
 
-    private boolean flgHighlightBookmarks = false;
+    public boolean flgHighlightBookmarks = false;
 
     public void clearSelection() {
         BackgroundThread.ensureGUI();
@@ -812,121 +419,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             public void done() {
                 if (surface.isShown())
                     drawPage(true);
-            }
-        });
-    }
-
-    private void highlightBookmarks() {
-        BackgroundThread.ensureGUI();
-        if (mBookInfo == null || !isBookLoaded())
-            return;
-        int count = mBookInfo.getBookmarkCount();
-        final Bookmark[] list = (count > 0 && flgHighlightBookmarks) ? new Bookmark[count] : null;
-        for (int i = 0; i < count && flgHighlightBookmarks; i++)
-            list[i] = mBookInfo.getBookmark(i);
-        mEngine.post(new Task() {
-            public void work() throws Exception {
-                doc.hilightBookmarks(list);
-                invalidImages = true;
-            }
-
-            public void done() {
-                if (surface.isShown())
-                    drawPage(true);
-            }
-        });
-    }
-
-    public void goToBookmark(Bookmark bm) {
-        BackgroundThread.ensureGUI();
-        final String pos = bm.getStartPos();
-        mEngine.execute(new Task() {
-            public void work() {
-                BackgroundThread.ensureBackground();
-                doc.goToPosition(pos, true);
-            }
-
-            public void done() {
-                BackgroundThread.ensureGUI();
-                drawPage();
-            }
-        });
-    }
-
-    public boolean goToBookmark(final int shortcut) {
-        BackgroundThread.ensureGUI();
-        if (mBookInfo != null) {
-            Bookmark bm = mBookInfo.findShortcutBookmark(shortcut);
-            if (bm == null) {
-                addBookmark(shortcut);
-                return true;
-            } else {
-                // go to bookmark
-                goToBookmark(bm);
-                return false;
-            }
-        }
-        return false;
-    }
-
-    public Bookmark removeBookmark(final Bookmark bookmark) {
-        Bookmark removed = mBookInfo.removeBookmark(bookmark);
-        if (removed != null) {
-            if (removed.getId() != null) {
-                mActivity.getDB().deleteBookmark(removed);
-            }
-            highlightBookmarks();
-        }
-        return removed;
-    }
-
-    public Bookmark updateBookmark(final Bookmark bookmark) {
-        Bookmark bm = mBookInfo.updateBookmark(bookmark);
-        if (bm != null) {
-            scheduleSaveCurrentPositionBookmark(DEF_SAVE_POSITION_INTERVAL);
-            highlightBookmarks();
-        }
-        return bm;
-    }
-
-    public void addBookmark(final Bookmark bookmark) {
-        mBookInfo.addBookmark(bookmark);
-        highlightBookmarks();
-        scheduleSaveCurrentPositionBookmark(DEF_SAVE_POSITION_INTERVAL);
-    }
-
-    public void addBookmark(final int shortcut) {
-        BackgroundThread.ensureGUI();
-        // set bookmark instead
-        mEngine.execute(new Task() {
-            Bookmark bm;
-
-            public void work() {
-                BackgroundThread.ensureBackground();
-                if (mBookInfo != null) {
-                    bm = doc.getCurrentPageBookmark();
-                    bm.setShortcut(shortcut);
-                }
-            }
-
-            public void done() {
-                if (mBookInfo != null && bm != null) {
-                    if (shortcut == 0)
-                        mBookInfo.addBookmark(bm);
-                    else
-                        mBookInfo.setShortcutBookmark(shortcut, bm);
-                    mActivity.getDB().saveBookInfo(mBookInfo);
-                    String s;
-                    if (shortcut == 0)
-                        s = mActivity.getString(R.string.toast_position_bookmark_is_set);
-                    else {
-                        s = mActivity.getString(R.string.toast_shortcut_bookmark_is_set);
-                        s.replace("$1", String.valueOf(shortcut));
-                    }
-                    highlightBookmarks();
-                    mActivity.showToast(s);
-                    scheduleSaveCurrentPositionBookmark(DEF_SAVE_POSITION_INTERVAL);
-                }
             }
         });
     }
@@ -950,9 +442,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         invalidImages = true;
     }
 
-    public boolean isNightMode() {
-        return mSettings.getBool(PROP_NIGHT_MODE, false);
-    }
 
     public String getSetting(String name) {
         return mSettings.getProperty(name);
@@ -1303,13 +792,13 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                 drawPage();
                 break;
             case DCMD_PAGEDOWN:
-                if (param == 1 )
+                if (param == 1)
                     animatePageFlip(1, onFinishHandler);
                 else
                     doEngineCommand(cmd, param, onFinishHandler);
                 break;
             case DCMD_PAGEUP:
-                if (param == 1 )
+                if (param == 1)
                     animatePageFlip(-1, onFinishHandler);
                 else
                     doEngineCommand(cmd, param, onFinishHandler);
@@ -1361,10 +850,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     }
 
 
-
-
-
-
     public void doEngineCommand(final ReaderCommand cmd, final int param) {
         doEngineCommand(cmd, param, null);
     }
@@ -1413,13 +898,13 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                     drawPage(doneHandler, false);
                 }
                 if (isMoveCommand)
-                    scheduleSaveCurrentPositionBookmark(DEF_SAVE_POSITION_INTERVAL);
+                    mBookMarkManager.scheduleSaveCurrentPositionBookmark();
             }
         });
     }
 
     // update book and position info in status bar
-    private void updateCurrentPositionStatus() {
+    public void updateCurrentPositionStatus() {
         if (mBookInfo == null)
             return;
         // in background thread
@@ -1593,7 +1078,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         });
     }
 
-    private boolean hiliteTapZoneOnTap = false;
+    public boolean hiliteTapZoneOnTap = false;
     static private final int DEF_PAGE_FLIP_MS = 300;
 
     public void applyAppSetting(String key, String value) {
@@ -1611,7 +1096,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         } else if (PROP_APP_HIGHLIGHT_BOOKMARKS.equals(key)) {
             flgHighlightBookmarks = !"0".equals(value);
             clearSelection();
-        }  else if (PROP_PAGE_ANIMATION.equals(key)) {
+        } else if (PROP_PAGE_ANIMATION.equals(key)) {
             try {
                 int n = Integer.valueOf(value);
                 if (n < 0 || n > PAGE_ANIMATION_MAX)
@@ -1932,7 +1417,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             log.i("Battery state changed: " + state);
             mBatteryState = state;
 
-                drawPage();
+            drawPage();
 
         }
     }
@@ -1958,7 +1443,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
      * @param offset is kind of page: 0==current, -1=previous, 1=next page
      * @return page image and properties, null if requested page is unavailable (e.g. requested next/prev page is out of document range)
      */
-    private BitmapInfo preparePageImage(int offset) {
+    public BitmapInfo preparePageImage(int offset) {
         BackgroundThread.ensureBackground();
         log.v("preparePageImage( " + offset + ")");
 
@@ -2120,7 +1605,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             log.e("DrawPageTask.work(" + internalDX + "," + internalDY + ")");
             bi = preparePageImage(0);
             if (bi != null) {
-                bookView.draw(isPartially);
+                surface.draw(isPartially);
             }
         }
 
@@ -2137,13 +1622,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             hideProgress();
         }
     }
-
-    static class ReaderSurfaceView extends SurfaceView {
-        public ReaderSurfaceView(Context context) {
-            super(context);
-        }
-    }
-
 
     private int requestedWidth = 0;
     private int requestedHeight = 0;
@@ -2242,7 +1720,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
         surface.invalidate();
         //if (!isProgressActive())
-        bookView.draw();
+        surface.draw();
         //requestResize(width, height);
         //draw();
     }
@@ -2266,16 +1744,11 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         }
     }
 
-    enum AnimationType {
-        SCROLL, // for scroll mode
-        PAGE_SHIFT, // for simple page shift
-    }
-
 
     public ViewAnimationControl currentAnimation = null;
 
-    private int pageFlipAnimationSpeedMs = DEF_PAGE_FLIP_MS; // if 0 : no animation
-    private int pageFlipAnimationMode = PAGE_ANIMATION_SLIDE2; //PAGE_ANIMATION_PAPER; // if 0 : no animation
+    public int pageFlipAnimationSpeedMs = DEF_PAGE_FLIP_MS; // if 0 : no animation
+    public int pageFlipAnimationMode = PAGE_ANIMATION_SLIDE2; //PAGE_ANIMATION_PAPER; // if 0 : no animation
 
     //	private void animatePageFlip( final int dir ) {
 //		animatePageFlip(dir, null);
@@ -2305,7 +1778,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                     if (currPos.pageMode != 0) {
                         int fromX = dir2 > 0 ? w : 0;
                         int toX = dir2 > 0 ? 0 : w;
-                        new PageViewAnimation(fromX, w, dir2);
+                        new PageViewAnimation(ReaderView.this, fromX, w, dir2);
                         if (currentAnimation != null) {
                             if (currentAnimation != null) {
                                 nextHiliteId++;
@@ -2344,11 +1817,11 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     private final static int HILITE_RECT_ALPHA = 32;
     private Rect hiliteRect = null;
 
-    private void unhiliteTapZone() {
+    public void unhiliteTapZone() {
         hiliteTapZone(false, 0, 0, surface.getWidth(), surface.getHeight());
     }
 
-    private void hiliteTapZone(final boolean hilite, final int startX, final int startY, final int maxX, final int maxY) {
+    public void hiliteTapZone(final boolean hilite, final int startX, final int startY, final int maxX, final int maxY) {
         alog.d("highliteTapZone(" + startX + ", " + startY + ")");
         final int myHiliteId = ++nextHiliteId;
         int txcolor = mSettings.getColor(PROP_FONT_COLOR, Color.BLACK);
@@ -2358,9 +1831,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             public void run() {
                 if (myHiliteId != nextHiliteId || (!hilite && hiliteRect == null))
                     return;
-
-
-
                 BackgroundThread.ensureBackground();
                 final BitmapInfo pageImage = preparePageImage(0);
                 if (pageImage != null && pageImage.bitmap != null && pageImage.position != null) {
@@ -2371,7 +1841,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                     else
                         hiliteRect = null;
                     if (rc != null)
-                        drawCallback(new DrawCanvasCallback() {
+                        surface.drawCallback(new DrawCanvasCallback() {
                             @Override
                             public void drawTo(Canvas canvas) {
                                 if (mInitialized && mCurrentPageInfo != null) {
@@ -2399,7 +1869,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         });
     }
 
-    private void scheduleUnhilite(int delay) {
+    public void scheduleUnhilite(int delay) {
         final int myHiliteId = nextHiliteId;
         BackgroundThread.instance().postGUI(new Runnable() {
             @Override
@@ -2412,12 +1882,12 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
     int currentBrightnessValueIndex = -1;
 
-    private void startBrightnessControl(final int startX, final int startY) {
+    public void startBrightnessControl(final int startX, final int startY) {
         currentBrightnessValueIndex = -1;
         updateBrightnessControl(startX, startY);
     }
 
-    private void updateBrightnessControl(final int x, final int y) {
+    public void updateBrightnessControl(final int x, final int y) {
         int n = OptionsDialog.mBacklightLevels.length;
         int index = n - 1 - y * n / surface.getHeight();
         if (index < 0)
@@ -2432,7 +1902,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
     }
 
-    private void stopBrightnessControl(final int x, final int y) {
+    public void stopBrightnessControl(final int x, final int y) {
         if (currentBrightnessValueIndex >= 0) {
             if (x >= 0 && y >= 0) {
                 updateBrightnessControl(x, y);
@@ -2451,7 +1921,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     private static final boolean showBrightnessFlickToast = false;
 
 
-    private void startAnimation(final int startX, final int startY, final int maxX, final int maxY, final int newX, final int newY) {
+    public void startAnimation(final int startX, final int startY, final int maxX, final int maxY, final int newX, final int newY) {
         alog.d("startAnimation(" + startX + ", " + startY + ")");
         BackgroundThread.instance().executeBackground(new Runnable() {
             @Override
@@ -2465,7 +1935,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                     int sx = startX;
 //					if ( dir<0 )
 //						sx = 0;
-                    new PageViewAnimation(sx, maxX, dir);
+                    new PageViewAnimation(ReaderView.this, sx, maxX, dir);
                 }
                 if (currentAnimation != null) {
                     nextHiliteId++;
@@ -2516,7 +1986,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
     private AnimationUpdate currentAnimationUpdate;
 
-    private void updateAnimation(final int x, final int y) {
+    public void updateAnimation(final int x, final int y) {
         alog.d("updateAnimation(" + x + ", " + y + ")");
         synchronized (AnimationUpdate.class) {
             if (currentAnimationUpdate != null)
@@ -2532,7 +2002,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         }
     }
 
-    private void stopAnimation(final int x, final int y) {
+    public void stopAnimation(final int x, final int y) {
         alog.d("stopAnimation(" + x + ", " + y + ")");
         BackgroundThread.instance().executeBackground(new Runnable() {
             @Override
@@ -2547,7 +2017,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
     DelayedExecutor animationScheduler = DelayedExecutor.createBackground("animation");
 
-    private void scheduleAnimation() {
+    public void scheduleAnimation() {
         animationScheduler.post(new Runnable() {
             @Override
             public void run() {
@@ -2559,636 +2029,15 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
     }
 
 
-//	private Object surfaceLock = new Object();
-
-    private static final int[] accelerationShape = new int[]{
-            0, 6, 24, 54, 95, 146, 206, 273, 345, 421, 500, 578, 654, 726, 793, 853, 904, 945, 975, 993, 1000
-    };
-
-    static public int accelerate(int x0, int x1, int x) {
-        if (x < x0)
-            x = x0;
-        if (x > x1)
-            x = x1;
-        int intervals = accelerationShape.length - 1;
-        int pos = x1 > x0 ? 100 * intervals * (x - x0) / (x1 - x0) : x1;
-        int interval = pos / 100;
-        int part = pos % 100;
-        if (interval < 0)
-            interval = 0;
-        else if (interval > intervals)
-            interval = intervals;
-        int y = interval == intervals ? 100000 : accelerationShape[interval] * 100 + (accelerationShape[interval + 1] - accelerationShape[interval]) * part;
-        return x0 + (x1 - x0) * y / 100000;
-    }
-
-
-    public void drawCallback(DrawCanvasCallback callback, Rect rc, boolean isPartially) {
-        if (!mSurfaceCreated)
-            return;
-        //synchronized(surfaceLock) { }
-        //log.v("draw() - in thread " + Thread.currentThread().getName());
-        final SurfaceHolder holder = surface.getHolder();
-        //log.v("before synchronized(surfaceLock)");
-        if (holder != null)
-        //synchronized(surfaceLock)
-        {
-            Canvas canvas = null;
-            long startTs = android.os.SystemClock.uptimeMillis();
-            try {
-                canvas = holder.lockCanvas(rc);
-                //log.v("before draw(canvas)");
-                if (canvas != null) {
-
-                    callback.drawTo(canvas);
-                }
-            } finally {
-                //log.v("exiting finally");
-                if (canvas != null && surface.getHolder() != null) {
-                    //log.v("before unlockCanvasAndPost");
-                    if (canvas != null && holder != null) {
-                        holder.unlockCanvasAndPost(canvas);
-                        //if ( rc==null ) {
-                        long endTs = android.os.SystemClock.uptimeMillis();
-                        updateAnimationDurationStats(endTs - startTs);
-                        //}
-                    }
-                    //log.v("after unlockCanvasAndPost");
-                }
-            }
-        }
-        //log.v("exiting draw()");
-    }
-
-    abstract class ViewAnimationBase implements ViewAnimationControl {
-        //long startTimeStamp;
-        boolean started;
-
-        public boolean isStarted() {
-            return started;
-        }
-
-        ViewAnimationBase() {
-            //startTimeStamp = android.os.SystemClock.uptimeMillis();
-            cancelGc();
-        }
-
-        public void close() {
-            animationScheduler.cancel();
-            currentAnimation = null;
-            scheduleSaveCurrentPositionBookmark(DEF_SAVE_POSITION_INTERVAL);
-            lastSavedBookmark = null;
-            lastPositionBookmarkToSave = null;
-            updateCurrentPositionStatus();
-
-            scheduleGc();
-        }
-
-        public void draw() {
-            draw(false);
-        }
-
-        public void draw(boolean isPartially) {
-            drawCallback(new DrawCanvasCallback() {
-                @Override
-                public void drawTo(Canvas c) {
-                    //	long startTs = android.os.SystemClock.uptimeMillis();
-                    draw(c);
-                }
-            }, null, isPartially);
-        }
-    }
-
-
-
-    private final static int SIN_TABLE_SIZE = 1024;
-    private final static int SIN_TABLE_SCALE = 0x10000;
-    private final static int PI_DIV_2 = (int) (Math.PI / 2 * SIN_TABLE_SCALE);
-    /// sin table, for 0..PI/2
-    private static int[] SIN_TABLE = new int[SIN_TABLE_SIZE + 1];
-    private static int[] ASIN_TABLE = new int[SIN_TABLE_SIZE + 1];
-    // mapping of 0..1 shift to angle
-    private static int[] SRC_TABLE = new int[SIN_TABLE_SIZE + 1];
-    // mapping of 0..1 shift to sin(angle)
-    private static int[] DST_TABLE = new int[SIN_TABLE_SIZE + 1];
-
-    // for dx=0..1 find such alpha (0..pi/2) that alpha - sin(alpha) = dx
-    private static double shiftfn(double dx) {
-        double a = 0;
-        double b = Math.PI / 2;
-        double c = 0;
-        for (int i = 0; i < 15; i++) {
-            c = (a + b) / 2;
-            double cq = c - Math.sin(c);
-            if (cq < dx)
-                a = c;
-            else
-                b = c;
-        }
-        return c;
-    }
-
-    static {
-        for (int i = 0; i <= SIN_TABLE_SIZE; i++) {
-            double angle = Math.PI / 2 * i / SIN_TABLE_SIZE;
-            int s = (int) Math.round(Math.sin(angle) * SIN_TABLE_SCALE);
-            SIN_TABLE[i] = s;
-            double x = (double) i / SIN_TABLE_SIZE;
-            s = (int) Math.round(Math.asin(x) * SIN_TABLE_SCALE);
-            ASIN_TABLE[i] = s;
-
-            double dx = i * (Math.PI / 2 - 1.0) / SIN_TABLE_SIZE;
-            angle = shiftfn(dx);
-            SRC_TABLE[i] = (int) Math.round(angle * SIN_TABLE_SCALE);
-            DST_TABLE[i] = (int) Math.round(Math.sin(angle) * SIN_TABLE_SCALE);
-        }
-    }
-
-    class PageViewAnimation extends ViewAnimationBase {
-        int startX;
-        int maxX;
-        int page1;
-        int page2;
-        int direction;
-        int currShift;
-        int destShift;
-        int pageCount;
-        Paint divPaint;
-        Paint[] shadePaints;
-        Paint[] hilitePaints;
-        private final boolean naturalPageFlip;
-        private final boolean flipTwoPages;
-
-        BitmapInfo image1;
-        BitmapInfo image2;
-
-        PageViewAnimation(int startX, int maxX, int direction) {
-            super();
-            this.startX = startX;
-            this.maxX = maxX;
-            this.direction = direction;
-            this.currShift = 0;
-            this.destShift = 0;
-            this.naturalPageFlip = (pageFlipAnimationMode == PAGE_ANIMATION_PAPER);
-            this.flipTwoPages = (pageFlipAnimationMode == PAGE_ANIMATION_SLIDE2);
-
-            long start = android.os.SystemClock.uptimeMillis();
-            log.v("PageViewAnimation -- creating: drawing two pages to buffer");
-
-            PositionProperties currPos = mCurrentPageInfo == null ? null : mCurrentPageInfo.position;
-            if (currPos == null)
-                currPos = doc.getPositionProps(null);
-            page1 = currPos.pageNumber;
-            page2 = currPos.pageNumber + direction;
-            if (page2 < 0 || page2 >= currPos.pageCount) {
-                currentAnimation = null;
-                return;
-            }
-            this.pageCount = currPos.pageMode;
-            image1 = preparePageImage(0);
-            image2 = preparePageImage(direction);
-            if (image1 == null || image2 == null) {
-                log.v("PageViewAnimation -- cannot start animation: page image is null");
-                return;
-            }
-            if (page1 == page2) {
-                log.v("PageViewAnimation -- cannot start animation: not moved");
-                return;
-            }
-            page2 = image2.position.pageNumber;
-            currentAnimation = this;
-            divPaint = new Paint();
-            divPaint.setStyle(Paint.Style.FILL);
-            divPaint.setColor(mActivity.isNightMode() ? Color.argb(96, 64, 64, 64) : Color.argb(128, 128, 128, 128));
-            final int numPaints = 16;
-            shadePaints = new Paint[numPaints];
-            hilitePaints = new Paint[numPaints];
-            for (int i = 0; i < numPaints; i++) {
-                shadePaints[i] = new Paint();
-                hilitePaints[i] = new Paint();
-                hilitePaints[i].setStyle(Paint.Style.FILL);
-                shadePaints[i].setStyle(Paint.Style.FILL);
-                if (mActivity.isNightMode()) {
-                    shadePaints[i].setColor(Color.argb((i + 1) * 96 / numPaints, 0, 0, 0));
-                    hilitePaints[i].setColor(Color.argb((i + 1) * 96 / numPaints, 64, 64, 64));
-                } else {
-                    shadePaints[i].setColor(Color.argb((i + 1) * 96 / numPaints, 0, 0, 0));
-                    hilitePaints[i].setColor(Color.argb((i + 1) * 96 / numPaints, 255, 255, 255));
-                }
-            }
-
-
-            long duration = android.os.SystemClock.uptimeMillis() - start;
-            log.d("PageViewAnimation -- created in " + duration + " millis");
-        }
-
-        private void drawGradient(Canvas canvas, Rect rc, Paint[] paints, int startIndex, int endIndex) {
-            int n = (startIndex < endIndex) ? endIndex - startIndex + 1 : startIndex - endIndex + 1;
-            int dir = (startIndex < endIndex) ? 1 : -1;
-            int dx = rc.right - rc.left;
-            Rect rect = new Rect(rc);
-            for (int i = 0; i < n; i++) {
-                int index = startIndex + i * dir;
-                int x1 = rc.left + dx * i / n;
-                int x2 = rc.left + dx * (i + 1) / n;
-                if (x2 > rc.right)
-                    x2 = rc.right;
-                rect.left = x1;
-                rect.right = x2;
-                if (x2 > x1) {
-                    canvas.drawRect(rect, paints[index]);
-                }
-            }
-        }
-
-        private void drawShadow(Canvas canvas, Rect rc) {
-            drawGradient(canvas, rc, shadePaints, shadePaints.length / 2, shadePaints.length / 10);
-        }
-
-        private final static int DISTORT_PART_PERCENT = 30;
-
-        private void drawDistorted(Canvas canvas, Bitmap bmp, Rect src, Rect dst, int dir) {
-            int srcdx = src.width();
-            int dstdx = dst.width();
-            int dx = srcdx - dstdx;
-            int maxdistortdx = srcdx * DISTORT_PART_PERCENT / 100;
-            int maxdx = maxdistortdx * (PI_DIV_2 - SIN_TABLE_SCALE) / SIN_TABLE_SCALE;
-            int maxdistortsrc = maxdistortdx * PI_DIV_2 / SIN_TABLE_SCALE;
-
-            int distortdx = dx < maxdistortdx ? dx : maxdistortdx;
-            int distortsrcstart = -1;
-            int distortsrcend = -1;
-            int distortdststart = -1;
-            int distortdstend = -1;
-            int distortanglestart = -1;
-            int distortangleend = -1;
-            int normalsrcstart = -1;
-            int normalsrcend = -1;
-            int normaldststart = -1;
-            int normaldstend = -1;
-
-            if (dx < maxdx) {
-                // start
-                int index = dx >= 0 ? dx * SIN_TABLE_SIZE / maxdx : 0;
-                if (index > DST_TABLE.length)
-                    index = DST_TABLE.length;
-                int dstv = DST_TABLE[index] * maxdistortdx / SIN_TABLE_SCALE;
-                distortdststart = distortsrcstart = dstdx - dstv;
-                distortsrcend = srcdx;
-                distortdstend = dstdx;
-                normalsrcstart = normaldststart = 0;
-                normalsrcend = distortsrcstart;
-                normaldstend = distortdststart;
-                distortanglestart = 0;
-                distortangleend = SRC_TABLE[index];
-                distortdx = maxdistortdx;
-            } else if (dstdx > maxdistortdx) {
-                // middle
-                distortdststart = distortsrcstart = dstdx - maxdistortdx;
-                distortsrcend = distortsrcstart + maxdistortsrc;
-                distortdstend = dstdx;
-                normalsrcstart = normaldststart = 0;
-                normalsrcend = distortsrcstart;
-                normaldstend = distortdststart;
-                distortanglestart = 0;
-                distortangleend = PI_DIV_2;
-            } else {
-                // end
-                normalsrcstart = normaldststart = normalsrcend = normaldstend = -1;
-                distortdx = dstdx;
-                distortsrcstart = 0;
-                int n = maxdistortdx >= dstdx ? maxdistortdx - dstdx : 0;
-                distortsrcend = ASIN_TABLE[SIN_TABLE_SIZE * n / maxdistortdx] * maxdistortsrc / SIN_TABLE_SCALE;
-                distortdststart = 0;
-                distortdstend = dstdx;
-                distortangleend = PI_DIV_2;
-                n = maxdistortdx >= distortdx ? maxdistortdx - distortdx : 0;
-                distortanglestart = ASIN_TABLE[SIN_TABLE_SIZE * (maxdistortdx - distortdx) / maxdistortdx];
-            }
-
-            Rect srcrc = new Rect(src);
-            Rect dstrc = new Rect(dst);
-            if (normalsrcstart < normalsrcend) {
-                if (dir > 0) {
-                    srcrc.left = src.left + normalsrcstart;
-                    srcrc.right = src.left + normalsrcend;
-                    dstrc.left = dst.left + normaldststart;
-                    dstrc.right = dst.left + normaldstend;
-                } else {
-                    srcrc.right = src.right - normalsrcstart;
-                    srcrc.left = src.right - normalsrcend;
-                    dstrc.right = dst.right - normaldststart;
-                    dstrc.left = dst.right - normaldstend;
-                }
-                drawDimmedBitmap(canvas, bmp, srcrc, dstrc);
-            }
-            if (distortdststart < distortdstend) {
-                int n = distortdx / 5 + 1;
-                int dst0 = SIN_TABLE[distortanglestart * SIN_TABLE_SIZE / PI_DIV_2] * maxdistortdx / SIN_TABLE_SCALE;
-                int src0 = distortanglestart * maxdistortdx / SIN_TABLE_SCALE;
-                for (int i = 0; i < n; i++) {
-                    int angledelta = distortangleend - distortanglestart;
-                    int startangle = distortanglestart + i * angledelta / n;
-                    int endangle = distortanglestart + (i + 1) * angledelta / n;
-                    int src1 = startangle * maxdistortdx / SIN_TABLE_SCALE - src0;
-                    int src2 = endangle * maxdistortdx / SIN_TABLE_SCALE - src0;
-                    int dst1 = SIN_TABLE[startangle * SIN_TABLE_SIZE / PI_DIV_2] * maxdistortdx / SIN_TABLE_SCALE - dst0;
-                    int dst2 = SIN_TABLE[endangle * SIN_TABLE_SIZE / PI_DIV_2] * maxdistortdx / SIN_TABLE_SCALE - dst0;
-                    int hiliteIndex = startangle * hilitePaints.length / PI_DIV_2;
-                    Paint[] paints;
-                    if (dir > 0) {
-                        dstrc.left = dst.left + distortdststart + dst1;
-                        dstrc.right = dst.left + distortdststart + dst2;
-                        srcrc.left = src.left + distortsrcstart + src1;
-                        srcrc.right = src.left + distortsrcstart + src2;
-                        paints = hilitePaints;
-                    } else {
-                        dstrc.right = dst.right - distortdststart - dst1;
-                        dstrc.left = dst.right - distortdststart - dst2;
-                        srcrc.right = src.right - distortsrcstart - src1;
-                        srcrc.left = src.right - distortsrcstart - src2;
-                        paints = shadePaints;
-                    }
-                    drawDimmedBitmap(canvas, bmp, srcrc, dstrc);
-                    canvas.drawRect(dstrc, paints[hiliteIndex]);
-                }
-            }
-        }
-
-        @Override
-        public void move(int duration, boolean accelerated) {
-            if (duration > 0 && pageFlipAnimationSpeedMs != 0) {
-                int steps = (int) (duration / getAvgAnimationDrawDuration()) + 2;
-                int x0 = currShift;
-                int x1 = destShift;
-                if ((x0 - x1) < 10 && (x0 - x1) > -10)
-                    steps = 2;
-                for (int i = 1; i < steps; i++) {
-                    int x = x0 + (x1 - x0) * i / steps;
-                    currShift = accelerated ? accelerate(x0, x1, x) : x;
-                    draw();
-                }
-            }
-            currShift = destShift;
-            draw();
-        }
-
-        @Override
-        public void stop(int x, int y) {
-            if (currentAnimation == null)
-                return;
-            alog.v("PageViewAnimation.stop(" + x + ", " + y + ")");
-            //if ( started ) {
-            boolean moved = false;
-            if (x != -1) {
-                int threshold = mActivity.getPalmTipPixels() * 7 / 8;
-                if (direction > 0) {
-                    // |  <=====  |
-                    int dx = startX - x;
-                    if (dx > threshold)
-                        moved = true;
-                } else {
-                    // |  =====>  |
-                    int dx = x - startX;
-                    if (dx > threshold)
-                        moved = true;
-                }
-                int duration;
-                if (moved) {
-                    destShift = maxX;
-                    duration = 300; // 500 ms forward
-                } else {
-                    destShift = 0;
-                    duration = 200; // 200 ms cancel
-                }
-                move(duration, false);
-            } else {
-                moved = true;
-            }
-            doc.doCommand(ReaderCommand.DCMD_GO_PAGE_DONT_SAVE_HISTORY.nativeId, moved ? page2 : page1);
-            //}
-            scheduleSaveCurrentPositionBookmark(DEF_SAVE_POSITION_INTERVAL);
-            close();
-            // preparing images for next page flip
-            preparePageImage(0);
-            preparePageImage(direction);
-            updateCurrentPositionStatus();
-            //if ( started )
-            //	drawPage();
-        }
-
-        @Override
-        public void update(int x, int y) {
-            alog.v("PageViewAnimation.update(" + x + ", " + y + ")");
-            int delta = direction > 0 ? startX - x : x - startX;
-            if (delta <= 0)
-                destShift = 0;
-            else if (delta < maxX)
-                destShift = delta;
-            else
-                destShift = maxX;
-        }
-
-        public void animate() {
-            alog.v("PageViewAnimation.animate(" + currShift + " => " + destShift + ") speed=" + pageFlipAnimationSpeedMs);
-            //log.d("animate() is called");
-            if (currShift != destShift) {
-                started = true;
-                if (pageFlipAnimationSpeedMs == 0)
-                    currShift = destShift;
-                else {
-                    int delta = currShift - destShift;
-                    if (delta < 0)
-                        delta = -delta;
-                    long avgDraw = getAvgAnimationDrawDuration();
-                    int maxStep = pageFlipAnimationSpeedMs > 0 ? (int) (maxX * 1000 / avgDraw / pageFlipAnimationSpeedMs) : maxX;
-                    int step;
-                    if (delta > maxStep * 2)
-                        step = maxStep;
-                    else
-                        step = (delta + 3) / 4;
-                    //int step = delta<3 ? 1 : (delta<5 ? 2 : (delta<10 ? 3 : (delta<15 ? 6 : (delta<25 ? 10 : (delta<50 ? 15 : 30)))));
-                    if (currShift < destShift)
-                        currShift += step;
-                    else if (currShift > destShift)
-                        currShift -= step;
-                    alog.v("PageViewAnimation.animate(" + currShift + " => " + destShift + "  step=" + step + ")");
-                }
-                //pointerCurrPos = pointerDestPos;
-                draw();
-                if (currShift != destShift)
-                    scheduleAnimation();
-            }
-        }
-
-        public void draw(Canvas canvas) {
-            alog.v("PageViewAnimation.draw(" + currShift + ")");
-//			BitmapInfo image1 = mCurrentPageInfo;
-//			BitmapInfo image2 = mNextPageInfo;
-            if (image1.isReleased() || image2.isReleased())
-                return;
-            int w = image1.bitmap.getWidth();
-            int h = image1.bitmap.getHeight();
-            int div;
-            if (direction > 0) {
-                // FORWARD
-                div = w - currShift;
-                Rect shadowRect = new Rect(div, 0, div + w / 10, h);
-                if (naturalPageFlip) {
-                    if (this.pageCount == 2) {
-                        int w2 = w / 2;
-                        if (div < w2) {
-                            // left - part of old page
-                            Rect src1 = new Rect(0, 0, div, h);
-                            Rect dst1 = new Rect(0, 0, div, h);
-                            drawDimmedBitmap(canvas, image1.bitmap, src1, dst1);
-                            // left, resized part of new page
-                            Rect src2 = new Rect(0, 0, w2, h);
-                            Rect dst2 = new Rect(div, 0, w2, h);
-                            //canvas.drawBitmap(image2.bitmap, src2, dst2, null);
-                            drawDistorted(canvas, image2.bitmap, src2, dst2, -1);
-                            // right, new page
-                            Rect src3 = new Rect(w2, 0, w, h);
-                            Rect dst3 = new Rect(w2, 0, w, h);
-                            drawDimmedBitmap(canvas, image2.bitmap, src3, dst3);
-
-                        } else {
-                            // left - old page
-                            Rect src1 = new Rect(0, 0, w2, h);
-                            Rect dst1 = new Rect(0, 0, w2, h);
-                            drawDimmedBitmap(canvas, image1.bitmap, src1, dst1);
-                            // right, resized old page
-                            Rect src2 = new Rect(w2, 0, w, h);
-                            Rect dst2 = new Rect(w2, 0, div, h);
-                            //canvas.drawBitmap(image1.bitmap, src2, dst2, null);
-                            drawDistorted(canvas, image1.bitmap, src2, dst2, 1);
-                            // right, new page
-                            Rect src3 = new Rect(div, 0, w, h);
-                            Rect dst3 = new Rect(div, 0, w, h);
-                            drawDimmedBitmap(canvas, image2.bitmap, src3, dst3);
-
-                            if (div > 0 && div < w)
-                                drawShadow(canvas, shadowRect);
-                        }
-                    } else {
-                        Rect src1 = new Rect(0, 0, w, h);
-                        Rect dst1 = new Rect(0, 0, w - currShift, h);
-                        //log.v("drawing " + image1);
-                        //canvas.drawBitmap(image1.bitmap, src1, dst1, null);
-                        drawDistorted(canvas, image1.bitmap, src1, dst1, 1);
-                        Rect src2 = new Rect(w - currShift, 0, w, h);
-                        Rect dst2 = new Rect(w - currShift, 0, w, h);
-                        //log.v("drawing " + image1);
-                        drawDimmedBitmap(canvas, image2.bitmap, src2, dst2);
-
-                        if (div > 0 && div < w)
-                            drawShadow(canvas, shadowRect);
-                    }
-                } else {
-                    if (flipTwoPages) {
-                        Rect src1 = new Rect(currShift, 0, w, h);
-                        Rect dst1 = new Rect(0, 0, w - currShift, h);
-                        //log.v("drawing " + image1);
-                        drawDimmedBitmap(canvas, image1.bitmap, src1, dst1);
-                        Rect src2 = new Rect(0, 0, currShift, h);
-                        Rect dst2 = new Rect(w - currShift, 0, w, h);
-                        //log.v("drawing " + image1);
-                        drawDimmedBitmap(canvas, image2.bitmap, src2, dst2);
-                    } else {
-                        Rect src1 = new Rect(currShift, 0, w, h);
-                        Rect dst1 = new Rect(0, 0, w - currShift, h);
-                        //log.v("drawing " + image1);
-                        drawDimmedBitmap(canvas, image1.bitmap, src1, dst1);
-                        Rect src2 = new Rect(w - currShift, 0, w, h);
-                        Rect dst2 = new Rect(w - currShift, 0, w, h);
-                        //log.v("drawing " + image1);
-                        drawDimmedBitmap(canvas, image2.bitmap, src2, dst2);
-                    }
-                }
-            } else {
-                // BACK
-                div = currShift;
-                Rect shadowRect = new Rect(div, 0, div + 10, h);
-                if (naturalPageFlip) {
-                    if (this.pageCount == 2) {
-                        int w2 = w / 2;
-                        if (div < w2) {
-                            // left - part of old page
-                            Rect src1 = new Rect(0, 0, div, h);
-                            Rect dst1 = new Rect(0, 0, div, h);
-                            drawDimmedBitmap(canvas, image2.bitmap, src1, dst1);
-                            // left, resized part of new page
-                            Rect src2 = new Rect(0, 0, w2, h);
-                            Rect dst2 = new Rect(div, 0, w2, h);
-                            //canvas.drawBitmap(image1.bitmap, src2, dst2, null);
-                            drawDistorted(canvas, image1.bitmap, src2, dst2, -1);
-                            // right, new page
-                            Rect src3 = new Rect(w2, 0, w, h);
-                            Rect dst3 = new Rect(w2, 0, w, h);
-                            drawDimmedBitmap(canvas, image1.bitmap, src3, dst3);
-                        } else {
-                            // left - old page
-                            Rect src1 = new Rect(0, 0, w2, h);
-                            Rect dst1 = new Rect(0, 0, w2, h);
-                            drawDimmedBitmap(canvas, image2.bitmap, src1, dst1);
-                            // right, resized old page
-                            Rect src2 = new Rect(w2, 0, w, h);
-                            Rect dst2 = new Rect(w2, 0, div, h);
-                            //canvas.drawBitmap(image2.bitmap, src2, dst2, null);
-                            drawDistorted(canvas, image2.bitmap, src2, dst2, 1);
-                            // right, new page
-                            Rect src3 = new Rect(div, 0, w, h);
-                            Rect dst3 = new Rect(div, 0, w, h);
-                            drawDimmedBitmap(canvas, image1.bitmap, src3, dst3);
-
-                            if (div > 0 && div < w)
-                                drawShadow(canvas, shadowRect);
-                        }
-                    } else {
-                        Rect src1 = new Rect(currShift, 0, w, h);
-                        Rect dst1 = new Rect(currShift, 0, w, h);
-                        drawDimmedBitmap(canvas, image1.bitmap, src1, dst1);
-                        Rect src2 = new Rect(0, 0, w, h);
-                        Rect dst2 = new Rect(0, 0, currShift, h);
-                        //canvas.drawBitmap(image2.bitmap, src2, dst2, null);
-                        drawDistorted(canvas, image2.bitmap, src2, dst2, 1);
-
-                        if (div > 0 && div < w)
-                            drawShadow(canvas, shadowRect);
-                    }
-                } else {
-                    if (flipTwoPages) {
-                        Rect src1 = new Rect(0, 0, w - currShift, h);
-                        Rect dst1 = new Rect(currShift, 0, w, h);
-                        drawDimmedBitmap(canvas, image1.bitmap, src1, dst1);
-                        Rect src2 = new Rect(w - currShift, 0, w, h);
-                        Rect dst2 = new Rect(0, 0, currShift, h);
-                        drawDimmedBitmap(canvas, image2.bitmap, src2, dst2);
-                    } else {
-                        Rect src1 = new Rect(currShift, 0, w, h);
-                        Rect dst1 = new Rect(currShift, 0, w, h);
-                        drawDimmedBitmap(canvas, image1.bitmap, src1, dst1);
-                        Rect src2 = new Rect(w - currShift, 0, w, h);
-                        Rect dst2 = new Rect(0, 0, currShift, h);
-                        drawDimmedBitmap(canvas, image2.bitmap, src2, dst2);
-                    }
-                }
-            }
-            if (div > 0 && div < w) {
-                canvas.drawLine(div, 0, div, h, divPaint);
-            }
-        }
-    }
-
     private int drawAnimationPos = 0;
     private Long[] drawAnimationStats = new Long[8];
     private long avgDrawAnimationDuration = 200;
 
-    private long getAvgAnimationDrawDuration() {
+    public long getAvgAnimationDrawDuration() {
         return avgDrawAnimationDuration;
     }
 
-    private void updateAnimationDurationStats(long duration) {
+    public void updateAnimationDurationStats(long duration) {
         if (duration <= 0)
             duration = 1;
         else if (duration > 1000)
@@ -3213,7 +2062,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         drawPage(null, false);
     }
 
-    private void drawPage(boolean isPartially) {
+    public void drawPage(boolean isPartially) {
         drawPage(null, isPartially);
     }
 
@@ -3221,7 +2070,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         if (!mInitialized || !mOpened)
             return;
         log.v("drawPage() : submitting DrawPageTask");
-        scheduleSaveCurrentPositionBookmark(DEF_SAVE_POSITION_INTERVAL);
+        mBookMarkManager.scheduleSaveCurrentPositionBookmark();
         mEngine.post(new DrawPageTask(doneHandler, isPartially));
     }
 
@@ -3248,7 +2097,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         if (currentProgressPosition != position || currentProgressTitle != titleResource) {
             currentProgressPosition = position;
             currentProgressTitle = titleResource;
-            bookView.draw(!first);
+            surface.draw(!first);
         }
     }
 
@@ -3257,7 +2106,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         if (currentProgressTitle != 0) {
             currentProgressPosition = -1;
             currentProgressTitle = 0;
-            bookView.draw(false);
+            surface.draw(false);
         }
     }
 
@@ -3310,7 +2159,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             //mBitmap = null;
             //showProgress(1000, R.string.progress_loading);
             //draw();
-            BackgroundThread.instance().postGUI(() -> bookView.draw(false));
+            BackgroundThread.instance().postGUI(() -> surface.draw(false));
             //init();
             // close existing document
             log.v("LoadDocumentTask : closing current book");
@@ -3380,7 +2229,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
                 mOpened = true;
 
-                highlightBookmarks();
+                mBookMarkManager.highlightBookmarks();
 
                 drawPage();
                 BackgroundThread.instance().postGUI(new Runnable() {
@@ -3574,7 +2423,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             mEngine.execute(new Task() {
                 @Override
                 public void work() throws Exception {
-                    bookView.draw();
+                    surface.draw();
                 }
 
             });
@@ -3592,54 +2441,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             updateCurrentPositionStatus();
         }
     }
-
-    private int lastSavePositionTaskId = 0;
-
-    private final static int DEF_SAVE_POSITION_INTERVAL = 180000; // 3 minutes
-
-    private void scheduleSaveCurrentPositionBookmark(final int delayMillis) {
-
-
-        // GUI thread required
-        BackgroundThread.instance().executeGUI(new Runnable() {
-            @Override
-            public void run() {
-                final int mylastSavePositionTaskId = ++lastSavePositionTaskId;
-                if (isBookLoaded() && mBookInfo != null) {
-                    prepareCurrentPositionBookmark();
-                    Bookmark bmk = lastPositionBookmarkToSave;
-                    if (bmk == null)
-                        return;
-                    final BookInfo bookInfo = mBookInfo;
-                    if (delayMillis <= 1) {
-                        if (bookInfo != null && mActivity.getDB() != null) {
-                            log.v("saving last position immediately");
-                            saveCurrentPositionBookmark();
-                            Services.getHistory().updateBookAccess(bookInfo, getTimeElapsed());
-                        }
-                    } else {
-                        BackgroundThread.instance().postGUI(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mylastSavePositionTaskId == lastSavePositionTaskId) {
-                                    if (bookInfo != null) {
-                                        log.v("saving last position");
-                                        if (Services.getHistory() != null) {
-                                            saveCurrentPositionBookmark();
-                                            Services.getHistory().updateBookAccess(bookInfo, getTimeElapsed());
-                                        }
-                                    }
-                                }
-                            }
-                        }, delayMillis);
-                    }
-                }
-            }
-        });
-
-    }
-
-
 
 
     public interface PositionPropertiesCallback {
@@ -3669,64 +2470,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         });
     }
 
-
-    Bookmark lastPositionBookmarkToSave = null;
-    Bookmark lastSavedBookmark = null;
-
-    public void prepareCurrentPositionBookmark() {
-        if (!mOpened)
-            return;
-        Bookmark bmk = doc.getCurrentPageBookmarkNoRender();
-        if (bmk != null) {
-            bmk.setTimeStamp(System.currentTimeMillis());
-            bmk.setType(Bookmark.TYPE_LAST_POSITION);
-            if (mBookInfo != null)
-                mBookInfo.setLastPosition(bmk);
-        }
-        lastPositionBookmarkToSave = bmk;
-    }
-
-    public void saveCurrentPositionBookmark() {
-        Bookmark bmk = lastPositionBookmarkToSave;
-        if (bmk != null && mBookInfo != null && isBookLoaded()) {
-            //setBookPosition();
-            if (lastSavedBookmark == null || !lastSavedBookmark.getStartPos().equals(bmk.getStartPos())) {
-                if (Services.getHistory() != null)
-                    Services.getHistory().updateRecentDir();
-                if (mActivity.getDB() != null) {
-                    mActivity.getDB().saveBookInfo(mBookInfo);
-                    mActivity.getDB().flush();
-                }
-                lastSavedBookmark = bmk;
-            }
-            lastPositionBookmarkToSave = null;
-        }
-    }
-
-    public Bookmark saveCurrentPositionBookmarkSync(final boolean saveToDB) {
-        ++lastSavePositionTaskId;
-        Bookmark bmk = BackgroundThread.instance().callBackground(new Callable<Bookmark>() {
-            @Override
-            public Bookmark call() throws Exception {
-                if (!mOpened)
-                    return null;
-                return doc.getCurrentPageBookmark();
-            }
-        });
-        if (bmk != null) {
-            //setBookPosition();
-            bmk.setTimeStamp(System.currentTimeMillis());
-            bmk.setType(Bookmark.TYPE_LAST_POSITION);
-            if (mBookInfo != null)
-                mBookInfo.setLastPosition(bmk);
-            if (saveToDB) {
-                Services.getHistory().updateRecentDir();
-                mActivity.getDB().saveBookInfo(mBookInfo);
-                mActivity.getDB().flush();
-            }
-        }
-        return bmk;
-    }
 
     public void save() {
         BackgroundThread.ensureGUI();
@@ -3960,7 +2703,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
     }
 
-    private boolean invalidImages = true;
+    public boolean invalidImages = true;
 
     public void clearImageCache() {
         BackgroundThread.instance().postBackground(new Runnable() {
@@ -3993,7 +2736,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
             public void work() {
                 BackgroundThread.ensureBackground();
                 doc.doCommand(ReaderCommand.DCMD_SCROLL_BY.nativeId, delta);
-                scheduleSaveCurrentPositionBookmark(DEF_SAVE_POSITION_INTERVAL);
+                mBookMarkManager.scheduleSaveCurrentPositionBookmark();
             }
 
             public void done() {
@@ -4208,7 +2951,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
 
         if (currentTapHandler == null)
-            currentTapHandler = new TapHandler();
+            currentTapHandler = new TapHandler(this);
         currentTapHandler.checkExpiration();
         return currentTapHandler.onTouchEvent(event);
     }
@@ -4225,7 +2968,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
                 surface.invalidate();
                 invalidImages = true;
                 //preparePageImage(0);
-                bookView.draw();
+                surface.draw();
             }
         });
     }
@@ -4235,7 +2978,6 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
         log.i("Creating normal SurfaceView");
         surface = new ReaderSurface(activity, mSettings, this);
 
-        bookView = (BookView) surface;
         surface.setOnTouchListener(this);
 //		surface.setOnKeyListener(this);
         surface.setOnFocusChangeListener(this);
@@ -4263,6 +3005,7 @@ public class ReaderView implements android.view.SurfaceHolder.Callback, Settings
 
         log.i("Posting create view task");
         mEngine.post(new CreateViewTask(props));
+        mBookMarkManager = new BookMarkManager(mBookInfo, engine, mActivity, this);
 
     }
 

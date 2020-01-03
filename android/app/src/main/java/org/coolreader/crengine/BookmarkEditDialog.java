@@ -87,11 +87,11 @@ public class BookmarkEditDialog extends BaseDialog {
 	protected void onPositiveButtonClick() {
 		if ( mIsNew ) {
 			mBookmark.setCommentText( commentEdit.getText().toString() );
-			mReaderView.addBookmark(mBookmark);
+			mReaderView.mBookMarkManager.addBookmark(mBookmark);
 		} else {
 			if ( mOriginalBookmark.setCommentText(commentEdit.getText().toString()) ) {
 				mOriginalBookmark.setTimeStamp(System.currentTimeMillis());
-				mReaderView.updateBookmark(mOriginalBookmark);
+				mReaderView.mBookMarkManager.updateBookmark(mOriginalBookmark);
 			}
 		}
 		super.onPositiveButtonClick();
@@ -107,7 +107,7 @@ public class BookmarkEditDialog extends BaseDialog {
 		mCoolReader.askConfirmation(R.string.win_title_confirm_bookmark_delete, new Runnable() {
 			@Override
 			public void run() {
-				mReaderView.removeBookmark(mBookmark);
+				mReaderView.mBookMarkManager.removeBookmark(mBookmark);
 				onNegativeButtonClick();
 			}
 		});

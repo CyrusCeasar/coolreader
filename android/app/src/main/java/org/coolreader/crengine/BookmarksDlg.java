@@ -230,7 +230,7 @@ public class BookmarksDlg  extends BaseDialog {
 			if ( mShortcutMode ) {
 				Bookmark b = mBookInfo.findShortcutBookmark(position+1);
 				if ( b==null ) {
-					mReaderView.addBookmark(position+1);
+					mReaderView.mBookMarkManager.addBookmark(position+1);
 					mThis.dismiss();
 					return true;
 				}
@@ -239,7 +239,7 @@ public class BookmarksDlg  extends BaseDialog {
 			} else {
 				Bookmark bm = (Bookmark)mAdapter.getItem(position);
 				if ( bm!=null ) {
-					mReaderView.goToBookmark(bm);
+					mReaderView.mBookMarkManager.goToBookmark(bm);
 					dismiss();
 				}
 			}
@@ -271,7 +271,7 @@ public class BookmarksDlg  extends BaseDialog {
 	@Override
 	protected void onPositiveButtonClick() {
 		// add bookmark
-		mReaderView.addBookmark(0);
+		mReaderView.mBookMarkManager.addBookmark(0);
 		BookmarksDlg.this.dismiss();
 	}
 
@@ -304,16 +304,16 @@ public class BookmarksDlg  extends BaseDialog {
 			if ( shortcut>=0 && shortcut<SHORTCUT_COUNT ) {
 				switch (item.getItemId()) {
 				case R.id.bookmark_shortcut_add:
-					mReaderView.addBookmark(shortcut+1);
+					mReaderView.mBookMarkManager.addBookmark(shortcut+1);
 					listUpdated();
 					dismiss();
 					return true;
 				case R.id.bookmark_delete:
-					if (mReaderView.removeBookmark(bm) != null)
+					if (mReaderView.mBookMarkManager.removeBookmark(bm) != null)
 						listUpdated();
 					return true;
 				case R.id.bookmark_shortcut_goto:
-					mReaderView.goToBookmark(shortcut+1);
+					mReaderView.mBookMarkManager.goToBookmark(shortcut+1);
 					dismiss();
 					return true;
 				}
@@ -322,17 +322,17 @@ public class BookmarksDlg  extends BaseDialog {
 		}
 		switch (item.getItemId()) {
 		case R.id.bookmark_add:
-			mReaderView.addBookmark(0);
+			mReaderView.mBookMarkManager.addBookmark(0);
 			listUpdated();
 			dismiss();
 			return true;
 		case R.id.bookmark_delete:
-			if (mReaderView.removeBookmark(bm) != null)
+			if (mReaderView.mBookMarkManager.removeBookmark(bm) != null)
 				listUpdated();
 			return true;
 		case R.id.bookmark_goto:
 			if ( bm!=null )
-				mReaderView.goToBookmark(bm);
+				mReaderView.mBookMarkManager.goToBookmark(bm);
 			dismiss();
 			return true;
 		case R.id.bookmark_edit:

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import org.coolreader.crengine.L;
@@ -153,12 +154,43 @@ public class ReaderSurface extends SurfaceView implements BookView {
 
     @Override
     public void draw(boolean isPartially) {
-        mReaderView.drawCallback(c -> doDraw(c), null, isPartially);
+        drawCallback(c -> doDraw(c), null, isPartially);
+    }
+    public void drawCallback(DrawCanvasCallback callback, Rect rc, boolean isPartially) {
+
+        //synchronized(surfaceLock) { }
+        //log.v("draw() - in thread " + Thread.currentThread().getName());
+        final SurfaceHolder holder = getHolder();
+        //log.v("before synchronized(surfaceLock)");
+        if (holder != null)
+        //synchronized(surfaceLock)
+        {
+            Canvas canvas = null;
+            long startTs = android.os.SystemClock.uptimeMillis();
+            try {
+                canvas = holder.lockCanvas(rc);
+                //log.v("before draw(canvas)");
+                if (canvas != null) {
+
+                    callback.drawTo(canvas);
+                }
+            } finally {
+                //log.v("exiting finally");
+                if (canvas != null && getHolder() != null) {
+                    //log.v("before unlockCanvasAndPost");
+                    if (canvas != null && holder != null) {
+                        holder.unlockCanvasAndPost(canvas);
+                        //if ( rc==null ) {
+                        long endTs = android.os.SystemClock.uptimeMillis();
+                        mReaderView.updateAnimationDurationStats(endTs - startTs);
+                        //}
+                    }
+                    //log.v("after unlockCanvasAndPost");
+                }
+            }
+        }
+        //log.v("exiting draw()");
     }
 
-    @Override
-    public void invalidate() {
-        super.invalidate();
-    }
 
 }
