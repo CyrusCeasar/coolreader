@@ -103,10 +103,12 @@
         </activity>
 
         <activity android:name=".crengine.filebrowser.FileBrowserActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="cn.cc.ereader.TranslateResultActivity"
-            android:theme="@style/AppTheme.NoActionBar" /> <!-- Database service -->
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/> <!-- Database service -->
         <service android:name=".db.CRDBService" /> <!-- Stop TTS on incoming call -->
         <receiver android:name=".PhoneStateReceiver">
             <intent-filter>
